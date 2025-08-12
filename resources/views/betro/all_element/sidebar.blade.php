@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <!-- sidebar: title-->
       <div class="title-text d-flex align-items-center mb-4 mt-1">
-        <h4 class="sidebar-title mb-0 flex-grow-1"><span class="sm-txt">Hr</span><span> Admin</span></h4>
+        <h4 class="sidebar-title mb-0 flex-grow-1"><span class="sm-txt">BT</span><span> ADMIN</span></h4>
 
       </div>
       <!-- sidebar: Create new -->
@@ -11,7 +11,7 @@
       <!-- sidebar: menu list -->
       <div class="main-menu flex-grow-1">
         <ul class="menu-list">
-          <li class="divider py-2 lh-sm"><span class="small">MAIN</span><br> <small class="text-muted">Unique dashboard designs </small></li>
+          <li class="divider py-2 lh-sm"><span class="small">MENU</span><br> <small class="text-muted">Navigation</small></li>
 
     <li class="{{ request()->routeIs('dashboard*') ? 'active' : '' }}">
                     <a class="m-link active" href="{{ route('dashboard') }}">

@@ -249,7 +249,11 @@ if ($request->hasFile('logo_compagnies')) {
         $compagnie = Compagnies::findOrFail($id);
         $info_users = InfoUser::where('id', $compagnie->info_user_id)->first();
         $users = User::where('id', $info_users->user_id)->first();
-        dd($compagnie);
+        // dd($compagnie);
+                // 🔹 Vérifier si le mot de passe existe déjà
+        // if (!empty($users->password)) {
+        //     return view('login');
+        // }
         // Logique pour créer les accès
         return view('modifierMotdepasse', compact('compagnie', 'info_users', 'users'));
     } catch (DecryptException $e) {
@@ -257,14 +261,28 @@ if ($request->hasFile('logo_compagnies')) {
     }
 }
 
-public function updatePassword(Request $request , $id)
-{
-    $validated = $request->validate([
-        'password' => 'required|confirmed',
 
+public function updatePassword(Request $request, $id)
+{
+    // 1️⃣ Validation
+    $validated = $request->validate([
+        'password' => 'required|string|min:8|confirmed',
     ]);
 
-    dd($validated , $id);
+    // 2️⃣ Récupérer l'utilisateur
+    $user = User::findOrFail($id);
+
+    // 3️⃣ Hacher et mettre à jour le mot de passe
+    $user->password = Hash::make($validated['password']);
+    $user->assignRole('super-admin-compagnie');
+    $user->save();
+
+    // 4️⃣ Authentifier automatiquement l'utilisateur
+    Auth::login($user);
+
+    // 5️⃣ Rediriger avec message
+    return redirect()->route('dashboardcompagnie_name')
+        ->with('success', 'Mot de passe modifié avec succès ✅');
 }
 
 

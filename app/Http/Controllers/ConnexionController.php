@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Compagnies;
 use App\Models\Connexion;
 use App\Http\Requests\StoreConnexionRequest;
 use App\Http\Requests\UpdateConnexionRequest;
@@ -78,31 +79,62 @@ class ConnexionController extends Controller
     //     }
     // }
 
-    public function login(Request $request)
+public function login(Request $request)
 {
+    // Validation des champs email et password
     $credentials = $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
 
+    // Tentative d'authentification avec les credentials
     if (Auth::attempt($credentials)) {
-        $request->session()->regenerate(); // protection contre les attaques de session fixation
+        $request->session()->regenerate(); // Protection contre la fixation de session
 
-        $user = Auth::user(); // si tu veux accéder à l'utilisateur connecté
+        $user = Auth::user();
+// dd($user->getRoleNames()); // Affiche une collection avec les rôles de l'utilisateur  // <-- Affiche la valeur du rôle et stoppe l'exécution
+        // Redirection selon le rôle de l'utilisateur
+        if ($user->hasRole('super-admin-betro')) {
+            return redirect()->route('dashboard')
+                ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
+        } elseif ($user->hasRole('super-admin-compagnie')) {
+            return redirect()->route('dashboardcompagnie_name')
+                ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
+        }
 
-        return redirect()->route('dashboard') // ou la vue que tu veux afficher
-            ->with('success', 'Connexion réussie. Bienvenue ' . $user->name);
+        // Optionnel : redirection par défaut si rôle non géré
+        // return redirect()->route('home')
+        //     ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
     }
 
+    // Si échec de connexion, retour avec message d'erreur
     return back()->withErrors([
         'email' => 'Les identifiants sont incorrects.',
     ])->onlyInput('email');
 }
 
-    public function dashboard()
+
+    // if ($user->role = 'super-admin-betro') {
+    //     // return redirect()->route('dashboardbetro'); // ou la vue que tu veux afficher
+    //     return redirect()->route('dashboard') // ou la vue que tu veux afficher
+    //     ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
+    //     }else{
+    //     return redirect()->route('dashboardcompagnie_name')
+    //     ->with('success', 'Mot de passe modifié avec succès ✅');
+    //     }
+
+    public function dashboardbetro()
     {
-        return view('betro.index');
+        $nombres_compagnie = Compagnies::count();
+        return view('betro.index' , compact('nombres_compagnie'));
     }
+
+        public function dashboardcompagnie()
+    {
+        //  $nombres_compagnie = Compagnies::count();
+        return view('compagnie.index');
+    }
+
 
         public function premierePage()
     {

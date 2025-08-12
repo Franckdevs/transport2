@@ -19,8 +19,11 @@ class Compagnies extends Model
         'info_user_id', // facultatif si tu lies la compagnie à un utilisateur
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+public function info_user()
+{
+    return $this->belongsTo(InfoUser::class, 'info_user_id');
+}
+
+
+
 }

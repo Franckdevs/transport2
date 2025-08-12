@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CompagniesController;
 use App\Http\Controllers\ConnexionController;
+use App\Http\Controllers\GareController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -30,7 +31,8 @@ Route::post('/login', [ConnexionController::class, 'login'])->name('login');
 Route::controller(ConnexionController::class)->group(function () {
 Route::get('/connexion', 'premierePage')->name('premierePage_name');
 Route::post('/login', 'login')->name('login');
-Route::get('/dashboard', 'dashboard')->name('dashboard');
+Route::get('/dashboard', 'dashboardbetro')->name('dashboard');
+Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagnie_name');
 Route::post('/', 'logout')->name('logout');
 });
 
@@ -46,6 +48,15 @@ Route::post('compagnies-update/{compagnies}', 'update')->name('compagnies.update
 Route::get('/creer-acces/{id}', 'creerAcces')->name('creer.acces');
 
 Route::put('/update-password/{id}', 'updatePassword')->name('acces.update.password');
+});
+
+Route::controller(GareController::class)->group(function () {
+
+Route::get('/gares', 'index2')->name('gares.index');
+Route::get('/gares/create', 'create2')->name('gares.create');
+Route::post('/gares/store', 'store2')->name('gares.store');
+Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
+
 });
 
 // Route::post('update-compagnies/{compagnies}', [CompagniesController::class, 'update'])->name('compagnies.update');

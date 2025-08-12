@@ -16,4 +16,16 @@ class InfoUser extends Model
         'password',
         'user_id',
     ];
+
+public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
+public function compagnie()
+{
+    return $this->hasOne(Compagnies::class, 'info_user_id'); // ✅ sans espace
+}
+
+
 }

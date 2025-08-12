@@ -24,7 +24,7 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
 
-                        <form action="{{ route('acces.update.passworde', $users->id) }}" method="POST">
+                        <form action="{{ route('acces.update.password', $users->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             {{-- <input type="hidden" name="id_user" value="{{ $users->id }}"> --}}
