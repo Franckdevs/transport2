@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('buses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('info_user_id')->constrained('info_users', 'id');
+            $table->foreignId('compagnies_id')->constrained('compagnies', 'id');
             $table->string('nom_bus');
             $table->string('marque_bus');
             $table->string('modele_bus');

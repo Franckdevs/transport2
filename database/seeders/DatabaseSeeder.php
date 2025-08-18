@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Ville;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,7 +18,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RoleSeeder::class,
-            SuperAdminBetroSeeder::class
+            SuperAdminBetroSeeder::class,
+            JourSeeder::class,
+            VilleSeeder::class,
         ]);
     }
 }
