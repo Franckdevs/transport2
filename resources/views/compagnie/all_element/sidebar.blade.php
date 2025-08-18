@@ -40,7 +40,7 @@
             </a>
             <!-- Menu: Sub menu ul -->
             <ul class="sub-menu collapse" id="menu-Applications">
-              <li><a class="ms-link" href="app-calendar.html">BUS / CARS</a></li>
+              <li><a class="ms-link" href="{{ route('compagnie.bus') }}">BUS / CARS</a></li>
             </ul>
 
              <ul class="sub-menu collapse" id="menu-Applications">
@@ -48,7 +48,7 @@
             </ul>
 
              <ul class="sub-menu collapse" id="menu-Applications">
-              <li><a class="ms-link" href="app-calendar.html">OPTION</a></li>
+              <li><a class="ms-link" href="{{ route('personnel.index') }}">UTILISATEUR</a></li>
             </ul>
           </li>
 

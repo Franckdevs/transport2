@@ -21,7 +21,7 @@ class SuperAdminBetroSeeder extends Seeder
                 'nom' => 'Super',
                 'prenom' => 'Admin Betro',
                 'telephone' => '0101010101',
-                'password' => Hash::make('password'), // ⚠️ À changer en production
+                'password' => Hash::make(value: 'password'), // ⚠️ À changer en production
             ]
         );
 

@@ -7,7 +7,7 @@ use App\Helpers\GlobalHelper;
 @include('compagnie.all_element.sidebar')
   <!-- start: body area -->
   <div class="wrapper">
-    <!-- start: page header --> 
+    <!-- start: page header -->
     <header class="page-header sticky-top px-xl-4 px-sm-2 px-0 py-lg-2 py-1">
       <div class="container-fluid">
         <nav class="navbar">
@@ -38,7 +38,7 @@ use App\Helpers\GlobalHelper;
 
                  <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
                 <h5 class="mb-0">Liste des gares</h5>
-                <a href="{{ route('gares.create') }}" class="btn btn-success">
+                <a href="{{ route('bus.create') }}" class="btn btn-success">
                <i class="fa fa-plus"></i>  Ajouter une gare
                 </a>
             </div>
@@ -46,33 +46,31 @@ use App\Helpers\GlobalHelper;
                 <table id="myTable" class="table display dataTable table-hover" style="width:100%">
                   <thead>
                     <tr>
-                      <th>Nom gare</th>
-                      <th>Adresse</th>
-                      <th>Heure ouverture</th>
-                      <th>Heure fermeture</th>
+                      <th>Nom du bus</th>
+                      <th>modele du bus</th>
+                      <th>marque du bus</th>
+                      <th>immatriculation</th>
                       <th>Date de création</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    @foreach ($listegares as $gare)
+                @foreach ($bus as $bu)
 
                     <tr>
-                      <td>{{ $gare->nom_gare ?? 'Aucun nom' }}</td>
-                      <td>{{ $gare->adresse_gare ?? 'Aucune adresse' }}</td>
-                      <td>{{ $gare->heure_ouverture ?? 'Aucune heure' }}</td>
-                      <td>{{ $gare->heure_fermeture ?? 'Aucune heure' }}</td>
-                      <td>{{ GlobalHelper::formatCreatedAt($gare->created_at) }}</td>
+                      <td>{{ $bu->nom_bus ?? 'Aucun nom' }}</td>
+                      <td>{{ $bu->modele_bus ?? 'Aucune adresse' }}</td>
+                      <td>{{ $bu->marque_bus ?? 'Aucune heure' }}</td>
+                      <td>{{ $bu->immatriculation_bus ?? 'Aucune heure' }}</td>
+                      <td>{{ GlobalHelper::formatCreatedAt($bu->created_at) }}</td>
 
                       <td>
-                   <form action="{{ route('gares.ajouterbUS', $gare->id) }}" method="POST" style="display:inline;">
+                   <form action="" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn btn-primary">
                     <i class="fa fa-bus"></i> Bus
                     </button>
                     </form>
-
-
                         <a href="#" class="btn btn-info">
                           <i class="fa fa-eye"></i>
                         </a>
@@ -80,18 +78,12 @@ use App\Helpers\GlobalHelper;
                           <i class="fa fa-trash"></i>
                         </a>
                       </td>
-
-
                     @endforeach
-
-
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
-
-
             <script>
     $(document).ready(function() {
       $('#myTable').addClass('nowrap').dataTable({

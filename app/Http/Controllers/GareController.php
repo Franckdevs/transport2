@@ -38,7 +38,7 @@ class GareController extends Controller
     }
 public function store2(Request $request)
 {
-    $user = Auth::user();
+        $user = Auth::user();
     // 1️⃣ Validation
     $validated = $request->validate([
         'nom_gare' => 'nullable',
@@ -62,6 +62,7 @@ public function store2(Request $request)
     ]);
     // 2️⃣ On ajoute l'info_user_id après validation
     $validated['info_user_id'] = $user->info_user->id;
+
     // dd($validated);
 
     // 3️⃣ Création de la gare

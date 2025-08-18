@@ -7,7 +7,7 @@ use App\Helpers\GlobalHelper;
 @include('compagnie.all_element.sidebar')
   <!-- start: body area -->
   <div class="wrapper">
-    <!-- start: page header --> 
+    <!-- start: page header -->
     <header class="page-header sticky-top px-xl-4 px-sm-2 px-0 py-lg-2 py-1">
       <div class="container-fluid">
         <nav class="navbar">
@@ -38,34 +38,36 @@ use App\Helpers\GlobalHelper;
 
                  <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
                 <h5 class="mb-0">Liste des gares</h5>
-                <a href="{{ route('gares.create') }}" class="btn btn-success">
-               <i class="fa fa-plus"></i>  Ajouter une gare
+                <a href="{{ route('personnel.create') }}" class="btn btn-success">
+               <i class="fa fa-plus"></i>  Ajouter un utilisateur
                 </a>
             </div>
 
                 <table id="myTable" class="table display dataTable table-hover" style="width:100%">
                   <thead>
                     <tr>
-                      <th>Nom gare</th>
-                      <th>Adresse</th>
-                      <th>Heure ouverture</th>
-                      <th>Heure fermeture</th>
-                      <th>Date de création</th>
+                      <th>Nom </th>
+                      <th>Prenoms</th>
+                      <th>Telephone</th>
+                      <th>E-mail</th>
+                      <th>Fonction</th>
                       <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    @foreach ($listegares as $gare)
+                                  @foreach ($personnels as $personnel)
 
                     <tr>
-                      <td>{{ $gare->nom_gare ?? 'Aucun nom' }}</td>
-                      <td>{{ $gare->adresse_gare ?? 'Aucune adresse' }}</td>
-                      <td>{{ $gare->heure_ouverture ?? 'Aucune heure' }}</td>
-                      <td>{{ $gare->heure_fermeture ?? 'Aucune heure' }}</td>
-                      <td>{{ GlobalHelper::formatCreatedAt($gare->created_at) }}</td>
+                      <td>{{ $personnel->nom ?? 'Aucun nom' }}</td>
+                      <td>{{ $personnel->prenom ?? 'Aucun prenom' }}</td>
+                      <td>{{ $personnel->telephone ?? 'Aucun telephone' }}</td>
+                      <td>{{ $personnel->email ?? 'Aucun email' }}</td>
+                      <td>{{ $personnel->fonction ?? 'Aucune fonction' }}</td>
+
+
 
                       <td>
-                   <form action="{{ route('gares.ajouterbUS', $gare->id) }}" method="POST" style="display:inline;">
+                   <form action="" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit" class="btn btn-primary">
                     <i class="fa fa-bus"></i> Bus
@@ -75,8 +77,8 @@ use App\Helpers\GlobalHelper;
 
                         <a href="#" class="btn btn-info">
                           <i class="fa fa-eye"></i>
-                        </a>
-                        <a href="#" class="btn btn-danger">
+
+                          <a href="#" class="btn btn-danger">
                           <i class="fa fa-trash"></i>
                         </a>
                       </td>
@@ -84,14 +86,11 @@ use App\Helpers\GlobalHelper;
 
                     @endforeach
 
-
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
-
-
             <script>
     $(document).ready(function() {
       $('#myTable').addClass('nowrap').dataTable({

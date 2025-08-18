@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\CompagniesController;
-use App\Http\Controllers\ConnexionController;
-use App\Http\Controllers\GareController;
+use App\Http\Controllers\PersonelController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BusController;
+use App\Http\Controllers\GareController;
+use App\Http\Controllers\ConnexionController;
+use App\Http\Controllers\CompagniesController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -29,7 +31,7 @@ Route::post('/login', [ConnexionController::class, 'login'])->name('login');
 // });
 
 Route::controller(ConnexionController::class)->group(function () {
-Route::get('/connexion', 'premierePage')->name('premierePage_name');
+Route::get('/connexion', 'premierePage')->name('premierePage_nameS');
 Route::post('/login', 'login')->name('login');
 Route::get('/dashboard', 'dashboardbetro')->name('dashboard');
 Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagnie_name');
@@ -58,6 +60,20 @@ Route::post('/gares/store', 'store2')->name('gares.store');
 Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
 
 });
+Route::controller(BusController::class)->group(function () {
+
+Route::get('/bus','index')->name('compagnie.bus');
+Route::get('/bus/create','create')->name('bus.create');
+Route::post('/bus/store','store')->name('bus.store');
+
+
+
+});
+Route::controller(PersonelController::class)->group(function () {
+Route::get('/personnel','index')->name('personnel.index');
+Route::get('/personnel/create','create')->name('personnel.create');
+Route::post('/personnel/store','store')->name('personnel.store');
+});
+
 
 // Route::post('update-compagnies/{compagnies}', [CompagniesController::class, 'update'])->name('compagnies.update');
-
