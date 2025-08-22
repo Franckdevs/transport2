@@ -41,6 +41,7 @@ use App\Helpers\GlobalHelper;
                 <a href="{{ route('bus.create') }}" class="btn btn-success">
                <i class="fa fa-plus"></i>  Ajouter une gare
                 </a>
+
             </div>
 
                 <table id="myTable" class="table display dataTable table-hover" style="width:100%">

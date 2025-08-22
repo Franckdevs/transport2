@@ -29,64 +29,39 @@ class BusController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     */
-      public function store(Request $request)
-    {
-        // 1. Validation des données
-         $user = Auth::user();
-        $validated = $request->validate([
-            'nom_bus'            => 'nullable|string|max:255',
-            'marque_bus'         => 'nullable|string|max:255',
-            'modele_bus'         => 'nullable|string|max:255',
-            'immatriculation_bus'=> 'nullable|string|max:50',
-            'photo_bus'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'description_bus'    => 'nullable|string',
-            'localisation_bus'   => 'nullable|string|max:255',
-            'compagnies_id'      => 'nullable',
-        ]);
+ */public function store(Request $request)
+{
+    $user = Auth::user();
 
+    // 1. Validation des données
+    $validated = $request->validate([
+        'nom_bus'              => 'required|string|max:255',
+        'marque_bus'           => 'required|string|max:255',
+        'modele_bus'           => 'required|string|max:255',
+        'immatriculation_bus'  => 'required|string|max:50|unique:buses,immatriculation_bus',
+        'photo_bus'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        'description_bus'      => 'nullable|string',
+        'localisation_bus'     => 'nullable|string|max:255',
+        'nombre_places'        => 'required|integer|min:1',
+        'configuration_car'    => 'required|string|in:1,2,3,4', // on contrôle les valeurs possibles
+    ]);
 
-        $validated['info_user_id'] = $user->info_user->id;
+    // Ajout de l'ID de l'utilisateur relié
+    $validated['info_user_id'] = $user->info_user->id;
 
-        // 2. Gestion de la photo
-        // if ($request->hasFile('photo_bus')) {
-        //     $photoPath = $request->file('photo_bus')->store('buses', 'public');
-        //     $validated['photo_bus'] = $photoPath;
-        // }
-        // 2. Gestion de la photo
-        if ($request->hasFile('photo_bus')) {
-            $destinationPath = public_path('buses');
-            // Vérifier si le dossier existe sinon le créer
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
-            }
-            // Récupérer le fichier
-            $file = $request->file('photo_bus');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            // Déplacer dans /public/buses
-            $file->move($destinationPath, $fileName);
-            // Sauvegarder le chemin relatif
-            $validated['photo_bus'] = $fileName;
-        }
-
-
-        // 3. Sauvegarde dans la base
-       $bus = new bus($validated);
-       $bus->nom_bus = $validated['nom_bus'];
-       $bus->marque_bus = $validated['marque_bus'];
-       $bus->modele_bus = $validated['modele_bus'];
-       $bus->immatriculation_bus = $validated['immatriculation_bus'];
-       $bus->photo_bus = $validated['photo_bus'] ?? null;
-       $bus->description_bus = $validated['description_bus'];
-       $bus->localisation_bus = $validated['localisation_bus'];
-       $bus->compagnies_id = $user->info_user->compagnie->id;
-       $bus->save();
-
-        // 4. Redirection
-       return redirect()->route('compagnie.bus', compact('bus'))
-                 ->with('success', 'Bus ajouté avec succès.');
-
+    // 2. Gestion de la photo
+    if ($request->hasFile('photo_bus')) {
+        $photoPath = $request->file('photo_bus')->store('buses', 'public');
+        $validated['photo_bus'] = $photoPath;
     }
+
+    // 3. Sauvegarde en base de données
+    $bus = Bus::create($validated);
+
+    // 4. Redirection avec succès
+    return redirect()->route('compagnie.bus', compact('bus'))
+                     ->with('success', 'Bus ajouté avec succès.');
+}
 
     /**
      * Display the specified resource.

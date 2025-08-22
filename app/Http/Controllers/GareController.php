@@ -127,7 +127,7 @@ public function store2(Request $request)
         $emailStatus = '';
     }
 
-        return redirect()->route('gares.index')
+        return redirect()->route('gares.index.2')
             ->with('success', 'Gare créée avec succès ✅' . ($adminInfoUserId ? ' et administrateur créé.' : '') . $emailStatus);
 
     } catch (\Illuminate\Validation\ValidationException $e) {

@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Compagnies;
-use App\Http\Requests\StoreCompagniesRequest;
-use App\Http\Requests\UpdateCompagniesRequest;
+
 use App\Models\InfoUser;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;

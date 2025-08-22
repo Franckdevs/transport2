@@ -1,0 +1,118 @@
+[33mcommit f867bf811d846c4abfff8d4ae6deeebb334ec6d7[m
+Merge: 8a177d2 281ca72
+Author: Franckdevs <106821220+Franckdevs@users.noreply.github.com>
+Date:   Fri Aug 22 12:08:25 2025 +0000
+
+    recuperation avant conflic
+
+[1mdiff --cc app/Console/Commands/AddPermission.php[m
+[1mindex 0000000,0000000..366e552[m
+[1mnew file mode 100644[m
+[1m--- /dev/null[m
+[1m+++ b/app/Console/Commands/AddPermission.php[m
+[36m@@@ -1,0 -1,0 +1,43 @@@[m
+[32m++<?php[m
+[32m++[m
+[32m++namespace App\Console\Commands;[m
+[32m++[m
+[32m++use Illuminate\Console\Command;[m
+[32m++use Spatie\Permission\Models\Permission;[m
+[32m++use Spatie\Permission\Models\Role;[m
+[32m++[m
+[32m++class AddPermission extends Command[m
+[32m++{[m
+[32m++    protected $signature = 'permission:add {name} {--role=* : Assign to specific roles}';[m
+[32m++    protected $description = 'Add a new permission and optionally assign it to roles';[m
+[32m++[m
+[32m++    public function handle()[m
+[32m++    {[m
+[32m++        $permissionName = $this->argument('name');[m
+[32m++        $roles = $this->option('role');[m
+[32m++[m
+[32m++        // Créer la permission[m
+[32m++        $permission = Permission::firstOrCreate(['name' => $permissionName]);[m
+[32m++        [m
+[32m++        if ($permission->wasRecentlyCreated) {[m
+[32m++            $this->info("Permission '{$permissionName}' created successfully.");[m
+[32m++        } else {[m
+[32m++            $this->warn("Permission '{$permissionName}' already exists.");[m
+[32m++        }[m
+[32m++[m
+[32m++        // Assigner aux rôles si spécifiés[m
+[32m++        if (!empty($roles)) {[m
+[32m++            foreach ($roles as $roleName) {[m
+[32m++                $role = Role::where('name', $roleName)->first();[m
+[32m++                if ($role) {[m
+[32m++                    $role->givePermissionTo($permission);[m
+[32m++                    $this->info("Permission assigned to role '{$roleName}'.");[m
+[32m++                } else {[m
+[32m++                    $this->error("Role '{$roleName}' not found.");[m
+[32m++                }[m
+[32m++            }[m
+[32m++        }[m
+[32m++[m
+[32m++        return 0;[m
+[32m++    }[m
+[32m++}[m
+[1mdiff --cc app/Helpers/GlobalHelper.php[m
+[1mindex 8e40c86,8e40c86..093cd81[m
+[1m--- a/app/Helpers/GlobalHelper.php[m
+[1m+++ b/app/Helpers/GlobalHelper.php[m
+[36m@@@ -3,7 -3,7 +3,7 @@@[m
+  namespace App\Helpers;[m
+  [m
+  use Carbon\Carbon;[m
+[31m--[m
+[32m++use Illuminate\Support\Str;[m
+  class GlobalHelper[m
+  {[m
+      public static function formatCreatedAt($date = null)[m
+[36m@@@ -18,4 -18,4 +18,22 @@@[m
+  [m
+          return $date->format('d/m/Y');[m
+      }[m
+[32m++[m
+[32m++     /**[m
+[32m++     * Limiter une chaîne de caractères avec un nombre de caractères défini[m
+[32m++     *[m
+[32m++     * @param string|null $text[m
+[32m++     * @param int $limit[m
+[32m++     * @param string $end[m
+[32m++     * @return string[m
+[32m++     */[m
+[32m++    public static function limitText($text = null, int $limit = 15, string $end = '...')[m
+[32m++    {[m
+[32m++        if (empty($text)) {[m
+[32m++            return '';[m
+[32m++        }[m
+[32m++[m
+[32m++        return Str::limit($text, $limit, $end);[m
+[32m++    }[m
+[32m++[m
+  }[m
+[1mdiff --cc app/Helpers/PermissionHelper.php[m
+[1mindex 0000000,0000000..3b97bcc[m
+[1mnew file mode 100644[m
+[1m--- /dev/null[m
+[1m+++ b/app/Helpers/PermissionHelper.php[m
+[36m@@@ -1,0 -1,0 +1,120 @@@[m
+[32m++<?php[m
+[32m++[m
+[32m++namespace App\Helpers;[m
+[32m++[m
+[32m++use Illuminate\Support\Facades\Auth;[m
+[32m++[m
+[32m++class PermissionHelper[m
+[32m++{[m
+[32m++    /**[m
+[32m++     * Vérifier si l'utilisateur connecté a une permission spécifique[m
+[32m++     */[m
+[32m++    public static function can($permission)[m
+[32m++    {[m
+[32m++        if (!Auth::check()) {[m
+[32m++            return false;[m
+[32m++        }[m
+[32m++[m
+[32m++        return Auth::user()->can($permission);[m
+[32m++    }[m
+[32

@@ -1,0 +1,36 @@
+[33mcommit f867bf811d846c4abfff8d4ae6deeebb334ec6d7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: 8a177d2 281ca72
+Author: Franckdevs <106821220+Franckdevs@users.noreply.github.com>
+Date:   Fri Aug 22 12:08:25 2025 +0000
+
+    recuperation avant conflic
+
+[33mcommit 8a177d20b6d70925987b8e975bc7e7f60f0f4877[m
+Author: Franckdevs <106821220+Franckdevs@users.noreply.github.com>
+Date:   Mon Aug 18 09:11:30 2025 +0000
+
+    Sauvegarde locale avant pull
+
+[33mcommit 281ca7244822dfc149cea47ed6836cc81290eefe[m
+Author: silue17 <silue17@gmail.com>
+Date:   Mon Aug 18 01:54:19 2025 -0700
+
+    ajout d'utulisateur,bus
+
+[33mcommit 07cd9f28f14d6e7b08e8e98d92678fb1583b3a79[m
+Author: Franckdevs <106821220+Franckdevs@users.noreply.github.com>
+Date:   Tue Aug 12 11:16:03 2025 +0000
+
+    dernier version ange
+
+[33mcommit 5fa83511001e579cd63522160e20389fd1c8cee8[m
+Author: Franckdevs <106821220+Franckdevs@users.noreply.github.com>
+Date:   Wed Aug 6 18:54:37 2025 +0000
+
+    first commit
+
+[33mcommit 463878d76b04333f9c45ed0b5b01d60f08268bdb[m
+Author: Franckdevs <106821220+Franckdevs@users.noreply.github.com>
+Date:   Wed Aug 6 18:53:37 2025 +0000
+
+    first commit
