@@ -8,8 +8,13 @@ use App\Http\Requests\UpdategareRequest;
 use App\Models\InfoUser;
 use App\Models\Jour;
 use App\Models\Ville;
+use App\Models\User;
+use App\Mail\AdminGareCreatedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Permission;
 
 class GareController extends Controller
 {
@@ -38,9 +43,11 @@ class GareController extends Controller
     }
 public function store2(Request $request)
 {
-    $user = Auth::user();
-    // 1️⃣ Validation
-    $validated = $request->validate([
+    $currentUser = Auth::user();
+
+    try {
+        // 1️⃣ Validation
+        $validated = $request->validate([
         'nom_gare' => 'nullable',
         'adresse_gare'=> 'nullable',
         'telephone_gare'=> 'nullable',
@@ -59,25 +66,91 @@ public function store2(Request $request)
         'email'=> 'nullable|email',
         'site_web'=> 'nullable',
         'description'=> 'nullable',
+        // Champs administrateur
+        'admin_nom' => 'nullable|string|max:255',
+        'admin_prenom' => 'nullable|string|max:255',
+        'admin_email' => 'nullable|email|unique:users,email',
+        'admin_telephone' => 'nullable|string|max:20',
+        'admin_permissions' => 'nullable|array',
+        'admin_permissions.*' => 'exists:permissions,name',
     ]);
-    // 2️⃣ On ajoute l'info_user_id après validation
-    $validated['info_user_id'] = $user->info_user->id;
-    // dd($validated);
 
-    // 3️⃣ Création de la gare
-    Gare::create($validated);
+    // 2️⃣ Créer l'utilisateur administrateur de la gare si les infos sont fournies
+    $adminInfoUserId = null;
+    if ($validated['admin_email'] && ($validated['admin_nom'] || $validated['admin_prenom'])) {
+        // Créer l'utilisateur
+        $user = User::create([
+            'name' => trim(($validated['admin_prenom'] ?? '') . ' ' . ($validated['admin_nom'] ?? '')),
+            'email' => $validated['admin_email'],
+            // 'password' => Hash::make('password123'), // Mot de passe par défaut
+            'email_verified_at' => now(),
+        ]);
 
-    return redirect()->route('gares.index')
-        ->with('success', 'Gare créée avec succès ✅');
+        // Créer InfoUser associé
+        $infoUser = InfoUser::create([
+            'user_id' => $user->id,
+            'nom' => $validated['admin_nom'],
+            'prenom' => $validated['admin_prenom'],
+            'telephone' => $validated['admin_telephone'],
+            'email' => $validated['admin_email'],
+        ]);
+
+        // Assigner le rôle super-admin-gare
+        $user->assignRole('super-admin-gare');
+
+        // Assigner les permissions personnalisées si sélectionnées
+        if (!empty($validated['admin_permissions'])) {
+            $user->givePermissionTo($validated['admin_permissions']);
+        }
+
+        $adminInfoUserId = $infoUser->id;
+    }
+
+    // 3️⃣ Préparer les données de la gare
+    $gareData = collect($validated)->except(['admin_nom', 'admin_prenom', 'admin_email', 'admin_telephone', 'admin_permissions'])->toArray();
+
+    // Utiliser l'admin créé ou l'utilisateur actuel
+    $gareData['info_user_id'] = $adminInfoUserId ?? $currentUser->info_user->id;
+
+    // 4️⃣ Création de la gare
+    $gare = Gare::create($gareData);
+
+    // 5️⃣ Envoyer l'email à l'administrateur si créé
+    if ($adminInfoUserId && $user) {
+        try {
+            Mail::to($user->email)->send(new AdminGareCreatedMail($user, $gare));
+            $emailStatus = ' Email de bienvenue envoyé.';
+        } catch (\Exception $e) {
+            $emailStatus = ' Erreur lors de l\'envoi de l\'email.';
+        }
+    } else {
+        $emailStatus = '';
+    }
+
+        return redirect()->route('gares.index')
+            ->with('success', 'Gare créée avec succès ✅' . ($adminInfoUserId ? ' et administrateur créé.' : '') . $emailStatus);
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()
+            ->withErrors($e->validator)
+            ->withInput();
+    } catch (\Exception $e) {
+        \Log::error('Erreur lors de la création de la gare: ' . $e->getMessage());
+        return redirect()->back()
+            ->with('error', 'Erreur lors de la création de la gare: ' . $e->getMessage())
+            ->withInput();
+    }
 }
 
 
     /**
      * Display the specified resource.
      */
-    public function show(gare $gare)
+    public function show($gars)
     {
         //
+        $gare = gare::find($gars);
+        return view('compagnie.gares.show', compact('gare'));
     }
 
     /**
@@ -112,10 +185,14 @@ public function index2()
 
 public function create2()
 {
+   // Récupérer les permissions liées aux gares
+   $garePermissions = Permission::all();
+
    return view('compagnie.gares.create', [
         'infoUsers' => InfoUser::all(),
         'jours' => Jour::all(),
         'villes' => Ville::all(),
+        'permissions' => $garePermissions,
     ]);
 }
 

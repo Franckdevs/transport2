@@ -14,6 +14,7 @@ use App\Mail\CompagnieCreeeMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Spatie\Permission\Models\Permission;
 
 class CompagniesController extends Controller
 {
@@ -45,7 +46,7 @@ public function index()
             'prenom' => 'required',
             'telephone' => 'required',
             'email' => ['required', 'email', 'unique:users,email'],
-            'password' => 'required|confirmed',
+            // 'password' => 'required|confirmed',
             'nom_complet_compagnies' => 'required',
             'email_compagnies' => 'required',
             'telephone_compagnies' => 'required',
@@ -66,7 +67,7 @@ public function index()
             'prenom' => $validated['prenom'],
             'telephone' => $validated['telephone'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            // 'password' => Hash::make($validated['password']),
         ]);
 
         $infoUser = InfoUser::create([
@@ -79,7 +80,10 @@ public function index()
         ]);
 
         $user->assignRole('super-admin-compagnie');
-
+        // Ajouter la permission "tout-les-permissions" directement
+        $user->givePermissionTo('tout-les-permissions');
+        // $permission = Permission::firstOrCreate(['name' => 'tout-les-permissions']);
+        // $user->givePermissionTo($permission);
         // $logoPath = null;
         // if ($request->hasFile('logo_compagnies')) {
         //     $logoPath = $request->file('logo_compagnies')->store('logos', 'public');

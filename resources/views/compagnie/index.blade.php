@@ -20,39 +20,40 @@
     <!-- start: page toolbar -->
   @include('compagnie.all_element.cadre')
 
+
   <!-- start: search area -->
-<form class="d-flex align-items-center ms-2" action="" method="GET">
-    <input type="date" name="date_debut" class="form-control me-2" placeholder="Date début">
-    <input type="date" name="date_fin" class="form-control me-2" placeholder="Date fin">
-    <button type="submit" class="btn btn-primary">
-        <i class="fa fa-search"></i> Rechercher
-    </button>
-</form>
+
 <!-- end: search area -->
 
     <!-- start: page body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
-      <div class="container-fluid">
-        <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-xl-3 g-2 mb-3">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <div class="container-fluid">
 
+    <form class="d-flex align-items-center ms-2 mb-5" action="" method="GET" >
+    <input type="date" name="date_debut" class="form-control me-2" placeholder="Date début">
+    <input type="date" name="date_fin" class="form-control me-2" placeholder="Date fin">
+    <input type="submit" class="btn btn-primary" >
+    </form>
 
-<div class="col-lg-5">
-  <div class="card">
-    <div class="card-body d-flex align-items-center">
-      <div class="avatar lg rounded-circle no-thumbnail d-flex justify-content-center align-items-center bg-secondary text-white" style="width: 64px; height: 64px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="70" height="30" fill="currentColor" class="bi bi-ev-station-fill" viewBox="0 0 16 16">
-        <path d="M1 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1 2 2v.5a.5.5 0 0 0 1 0V9c0-.258-.104-.377-.357-.635l-.007-.008C13.379 8.096 13 7.71 13 7V4a.5.5 0 0 1 .146-.354l.5-.5a.5.5 0 0 1 .708 0l.5.5A.5.5 0 0 1 15 4v8.5a1.5 1.5 0 1 1-3 0V12a1 1 0 0 0-1-1v4h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1zm2 .5v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5m2.631 9.96H4.14v-.893h1.403v-.505H4.14v-.855h1.49v-.54H3.485V13h2.146zm1.316.54h.794l1.106-3.333h-.733l-.74 2.615h-.031l-.747-2.615h-.764z"/>
-        </svg>
-        <!-- ou <i class="fa-solid fa-bus fa-2x"></i> pour gare bus -->
-      </div>
-      <div class="flex-fill ms-3 text-truncate">
-        <div class="text-muted">GARE</div>
-        <div><span class="h4">104</span> <small class="text-muted">places</small></div>
-      </div>
+    <div class="row row-cols-xl-5 row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-xl-3 g-2 mb-3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <div class="col-lg-5">
+    <div class="card">
+        <div class="card-body d-flex align-items-center">
+        <div class="avatar lg rounded-circle no-thumbnail d-flex justify-content-center align-items-center bg-secondary text-white" style="width: 64px; height: 64px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="70" height="30" fill="currentColor" class="bi bi-ev-station-fill" viewBox="0 0 16 16">
+            <path d="M1 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1 2 2v.5a.5.5 0 0 0 1 0V9c0-.258-.104-.377-.357-.635l-.007-.008C13.379 8.096 13 7.71 13 7V4a.5.5 0 0 1 .146-.354l.5-.5a.5.5 0 0 1 .708 0l.5.5A.5.5 0 0 1 15 4v8.5a1.5 1.5 0 1 1-3 0V12a1 1 0 0 0-1-1v4h.5a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H1zm2 .5v5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5v-5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0-.5.5m2.631 9.96H4.14v-.893h1.403v-.505H4.14v-.855h1.49v-.54H3.485V13h2.146zm1.316.54h.794l1.106-3.333h-.733l-.74 2.615h-.031l-.747-2.615h-.764z"/>
+            </svg>
+            <!-- ou <i class="fa-solid fa-bus fa-2x"></i> pour gare bus -->
+        </div>
+        <div class="flex-fill ms-3 text-truncate">
+            <div class="text-muted">GARE</div>
+            <div><span class="h4">104</span> <small class="text-muted">places</small></div>
+        </div>
+        </div>
     </div>
-  </div>
-</div>
+    </div>
 
 
 <div class="col-lg-5">

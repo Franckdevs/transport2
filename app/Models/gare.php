@@ -28,7 +28,11 @@ class gare extends Model
         'description',
         'nom_gare',
         'adresse_gare',
-        'telephone_gare'
+        'telephone_gare',
+        'admin_nom',
+        'admin_prenom',
+        'admin_email',
+        'admin_telephone'
     ];
 
     // Relations

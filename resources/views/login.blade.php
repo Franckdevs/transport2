@@ -222,7 +222,7 @@
 
     </div> --}}
 
-    <form method="POST" action="{{ route('login') }}" class="login-form">
+    <form method="POST" action="{{ route('login_connexion') }}" class="login-form">
       @csrf
 
       @if ($errors->any())

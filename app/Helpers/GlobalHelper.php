@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use Carbon\Carbon;
-
+use Illuminate\Support\Str;
 class GlobalHelper
 {
     public static function formatCreatedAt($date = null)
@@ -18,4 +18,22 @@ class GlobalHelper
 
         return $date->format('d/m/Y');
     }
+
+     /**
+     * Limiter une chaîne de caractères avec un nombre de caractères défini
+     *
+     * @param string|null $text
+     * @param int $limit
+     * @param string $end
+     * @return string
+     */
+    public static function limitText($text = null, int $limit = 15, string $end = '...')
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        return Str::limit($text, $limit, $end);
+    }
+
 }

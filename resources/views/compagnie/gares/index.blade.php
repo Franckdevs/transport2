@@ -59,29 +59,19 @@ use App\Helpers\GlobalHelper;
 
                     <tr>
                       <td>{{ $gare->nom_gare ?? 'Aucun nom' }}</td>
-                      <td>{{ $gare->adresse_gare ?? 'Aucune adresse' }}</td>
+                      <td>{{ GlobalHelper::limitText($gare->adresse_gare, 20) ?? 'Aucune adresse' }}</td>
                       <td>{{ $gare->heure_ouverture ?? 'Aucune heure' }}</td>
                       <td>{{ $gare->heure_fermeture ?? 'Aucune heure' }}</td>
                       <td>{{ GlobalHelper::formatCreatedAt($gare->created_at) }}</td>
 
                       <td>
-                   <form action="{{ route('gares.ajouterbUS', $gare->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-bus"></i> Bus
-                    </button>
-                    </form>
-
-
-                        <a href="#" class="btn btn-info">
+                        <a href="{{ route('gares.show', $gare->id) }}" class="btn btn-info">
                           <i class="fa fa-eye"></i>
                         </a>
                         <a href="#" class="btn btn-danger">
                           <i class="fa fa-trash"></i>
                         </a>
                       </td>
-
-
                     @endforeach
 
 

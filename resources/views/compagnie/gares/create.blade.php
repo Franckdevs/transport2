@@ -13,6 +13,29 @@
         @include('compagnie.all_element.navbar')
           <!-- start: link -->
 
+           {{-- @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif --}}
+
+
         </nav>
       </div>
     </header>
@@ -23,13 +46,367 @@
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
 
-            <div class="col-md-12 mt-4">
+<div class="col-md-12">
   <div class="card">
     <div class="card-body">
       <h5 class="mb-4">Créer une nouvelle gare</h5>
-
 <form action="{{ route('gares.store') }}" method="POST">
 @csrf
+    <style>
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+            white-space: nowrap;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+        .status-message {
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        .info {
+            background-color: #cce5ff;
+            color: #004085;
+            display: block;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .address-details {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+<div class="container">
+        <h2 class="mb-4"><i class="fas fa-map-marker-alt me-2"></i>Système de Géolocalisation</h2>
+
+        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+
+        <div class="row">
+            <div class="col-md-12 mb-3 d-flex">
+                <input id="searchInput" name="adresse_gare" value="{{ old('adresse_gare') }}" class="form-control me-2" type="text" placeholder="Entrer une adresse ou un lieu">
+                <button type="button" id="locateBtn" class="btn btn-primary">
+                    <i class="fas fa-location-arrow me-1"></i> Me localiser
+                </button>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <div id="statusMessage" class="status-message"></div>
+            </div>
+
+            <div class="col-md-12 mb-3">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <style>
+        /* Masquer la section des détails de l'adresse et des coordonnées */
+        #addressDetails,
+        #coordinates,
+        #addressDetailsContainer {
+            display: none;
+        }
+        </style>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h5><i class="fas fa-info-circle me-2"></i>Détails de l'adresse:</h5>
+                <div id="addressDetails" class="address-details">
+                    Les détails de l'adresse s'afficheront ici...
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5><i class="fas fa-globe me-2"></i>Coordonnées:</h5>
+                <div id="coordinates" class="address-details">
+                    Latitude: <span id="latValue">5.345317</span><br>
+                    Longitude: <span id="lngValue">-4.024429</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places" async defer></script>
+
+    <script>
+        let map, marker, autocomplete;
+        let isGoogleMapsLoaded = false;
+
+        // Attendre que Google Maps soit chargé
+        window.initMap = function() {
+            isGoogleMapsLoaded = true;
+            initializeMap();
+        };
+
+        function initializeMap() {
+            const defaultLocation = { lat: 5.345317, lng: -4.024429 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: defaultLocation,
+                zoom: 13,
+                streetViewControl: false,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_RIGHT
+                }
+            });
+
+            marker = new google.maps.Marker({
+                position: defaultLocation,
+                map: map,
+                draggable: true,
+                icon: {
+                    url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                title: "Déplacez-moi pour ajuster la position"
+            });
+
+            // Ajouter un cercle de précision autour du marqueur
+            const circle = new google.maps.Circle({
+                map: map,
+                radius: 100, // 100 mètres
+                fillColor: '#AA0000',
+                fillOpacity: 0.2,
+                strokeColor: '#AA0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 1
+            });
+            circle.bindTo('center', marker, 'position');
+
+            // Initialiser l'autocomplétion des adresses
+            initAutocomplete();
+
+            // Événements
+            marker.addListener("dragend", function() {
+                setLocation(marker.getPosition());
+            });
+
+            document.getElementById("locateBtn").addEventListener("click", function() {
+                locateUser();
+            });
+
+            // Mettre à jour l'affichage des coordonnées
+            updateCoordinates(defaultLocation.lat, defaultLocation.lng);
+        }
+
+        function initAutocomplete() {
+            if (!isGoogleMapsLoaded) return;
+
+            const input = document.getElementById("searchInput");
+            autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'ci' } // Restreindre à la Côte d'Ivoire
+            });
+
+            autocomplete.bindTo("bounds", map);
+            autocomplete.addListener("place_changed", function () {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) {
+                    showStatus("Lieu non trouvé !", "error");
+                    return;
+                }
+                setLocation(place.geometry.location);
+            });
+        }
+
+        function locateUser() {
+            if (!navigator.geolocation) {
+                showStatus("La géolocalisation n'est pas supportée par ce navigateur.", "error");
+                return;
+            }
+
+            showStatus("Localisation en cours... <span class='loading'></span>", "info");
+
+            // Désactiver le bouton pendant la localisation
+            const locateBtn = document.getElementById("locateBtn");
+            locateBtn.disabled = true;
+            locateBtn.innerHTML = "<i class='fas fa-spinner fa-spin me-1'></i> Localisation...";
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    setLocation(userLocation);
+                    locateBtn.disabled = false;
+                    locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
+                },
+                function (error) {
+                    let errorMessage = "Impossible de récupérer votre position.";
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = "Vous avez refusé l'accès à votre position. Veuillez autoriser la localisation dans les paramètres de votre navigateur.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = "Votre position n'a pas pu être déterminée. Vérifiez votre connexion Internet ou le signal GPS.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = "La requête a expiré. Veuillez réessayer.";
+                            break;
+                    }
+                    showStatus(errorMessage, "error");
+                    locateBtn.disabled = false;
+                    locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
+                },
+                {
+                    timeout: 15000,
+                    enableHighAccuracy: true,
+                    maximumAge: 60000
+                }
+            );
+        }
+
+        function setLocation(latlng) {
+            const lat = typeof latlng.lat === 'function' ? latlng.lat() : latlng.lat;
+            const lng = typeof latlng.lng === 'function' ? latlng.lng() : latlng.lng;
+
+            map.setCenter({lat, lng});
+            map.setZoom(16);
+            marker.setPosition({lat, lng});
+
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lng;
+            updateCoordinates(lat, lng);
+
+            showStatus("Récupération de l'adresse... <span class='loading'></span>", "info");
+
+            // Essayer d'abord avec Google Geocoding
+            if (isGoogleMapsLoaded) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: {lat, lng} }, function(results, status) {
+                    if (status === "OK" && results[0]) {
+                        processAddressResults(results[0]);
+                    } else {
+                        // Si Google échoue, utiliser Nominatim
+                        useNominatim(lat, lng);
+                    }
+                });
+            } else {
+                // Utiliser Nominatim si Google Maps n'est pas chargé
+                useNominatim(lat, lng);
+            }
+        }
+
+        function useNominatim(lat, lng) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Erreur réseau");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.address) {
+                        processNominatimResult(data);
+                    } else {
+                        throw new Error("Aucune adresse trouvée");
+                    }
+                })
+                .catch(err => {
+                    console.error("Erreur Nominatim:", err);
+                    showStatus("Impossible de récupérer l'adresse. Vous pouvez saisir manuellement.", "error");
+                    document.getElementById("searchInput").value = `Position: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    document.getElementById("addressDetails").innerHTML = "Adresse non disponible. Veuillez saisir manuellement.";
+                });
+        }
+
+        function processAddressResults(result) {
+            const address = result.formatted_address;
+            document.getElementById("searchInput").value = address;
+
+            let detailsHTML = `<strong>Adresse complète:</strong> ${address}<br><br>`;
+            detailsHTML += "<strong>Détails:</strong><br>";
+            detailsHTML += "<ul>";
+
+            for (const component of result.address_components) {
+                detailsHTML += `<li><strong>${component.types[0]}:</strong> ${component.long_name}</li>`;
+            }
+
+            detailsHTML += "</ul>";
+            document.getElementById("addressDetails").innerHTML = detailsHTML;
+
+            showStatus("Adresse trouvée avec succès!", "success");
+        }
+
+        function processNominatimResult(data) {
+            const address = data.display_name;
+            document.getElementById("searchInput").value = address;
+
+            let detailsHTML = `<strong>Adresse complète:</strong> ${address}<br><br>`;
+            detailsHTML += "<strong>Détails:</strong><br>";
+            detailsHTML += "<ul>";
+
+            for (const [key, value] of Object.entries(data.address)) {
+                detailsHTML += `<li><strong>${key}:</strong> ${value}</li>`;
+            }
+
+            detailsHTML += "</ul>";
+            document.getElementById("addressDetails").innerHTML = detailsHTML;
+
+            showStatus("Adresse trouvée avec succès!", "success");
+        }
+
+        function showStatus(message, type) {
+            const statusElement = document.getElementById("statusMessage");
+            statusElement.innerHTML = message;
+            statusElement.className = "status-message " + type;
+        }
+
+        function updateCoordinates(lat, lng) {
+            document.getElementById("latValue").textContent = lat.toFixed(6);
+            document.getElementById("lngValue").textContent = lng.toFixed(6);
+        }
+
+        // Vérifier si l'API Google Maps est chargée
+        function checkGoogleMapsLoaded() {
+            if (typeof google !== 'undefined' && google.maps) {
+                isGoogleMapsLoaded = true;
+                initializeMap();
+            } else {
+                // Réessayer après 1 seconde
+                setTimeout(checkGoogleMapsLoaded, 1000);
+            }
+        }
+        // Démarrer la vérification du chargement de Google Maps
+        window.onload = checkGoogleMapsLoaded;
+    </script>
+
+
+
+
+
 
 <div class="row">
     {{-- Nom gare (plein largeur) --}}
@@ -41,10 +418,10 @@
 
   <div class="row">
     {{-- Adresse gare --}}
-    <div class="col-md-6 mb-3">
+    {{-- <div class="col-md-6 mb-3">
       <label for="adresse_gare" class="form-label">Adresse</label>
       <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare') }}">
-    </div>
+    </div> --}}
 
     {{-- Téléphone gare --}}
     <div class="col-md-6 mb-3">
@@ -183,7 +560,81 @@
     <textarea name="description" id="description" class="form-control" rows="3">{{ old('description') }}</textarea>
   </div>
 
+  {{-- Section Administrateur de la gare --}}
+  <div class="card mt-4 mb-4">
+    <div class="card-header bg-primary text-white">
+      <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Informations de l'Administrateur de la Gare</h6>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        {{-- Nom admin --}}
+        <div class="col-md-6 mb-3">
+          <label for="admin_nom" class="form-label">Nom de l'administrateur</label>
+          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom') }}" placeholder="Nom de famille">
+        </div>
 
+        {{-- Prénom admin --}}
+        <div class="col-md-6 mb-3">
+          <label for="admin_prenom" class="form-label">Prénom de l'administrateur</label>
+          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom') }}" placeholder="Prénom">
+        </div>
+      </div>
+
+      <div class="row">
+        {{-- Email admin --}}
+        <div class="col-md-6 mb-3">
+          <label for="admin_email" class="form-label">Email de l'administrateur</label>
+          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email') }}" placeholder="admin@exemple.com">
+        </div>
+
+        {{-- Téléphone admin --}}
+        <div class="col-md-6 mb-3">
+          <label for="admin_telephone" class="form-label">Téléphone de l'administrateur</label>
+          <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" value="{{ old('admin_telephone') }}" placeholder="+33 1 23 45 67 89">
+        </div>
+      </div>
+
+      {{-- Section Permissions --}}
+      <div class="mt-4">
+        <h6 class="text-primary mb-3"><i class="fas fa-key me-2"></i>Permissions de l'Administrateur</h6>
+        <p class="text-muted small mb-3">Sélectionnez les permissions spécifiques que vous souhaitez accorder à cet administrateur de gare (en plus des permissions par défaut du rôle).</p>
+
+        <div class="row">
+          @foreach($permissions as $permission)
+            <div class="col-md-6 col-lg-4 mb-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       name="admin_permissions[]"
+                       value="{{ $permission->name }}"
+                       id="perm_{{ $permission->id }}"
+                       {{ is_array(old('admin_permissions')) && in_array($permission->name, old('admin_permissions')) ? 'checked' : '' }}>
+                <label class="form-check-label" for="perm_{{ $permission->id }}">
+                  <span class="fw-bold">{{ ucfirst(str_replace('-', ' ', $permission->name)) }}</span>
+                  <br><small class="text-muted">{{ $permission->name }}</small>
+                </label>
+              </div>
+            </div>
+          @endforeach
+        </div>
+
+        @if($permissions->isEmpty())
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Aucune permission disponible. Exécutez d'abord les seeders pour créer les permissions.
+          </div>
+        @endif
+
+        <div class="mt-3">
+          <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
+            <i class="fas fa-check-double me-1"></i>Tout sélectionner
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="deselectAllPermissions()">
+            <i class="fas fa-times me-1"></i>Tout désélectionner
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
         <button type="submit" class="btn btn-primary">Enregistrer la gare</button>
       </form>
 
@@ -209,6 +660,18 @@
   <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
   <!-- Vendor Script -->
   <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
+
+  <script>
+    function selectAllPermissions() {
+      const checkboxes = document.querySelectorAll('input[name="admin_permissions[]"]');
+      checkboxes.forEach(checkbox => checkbox.checked = true);
+    }
+
+    function deselectAllPermissions() {
+      const checkboxes = document.querySelectorAll('input[name="admin_permissions[]"]');
+      checkboxes.forEach(checkbox => checkbox.checked = false);
+    }
+  </script>
 
 </body>
 

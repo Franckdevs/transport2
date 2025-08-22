@@ -100,11 +100,10 @@ public function login(Request $request)
         } elseif ($user->hasRole('super-admin-compagnie')) {
             return redirect()->route('dashboardcompagnie_name')
                 ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
+        }elseif($user->hasRole('super-admin-gare')){
+            return redirect()->route('dashboardcompagnie_name')
+                ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
         }
-
-        // Optionnel : redirection par défaut si rôle non géré
-        // return redirect()->route('home')
-        //     ->with('success', 'Connexion réussie. Bienvenue ' . $user->nom . ' ' . $user->prenom);
     }
 
     // Si échec de connexion, retour avec message d'erreur
@@ -131,6 +130,24 @@ public function login(Request $request)
 
         public function dashboardcompagnie()
     {
+        $user = auth()->user();
+
+// dd($user->getAllPermissions()->pluck('name'));
+        // Debug: Afficher les rôles et permissions de l'utilisateur connecté
+
+        // dd([
+        //     'user_id' => $user->id,
+        //     'user_name' => $user->name,
+        //     'user_email' => $user->email,
+        //     'roles' => $user->getRoleNames(),
+        //     'permissions_from_role' => $user->getPermissionsViaRoles()->pluck('name'),
+        //     'direct_permissions' => $user->getDirectPermissions()->pluck('name'),
+        //     'all_permissions' => $user->getAllPermissions()->pluck('name'),
+        //     'has_super_admin_gare' => $user->hasRole('super-admin-gare'),
+        //     'can_view_dashboard_gare' => $user->can('view-dashboard-gare'),
+        //     'can_manage_quais' => $user->can('manage-quais')
+        // ]);
+
         //  $nombres_compagnie = Compagnies::count();
         return view('compagnie.index');
     }
@@ -141,15 +158,34 @@ public function login(Request $request)
         return view('login');
     }
 
-    public function logout(Request $request)
+    public function logins()
+    {
+        return view('login');
+    }
+
+public function logout(Request $request)
 {
-    Auth::logout(); // Déconnecte l'utilisateur
+    // Déconnecte l'utilisateur
+    Auth::logout();
 
-    $request->session()->invalidate(); // Invalide la session
-    $request->session()->regenerateToken(); // Regénère le token CSRF
+    // Invalide la session Laravel
+    $request->session()->invalidate();
 
-    return redirect('/')->with('success', 'Déconnexion réussie.');
+    // Regénère le token CSRF
+    $request->session()->regenerateToken();
+
+    // Supprime tous les cookies de session (y compris laravel_session et XSRF-TOKEN)
+    foreach ($request->cookies->keys() as $cookieName) {
+        cookie()->forget($cookieName);
+    }
+
+    // Retour avec headers pour interdire le cache
+    return redirect('/login')->with('success', 'Déconnexion réussie.')
+        ->header('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', 'Sat, 01 Jan 1990 00:00:00 GMT');
 }
+
 
 
 // public function compagnie()

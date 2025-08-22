@@ -14,13 +14,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Exécuter les seeders dans l'ordre correct
         $this->call([
+            PermissionSeeder::class,
             RoleSeeder::class,
-            SuperAdminBetroSeeder::class,
             JourSeeder::class,
             VilleSeeder::class,
+            SuperAdminBetroSeeder::class,
         ]);
+
+        // User::factory(10)->create();
+
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }

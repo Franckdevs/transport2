@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jours', function (Blueprint $table) {
+        Schema::create('arrets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('itineraires_id')->nullable()->constrained('itineraires', 'id');
+            $table->string('adresse');
+            $table->float('lat');
+            $table->float('lng');
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jours');
+        Schema::dropIfExists('arrets');
     }
 };

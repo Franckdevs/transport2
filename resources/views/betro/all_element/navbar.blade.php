@@ -18,7 +18,6 @@
               </span>
             </button>
 
-
            <a href="../index.html" class="brand-icon d-flex align-items-center mx-2 mx-sm-3 text-primary" style="font-size: 22px; font-weight: bold;">
             BETRO
             </a>

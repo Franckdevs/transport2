@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('buses', function (Blueprint $table) {
+        Schema::create('personnels', function (Blueprint $table) {
             $table->id();
             $table->foreignId('info_user_id')->constrained('info_users', 'id');
             $table->foreignId('compagnies_id')->constrained('compagnies', 'id');
-            $table->string('nom_bus');
-            $table->string('marque_bus');
-            $table->string('modele_bus');
-            $table->string('immatriculation_bus');
-            $table->string('photo_bus')->nullable();
-            $table->string('description_bus')->nullable();
-            $table->string('localisation_bus')->nullable();
-            $table->enum('status', ['1', '2', '3'])->default('1');
+            $table->string(column: 'nom')->nullable();
+            $table->string('prenom')->nullable();
+            $table->string('adresse')->nullable();
+            $table->string('email')->nullable();
+            $table->string('telephone')->nullable();
+            $table->string('fonction')->nullable();
+            $table->string('status')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('buses');
+        Schema::dropIfExists('personnels');
     }
 };
