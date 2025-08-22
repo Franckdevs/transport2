@@ -72,10 +72,27 @@
             <label for="localisation_bus" class="form-label">Localisation</label>
             <input type="text" name="localisation_bus" id="localisation_bus" class="form-control" value="{{ old('localisation_bus') }}">
         </div>
+
+        <div class="col-md-3 mb-3">
+            <label for="nombre_places" class="form-label">Nombre de places</label>
+            <input type="number" name="nombre_places" id="nombre_places" class="form-control" min="1" value="{{ old('nombre_places') }}">
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <label for="configuration_car" class="form-label">Configuration</label>
+            <select name="configuration_car" id="configuration_car" class="form-select">
+                <option value="">-- Choisir --</option>
+                <option value="1" {{ old('configuration_car') == '2-1' ? 'selected' : '' }}>2-1 (2 sièges gauche, 1 siège droite)</option>
+                <option value="2" {{ old('configuration_car') == '2-2' ? 'selected' : '' }}>2-2 (2 sièges gauche, 2 sièges droite)</option>
+                <option value="3" {{ old('configuration_car') == '3-2' ? 'selected' : '' }}>3-2 (3 sièges gauche, 2 sièges droite)</option>
+                <option value="4" {{ old('configuration_car') == '1-1' ? 'selected' : '' }}>1-1 (1 siège gauche, 1 siège droite)</option>
+            </select>
+        </div>
     </div>
 
     <button type="submit" class="btn btn-primary">Enregistrer le bus</button>
 </form>
+
 
 
     </div>

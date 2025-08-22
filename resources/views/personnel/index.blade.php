@@ -37,7 +37,7 @@ use App\Helpers\GlobalHelper;
               <div class="card-body">
 
                  <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                <h5 class="mb-0">Liste des gares</h5>
+                <h5 class="mb-0">Liste des utilisateurs</h5>
                 <a href="{{ route('personnel.create') }}" class="btn btn-success">
                <i class="fa fa-plus"></i>  Ajouter un utilisateur
                 </a>

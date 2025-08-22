@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string('immatriculation_bus');
             $table->string('photo_bus')->nullable();
             $table->string('description_bus')->nullable();
+            $table->string('place')->nullable();
             $table->string('localisation_bus')->nullable();
+            $table->string('nombre_places')->nullable();
+            $table->string('configuration_car')->nullable();
             $table->enum('status', ['1', '2', '3'])->default('1');
             $table->timestamps();
         });
