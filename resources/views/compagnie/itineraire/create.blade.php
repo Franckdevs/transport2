@@ -31,6 +31,8 @@
                                 </ul>
                             </div>
                         @endif
+      
+
 
                         <!-- Formulaire de création -->
                         <form action="{{ route('itineraire.store') }}" method="POST">
@@ -41,11 +43,8 @@
 
 
                                 <!-- Ville de départ -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="vdepart" class="form-label">Ville de départ</label>
-                                    <input type="text" name="vdepart" id="vdepart" class="form-control"
-                                           list="liste-villes" value="{{ old('vdepart') }}" required>
-                                </div>
+                                 <input type="hidden" name="ville_id" value="{{ $villeId }}">
+
 
 
 
