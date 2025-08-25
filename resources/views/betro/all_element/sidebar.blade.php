@@ -57,7 +57,8 @@
 
 <style>
 .menu-list > li.active > a span.ms-2 {
-    color: rgb(16, 16, 16) !important;
+    color: #6AA67F
+ !important;
 }
 </style>
 

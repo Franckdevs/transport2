@@ -8,7 +8,7 @@ class Itineraire extends Model
     protected $fillable = [
         'user_id',
         'info_user_id',
-        'vdepart',
+        'ville_id',
         'estimation',
         'titre',
         'statut',
@@ -37,4 +37,10 @@ class Itineraire extends Model
     {
         return $this->hasMany(Voyage::class);
     }
+       public function ville()
+    {
+        return $this->belongsTo(Ville::class, 'ville_id');
+    }
+
+
 }

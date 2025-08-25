@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('info_user_id')->nullable()->constrained('info_users')->nullOnDelete();
-            $table->string('vdepart');
+            $table->foreignId('ville_id')->constrained()->onDelete('cascade');
             $table->time('estimation')->nullable();
             $table->string('titre')->nullable();
             $table->string('statut')->default(1);
