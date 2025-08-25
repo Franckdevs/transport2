@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Mail\CompagnieCreeeMail;
+use App\Models\Ville;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -31,7 +32,8 @@ public function index()
      */
     public function create()
     {
-     return view('betro.compagnie.create');
+    $villes = Ville::all();
+     return view('betro.compagnie.create' , compact('villes'));
     }
 
     /**
@@ -52,12 +54,18 @@ public function index()
             'adresse_compagnies' => 'required',
             'description_compagnies' => 'nullable|string',
             'logo_compagnies' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'latitude' => 'nullable|string',
+            'longitude' => 'nullable|string',
+            'adresse' => 'nullable|string',
+            'villes_id' => 'required|exists:villes,id',
         ], [
             'required' => 'Ce champ est obligatoire.',
             'confirmed' => 'Les mots de passe ne correspondent pas.',
             'unique' => 'Cet email est déjà utilisé.',
             'mimes' => 'Le format du fichier est incorrect.',
             'max' => 'Le fichier doit avoir une taille maximale de 2Mo.',
+            'email' => 'Le format de l\'email est incorrect.',
+            'exists' => 'La ville sélectionnée est invalide.',
         ]);
 
         // Création de l'utilisateur
@@ -118,6 +126,10 @@ public function index()
             'description_compagnies' => $validated['description_compagnies'],
             'logo_compagnies' => $logoPath,
             'info_user_id' => $infoUser->id,
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'adresse' => $validated['adresse'] ?? null,  // 🔑 protection ajoutée
+            'villes_id' => $validated['villes_id'],
         ]);
 
         Mail::to($validated['email_compagnies'])->send(new CompagnieCreeeMail($infoUser , $compagnies));

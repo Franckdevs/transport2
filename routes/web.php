@@ -22,6 +22,10 @@ Route::post('/', [ConnexionController::class, 'logout'])->name('logout');
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+
+Route::middleware(['auth'])->group(function () {
+
 // Route::middleware('auth')->group(function () {
 // Route::get('/dashboard', [ConnexionController::class, 'dashboard'])->name('dashboard');
 // Route::post('/', [ConnexionController::class, 'logout'])->name('logout');
@@ -72,13 +76,15 @@ Route::controller(CompagniesController::class)->group(function () {
 
 
 // });
-Route::controller(GareController::class)->group(function () {
-    Route::get('/gares', 'index2')->name('gares.index.2');
-    Route::get('/gares/create', 'create2')->name('gares.create');
-    Route::post('/gares/store', 'store2')->name('gares.store');
-    Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
-    Route::get('/gares-show/{gares}', 'show')->name('gares.show');
+
+    Route::controller(GareController::class)->group(function () {
+        Route::get('/gares', 'index2')->name('gares.index.2');
+        Route::get('/gares/create', 'create2')->name('gares.create');
+        Route::post('/gares/store', 'store2')->name('gares.store');
+        Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
+        Route::get('/gares-show/{gares}', 'show')->name('gares.show');
 });
+
 
 Route::controller(BusController::class)->group(function () {
 Route::get('/bus-liste','index')->name('liste.bus');
@@ -132,4 +138,6 @@ Route::controller(VoyageController::class)->group(function () {
     Route::get('/voyage/create', 'create')->name('voyage.create');
     Route::post('/voyage/store', 'store')->name('voyage.store');
     Route::get('/voyage/{id}', 'show')->name('voyage.show');
+});
+
 });

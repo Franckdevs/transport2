@@ -447,17 +447,7 @@
 
   <div class="row">
     {{-- jour_id --}}
-    <div class="col-md-6 mb-3">
-      <label for="jour_id" class="form-label">Jour</label>
-      <select name="jour_id" id="jour_id" class="form-select">
-        <option value="">-- Sélectionner un jour --</option>
-        @foreach($jours as $jour)
-          <option value="{{ $jour->id }}" {{ old('jour_id') == $jour->id ? 'selected' : '' }}>
-            {{ $jour->nom_jour ?? $jour->id }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+
 
     {{-- jour_ouvert_id --}}
     <div class="col-md-6 mb-3">
@@ -488,11 +478,11 @@
     </div>
 
     {{-- Nombre de quais --}}
-    <div class="col-md-6 mb-3">
+    {{-- <div class="col-md-6 mb-3">
       <label for="nombre_quais" class="form-label">Nombre de quais</label>
       <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais') }}" min="0">
     </div>
-  </div>
+  </div> --}}
 
   {{-- <div class="row">
     <div class="col-md-6 mb-3">
@@ -633,6 +623,8 @@
           </button>
         </div>
       </div>
+
+
     </div>
   </div>
         <button type="submit" class="btn btn-primary">Enregistrer la gare</button>

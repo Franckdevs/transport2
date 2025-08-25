@@ -9,52 +9,25 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Permissions pour BETRO (Administration générale)
+        //permission betro
         Permission::firstOrCreate(['name' => 'voir-tableau-de-bord-betro']);
-        Permission::firstOrCreate(['name' => 'gerer-compagnies']);
-        Permission::firstOrCreate(['name' => 'gerer-gares']);
-        Permission::firstOrCreate(['name' => 'gerer-utilisateurs']);
-        Permission::firstOrCreate(['name' => 'voir-statistiques']);
-        Permission::firstOrCreate(['name' => 'gerer-parametres-systeme']);
-        Permission::firstOrCreate(['name' => 'voir-tous-rapports']);
 
-        // Permissions pour Compagnies
-        Permission::firstOrCreate(['name' => 'voir-tableau-de-bord-compagnie']);
-        Permission::firstOrCreate(['name' => 'gerer-bus']);
-        Permission::firstOrCreate(['name' => 'gerer-personnel']);
-        Permission::firstOrCreate(['name' => 'gerer-voyages']);
-        Permission::firstOrCreate(['name' => 'voir-rapports-compagnie']);
-        Permission::firstOrCreate(['name' => 'gerer-itineraires']);
-        Permission::firstOrCreate(['name' => 'gerer-tarifs']);
+        Permission::firstOrCreate(['name' => 'betro-voir-compagnies']);
+        Permission::firstOrCreate(['name' => 'betro-ajouter-compagnie']);
+        Permission::firstOrCreate(['name' => 'betro-modifier-compagnie']);
+        Permission::firstOrCreate(['name' => 'betro-supprimer-compagnie']);
+        Permission::firstOrCreate(['name' => 'betro-show-compagnie']);
 
-        // Permissions pour Gares
-        Permission::firstOrCreate(['name' => 'voir-tableau-de-bord-gare']);
-        Permission::firstOrCreate(['name' => 'gerer-quais']);
-        Permission::firstOrCreate(['name' => 'voir-arrivees-departs']);
-        Permission::firstOrCreate(['name' => 'gerer-infos-gare']);
-        Permission::firstOrCreate(['name' => 'voir-statistiques-gare']);
+        //companies et gares
+        Permission::firstOrCreate(['name' => 'tableau-de-bord-compagnies']);
+        Permission::firstOrCreate(['name' => 'bus-cars']);
+        Permission::firstOrCreate(['name' => 'chauffeurs']);
+        Permission::firstOrCreate(['name' => 'utilisateurs']);
+        Permission::firstOrCreate(['name' => 'itineraires']);
+        Permission::firstOrCreate(['name' => 'voyages']);
+        Permission::firstOrCreate(['name' => 'ajouter-une-gars']);
 
-        // Permissions pour Personnel
-        Permission::firstOrCreate(['name' => 'voir-planning']);
-        Permission::firstOrCreate(['name' => 'mettre-a-jour-statut']);
-        Permission::firstOrCreate(['name' => 'voir-voyages-assignes']);
-        Permission::firstOrCreate(['name' => 'gerer-profil']);
-
-        // Permissions pour Clients
-        Permission::firstOrCreate(['name' => 'reserver-billets']);
-        Permission::firstOrCreate(['name' => 'voir-reservations']);
-        Permission::firstOrCreate(['name' => 'annuler-reservations']);
-        Permission::firstOrCreate(['name' => 'voir-horaires']);
-
-        // Permissions générales
-        Permission::firstOrCreate(['name' => 'creer']);
-        Permission::firstOrCreate(['name' => 'lire']);
-        Permission::firstOrCreate(['name' => 'mettre-a-jour']);
-        Permission::firstOrCreate(['name' => 'supprimer']);
-        Permission::firstOrCreate(['name' => 'exporter']);
-        Permission::firstOrCreate(['name' => 'importer']);
-
-        // Une seule fois ici
         Permission::firstOrCreate(['name' => 'tout-les-permissions']);
+
     }
 }

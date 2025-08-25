@@ -1,5 +1,4 @@
-
- <div class="d-flex">
+<div class="d-flex">
             <button type="button" class="btn btn-link d-none d-xl-block sidebar-mini-btn p-0 text-primary">
               <span class="hamburger-icon">
                 <span class="line"></span>
@@ -15,12 +14,46 @@
               </span>
             </button>
             <a href="../index.html" class="brand-icon d-flex align-items-center mx-2 mx-sm-3 text-primary" style="font-size: 22px; font-weight: bold;">
-            {{ Auth::user()->info_user->compagnie->nom_complet_compagnies ?? '' }}
+            {{-- {{ Auth::user()->info_user->compagnie->nom_complet_compagnies ?? '' }} --}}
             </a>
           </div>
 
        <ul class="header-right justify-content-end d-flex align-items-center mb-0">
             <!-- start: User dropdown-menu -->
+        <!-- Badge dans le header -->
+@if(Auth::check())
+    @php
+        $role = Auth::user()->getRoleNames()->first();
+        $roleLabels = [
+            'super-admin-betro'      => 'Super admin Betro',
+            'sous-admin-betro'       => 'Sous admin Betro',
+            'super-admin-compagnie'  => 'Admin Compagnie',
+            'super-admin-gare'       => 'Admin Gare',
+            'sous-admin-compagnie'   => 'Sous admin Compagnie',
+            'sous-admin-gare'        => 'Sous admin Gare',
+            'chauffeur'              => 'Chauffeur',
+            'hotesse'                => 'Hôtesse',
+            'agent'                  => 'Agent',
+            'client'                 => 'Client',
+        ];
+        $roleText = $roleLabels[$role] ?? $role;
+
+        // Liste des permissions de l’utilisateur
+        $permissionsList = Auth::user()->getAllPermissions()->pluck('name')->toArray();
+        $permissionsText = empty($permissionsList) ? 'Aucune permission' : implode(", ", $permissionsList);
+    @endphp
+
+    <span class="badge bg-primary rounded-pill px-3 py-2"
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="{{ $permissionsText }}">
+        <i class="fas fa-user-tag me-1"></i>
+        <strong>{{ $roleText }}</strong>
+    </span>
+@endif
+
+<!-- Fin du badge dans le header -->
+
             <li>
               <div class="dropdown morphing scale-left user-profile mx-lg-3 mx-2">
                 <a class="nav-link dropdown-toggle rounded-circle after-none p-0" href="#" role="button" data-bs-toggle="dropdown">
@@ -43,6 +76,8 @@
                 </div>
               </div>
             </li>
+
+
           </ul>
 
 

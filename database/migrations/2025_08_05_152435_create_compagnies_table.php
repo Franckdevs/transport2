@@ -14,12 +14,17 @@ return new class extends Migration
         Schema::create('compagnies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('info_user_id')->constrained('info_users', 'id');
+            $table->foreignId('villes_id')->constrained('villes', 'id');
             $table->string('nom_complet_compagnies')->nullable();
             $table->string('email_compagnies')->nullable();
             $table->string('telephone_compagnies')->nullable();
             $table->string('adresse_compagnies')->nullable();
             $table->string('logo_compagnies')->nullable();
             $table->string('description_compagnies')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
+            $table->string('adresse')->nullable();
+
             $table->enum('status', ['1', '2', '3'])->default('1');
             $table->timestamps();
         });

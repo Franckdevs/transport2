@@ -24,7 +24,7 @@ return new class extends Migration
 
                 $table->time('heure_ouverture')->nullable(); // Heure d'ouverture
                 $table->time('heure_fermeture')->nullable(); // Heure de fermeture$table->boolean('accessible_pm')->default(false); // Accessible aux personnes à mobilité réduite
-                $table->integer('nombre_quais')->nullable(); // Nombre de quais
+                // $table->integer('nombre_quais')->nullable(); // Nombre de quais
                 $table->boolean('parking_disponible')->default(false); // Parking disponible ou non
                 $table->boolean('wifi_disponible')->default(false); // Wi-Fi disponible
                 $table->string('telephone')->nullable(); // Numéro de contact

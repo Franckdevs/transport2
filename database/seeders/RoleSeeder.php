@@ -24,15 +24,8 @@ class RoleSeeder extends Seeder
             'client',
         ];
 
-        // foreach ($roles as $roleName) {
-        //     $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
-        //     $role->syncPermissions(Permission::all());
-        // }
-
         foreach ($roles as $roleName) {
         Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
-            // On ne synchronise pas toutes les permissions automatiquement
         }
-
     }
 }

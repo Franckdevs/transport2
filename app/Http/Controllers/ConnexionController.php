@@ -131,6 +131,8 @@ public function login(Request $request)
         public function dashboardcompagnie()
     {
         $user = auth()->user();
+    $role = $user->getRoleNames()->first(); // Récupère le premier rôle (ou adapte si multi-rôles)
+
 
 // dd($user->getAllPermissions()->pluck('name'));
         // Debug: Afficher les rôles et permissions de l'utilisateur connecté

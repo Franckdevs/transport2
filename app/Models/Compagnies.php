@@ -17,13 +17,22 @@ class Compagnies extends Model
         'description_compagnies',
         'logo_compagnies',
         'info_user_id', // facultatif si tu lies la compagnie à un utilisateur
+        'villes_id',
+        'latitude',
+        'longitude',
+        'adresse',
     ];
 
 public function info_user()
 {
     return $this->belongsTo(InfoUser::class, 'info_user_id');
+
 }
 
+public function ville()
+{
+    return $this->belongsTo(Ville::class, 'villes_id');
+}
 
 
 }
