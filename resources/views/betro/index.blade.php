@@ -1,62 +1,83 @@
-<div class="container-fluid mt-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="mb-0">Liste des employés</h5>
-                <a href="{{ route('employee.create') }}" class="btn btn-success">
-                    <i class="fa fa-plus"></i> Ajouter un employé
-                </a>
-            </div>
+@include('betro.all_element.header')
 
-            <!-- Barre de recherche personnalisée -->
-            <div class="mb-3" style="max-width: 300px;">
-                <input type="text" id="customSearchEmployee" class="form-control" placeholder="Rechercher un employé...">
-            </div>
-
-            <!-- Tableau -->
-            <table id="employeeTable" class="table display nowrap table-hover" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Email</th>
-                        <th>Fonction</th>
-                        <th>Date de création</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($employees as $employee)
-                    <tr>
-                        <td>{{ $employee->nom }}</td>
-                        <td>{{ $employee->prenom }}</td>
-                        <td>{{ $employee->email }}</td>
-                        <td>{{ $employee->fonction }}</td>
-                        <td>{{ \App\Helpers\GlobalHelper::formatCreatedAt($employee->created_at) }}</td>
-                        <td>
-                            <a href="{{ route('employee.show', $employee->id) }}" class="btn btn-info btn-sm">
-                                <i class="fa fa-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-        </div>
+<body class="layout-1" data-luno="theme-black">
+  <!-- start: sidebar -->
+@include('betro.all_element.sidebar')
+  <!-- start: body area -->
+  <div class="wrapper">
+    <!-- start: page header -->
+   @include('betro.all_element.navbar')
+    <!-- start: page toolbar -->
+    <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
+      @include('betro.all_element.cadre')
     </div>
-</div>
+    <!-- start: page body -->
+    <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
+      <div class="container-fluid">
+        <div class="row g-3 row-deck">
 
-<!-- DataTables 2.x JS -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+            <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-user fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">NOMBRE DE COMPAGNIE</div>
+                <div><span class="h4">{{ $nombres_compagnie ?? 0 }}</span>
+                    <span class="small text-muted"><i class="fa fa-level-up"></i>
+                         {{-- 13% --}}
+                        </span>
+                </div>
+              </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const table = new DataTable('#employeeTable');
-    const searchInput = document.getElementById('customSearchEmployee');
-    searchInput.addEventListener('input', function() {
-        table.search(this.value);
-    });
-});
-</script>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-user fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">NEW EMPLOYEE</div>
+                <div><span class="h4">51</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 13%</span></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-group fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">TOTAL EMPLOYEE</div>
+                <div><span class="h4">372</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 8%</span></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-credit-card fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">TOTAL SALARY</div>
+                <div><span class="h4">$25 k</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 4.26%</span></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-pie-chart fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">AVG. SALARY</div>
+                <div><span class="h4">$1050</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 11.2%</span></div>
+              </div>
+
+            </div>
+          </div>
+
+
+        </div> <!-- .row end -->
+      </div>
+    </div>
+    <!-- start: page footer -->
+    @include('betro.all_element.footer')

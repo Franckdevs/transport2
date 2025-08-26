@@ -81,12 +81,10 @@ class ConnexionController extends Controller
 
 public function login(Request $request)
 {
-    // Validation des champs email et password
     $credentials = $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
-
     // Tentative d'authentification avec les credentials
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate(); // Protection contre la fixation de session

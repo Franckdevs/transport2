@@ -23,9 +23,6 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-
-Route::middleware(['auth'])->group(function () {
-
 // Route::middleware('auth')->group(function () {
 // Route::get('/dashboard', [ConnexionController::class, 'dashboard'])->name('dashboard');
 // Route::post('/', [ConnexionController::class, 'logout'])->name('logout');
@@ -37,9 +34,13 @@ Route::middleware(['auth'])->group(function () {
 
 // });
 
+Route::post('/login_connexion', [ConnexionController::class, 'login'])->name('login_connexion');
+
+Route::middleware(['auth'])->group(function () {
+
 Route::controller(ConnexionController::class)->group(function () {
 Route::get('/connexion', 'premierePage')->name('premierePage_nameS');
-Route::post('/login_connexion', 'login')->name('login_connexion');
+// Route::post('/login_connexion', 'login')->name('login_connexion');
 Route::get('/dashboard', 'dashboardbetro')->name('dashboard');
 Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagnie_name');
 // Route::post('/', 'logout')->name('logout');
@@ -49,6 +50,8 @@ Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagni
     // Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagnie_name');
     // Route::post('/', 'logout')->name('logout');
 });
+
+
 
 Route::controller(CompagniesController::class)->group(function () {
     Route::get('/compagnies', 'index')->name('compagnies');
