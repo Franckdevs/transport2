@@ -36,6 +36,12 @@ Route::get('/', function () {
 
 Route::post('/login_connexion', [ConnexionController::class, 'login'])->name('login_connexion');
 
+    Route::get('/creer-acces/{id}', [CompagniesController::class, 'creerAcces'])->name('creer.acces');
+
+    Route::put('/update-password/{id}', [CompagniesController::class, 'updatePassword'])->name('acces.update.password');
+
+    // Route::get('/reservation', [CompagniesController::class, 'index'])->name('reservation.index');
+
 Route::middleware(['auth'])->group(function () {
 
 Route::controller(ConnexionController::class)->group(function () {
@@ -60,8 +66,8 @@ Route::controller(CompagniesController::class)->group(function () {
     Route::get('/compagnies-show/{compagnies}', 'show')->name('compagnies.show');
     Route::get('/compagnies-edit/{compagnies}', 'edit')->name('compagnies.edit');
     Route::post('compagnies-update/{compagnies}', 'update')->name('compagnies.update');
-    Route::get('/creer-acces/{id}', 'creerAcces')->name('creer.acces');
-    Route::put('/update-password/{id}', 'updatePassword')->name('acces.update.password');
+    // Route::get('/creer-acces/{id}', 'creerAcces')->name('creer.acces');
+    // Route::put('/update-password/{id}', 'updatePassword')->name('acces.update.password');
 });
 
 // Route::controller(GareController::class)->group(function () {
