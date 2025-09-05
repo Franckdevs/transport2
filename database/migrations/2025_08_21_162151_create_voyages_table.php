@@ -10,10 +10,15 @@ class CreateVoyagesTable extends Migration
     {
         Schema::create('voyages', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('compagnie_id')->nullable()->constrained('compagnies', 'id');
+            $table->foreignId('gare_id')->nullable()->constrained('gares', 'id');
+
             $table->unsignedBigInteger('itineraire_id'); // Clé étrangère vers itineraire
             $table->unsignedBigInteger('info_user_id'); // Clé étrangère vers itineraire// Clé étrangère vers itineraire
             $table->unsignedBigInteger('bus_id'); // Clé étrangère vers buses
             $table->unsignedBigInteger('chauffeur_id');
+
             $table->integer('montant')->nullable();
             $table->time('heure_depart')->nullable();
             $table->date('date_depart')->nullable();

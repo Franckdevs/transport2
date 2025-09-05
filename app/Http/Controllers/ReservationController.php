@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\reservation;
 use Illuminate\Http\Request;
 use App\Models\Bus;
 use App\Models\Voyage;
@@ -29,6 +30,12 @@ class ReservationController extends Controller
         // }
 
         return view('compagnie.reservation.index', compact('buses', 'selectedBus', 'voyages', 'selectedVoyage', 'reservations'));
+    }
+
+    public function liste_reservation()
+    {
+        $liste_reservation = reservation::all();
+        return view('compagnie.reservation.index2', compact('liste_reservation'));
     }
 
 }

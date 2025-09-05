@@ -34,5 +34,18 @@ public function ville()
     return $this->belongsTo(Ville::class, 'villes_id');
 }
 
+public function gares()
+{
+    return $this->hasMany(gare::class, 'compagnie_id');
+}
+public function voyages()
+{
+    return $this->hasMany(Voyage::class, 'compagnie_id');
+}
+public function itineraires()
+{
+    return $this->hasMany(Itineraire::class, 'compagnie_id');
+}
+
 
 }

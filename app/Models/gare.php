@@ -32,7 +32,8 @@ class gare extends Model
         'admin_nom',
         'admin_prenom',
         'admin_email',
-        'admin_telephone'
+        'admin_telephone',
+        'compagnie_id',
     ];
 
     // Relations
@@ -60,4 +61,15 @@ class gare extends Model
     {
         return $this->belongsTo(Jour::class, 'jour_de_fermeture_id');
     }
+// Gare.php
+public function compagnie()
+{
+    return $this->belongsTo(Compagnies::class, 'compagnie_id');
+}
+public function itineraires()
+{
+    return $this->hasMany(Itineraire::class, 'gare_id');
+}
+
+
 }

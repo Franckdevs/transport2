@@ -27,10 +27,13 @@ public function compagnie()
     return $this->hasOne(Compagnies::class, 'info_user_id'); // ✅ sans espace
 }
 
-public function gares()
+public function gare()
 {
-    return $this->hasMany(gare::class, 'info_user_id');
+    return $this->hasOne(Gare::class, 'info_user_id');
 }
+
+
+
 
 
 }

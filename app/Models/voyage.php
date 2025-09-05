@@ -13,6 +13,8 @@ class Voyage extends Model
         'montant',
         'heure_depart',
         'date_depart',
+        'compagnie_id',
+        'gare_id',
     ];
 
     // Relation : un voyage appartient à un itinéraire
@@ -38,4 +40,17 @@ class Voyage extends Model
     {
         return $this->belongsTo(Chauffeur::class, 'chauffeur_id');
     }
+    // Relation : un voyage appartient à une compagnie
+    public function compagnie()
+    {
+        return $this->belongsTo(Compagnies::class, 'compagnie_id');
+    }
+    // Relation : un voyage appartient à une gare
+    public function gare()
+    {
+        return $this->belongsTo(gare::class, 'gare_id');
+    }
+
+
 }
+

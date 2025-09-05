@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PersonelController;
+use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\Voyage2Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BusController;
@@ -36,9 +37,9 @@ Route::get('/', function () {
 
 Route::post('/login_connexion', [ConnexionController::class, 'login'])->name('login_connexion');
 
-    Route::get('/creer-acces/{id}', [CompagniesController::class, 'creerAcces'])->name('creer.acces');
+Route::get('/creer-acces/{id}', [CompagniesController::class, 'creerAcces'])->name('creer.acces');
 
-    Route::put('/update-password/{id}', [CompagniesController::class, 'updatePassword'])->name('acces.update.password');
+Route::put('/update-password/{id}', [CompagniesController::class, 'updatePassword'])->name('acces.update.password');
 
     // Route::get('/reservation', [CompagniesController::class, 'index'])->name('reservation.index');
 
@@ -56,8 +57,6 @@ Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagni
     // Route::get('/dashboardcompagnie', 'dashboardcompagnie')->name('dashboardcompagnie_name');
     // Route::post('/', 'logout')->name('logout');
 });
-
-
 
 Route::controller(CompagniesController::class)->group(function () {
     Route::get('/compagnies', 'index')->name('compagnies');
@@ -87,11 +86,11 @@ Route::controller(CompagniesController::class)->group(function () {
 // });
 
     Route::controller(GareController::class)->group(function () {
-        Route::get('/gares', 'index2')->name('gares.index.2');
-        Route::get('/gares/create', 'create2')->name('gares.create');
-        Route::post('/gares/store', 'store2')->name('gares.store');
-        Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
-        Route::get('/gares-show/{gares}', 'show')->name('gares.show');
+    Route::get('/gares', 'index2')->name('gares.index.2');
+    Route::get('/gares/create', 'create2')->name('gares.create');
+    Route::post('/gares/store', 'store2')->name('gares.store');
+    Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
+    Route::get('/gares-show/{gares}', 'show')->name('gares.show');
 });
 
 
@@ -150,3 +149,9 @@ Route::controller(VoyageController::class)->group(function () {
 });
 
 });
+
+Route::controller(ReservationController::class)->group(function () {
+    Route::get('/liste_reservation', 'liste_reservation')->name('liste_reservation');
+
+});
+

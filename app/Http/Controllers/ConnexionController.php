@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chauffeur;
 use App\Models\Compagnies;
 use App\Models\Connexion;
 use App\Http\Requests\StoreConnexionRequest;
 use App\Http\Requests\UpdateConnexionRequest;
+use App\Models\Bus;
+use App\Models\gare;
+use App\Models\Itineraire;
+use App\Models\Utilisateur;
+use App\Models\Voyage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -126,30 +132,28 @@ public function login(Request $request)
         return view('betro.index' , compact('nombres_compagnie'));
     }
 
-        public function dashboardcompagnie()
+    public function dashboardcompagnie()
     {
-        $user = auth()->user();
+    $user = auth()->user();
     $role = $user->getRoleNames()->first(); // Récupère le premier rôle (ou adapte si multi-rôles)
-
-
-// dd($user->getAllPermissions()->pluck('name'));
-        // Debug: Afficher les rôles et permissions de l'utilisateur connecté
-
-        // dd([
-        //     'user_id' => $user->id,
-        //     'user_name' => $user->name,
-        //     'user_email' => $user->email,
-        //     'roles' => $user->getRoleNames(),
-        //     'permissions_from_role' => $user->getPermissionsViaRoles()->pluck('name'),
-        //     'direct_permissions' => $user->getDirectPermissions()->pluck('name'),
-        //     'all_permissions' => $user->getAllPermissions()->pluck('name'),
-        //     'has_super_admin_gare' => $user->hasRole('super-admin-gare'),
-        //     'can_view_dashboard_gare' => $user->can('view-dashboard-gare'),
-        //     'can_manage_quais' => $user->can('manage-quais')
-        // ]);
-
-        //  $nombres_compagnie = Compagnies::count();
-        return view('compagnie.index');
+    // dd($user->getAllPermissions()->pluck('name') , $role);
+    $liste_gare = gare::all();
+    $liste_bus_cars = Bus::all();
+    // dd($liste_bus_cars);
+    $chauffeurs = Chauffeur::all();
+    // $utilisateurs = Utilisateur::all();
+    $itinierai = Itineraire::all();
+    $voyages = Voyage::all();
+    // $cars = Bus::all();
+    //nombre
+    $nombregars = $liste_gare->count();
+    // $nombres_utilisateur = $utilisateurs->count();
+    $nombres_bus = $liste_bus_cars->count();
+    // $nombres_gare = $liste_gare->count();
+    $nombres_itineraire = $itinierai->count();
+    $nombres_voyage = $voyages->count();
+    $nombres_chauffeur = $chauffeurs->count();
+        return view('compagnie.index' , compact('nombregars','nombres_bus','nombres_chauffeur','nombres_itineraire','nombres_voyage'));
     }
 
 

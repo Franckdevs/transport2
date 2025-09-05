@@ -1,17 +1,27 @@
 @php
     use Carbon\Carbon;
 @endphp
-@include('compagnie.all_element.header')
-
-<!-- DataTables 2.3.3 CSS -->
 <link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
-
+@include('compagnie.all_element.header')
 <body class="layout-1" data-luno="theme-blue">
-    @include('compagnie.all_element.sidebar')
-
-    <div class="wrapper">
+  <!-- start: sidebar -->
+@include('compagnie.all_element.sidebar')
+  <!-- start: body area -->
+  <div class="wrapper">
+    <!-- start: page header -->
+    <header class="page-header sticky-top px-xl-4 px-sm-2 px-0 py-lg-2 py-1">
+      <div class="container-fluid">
+        <nav class="navbar">
+          <!-- start: toggle btn -->
+          <!-- start: search area -->
         @include('compagnie.all_element.navbar')
-        @include('compagnie.all_element.cadre')
+          <!-- start: link -->
+
+        </nav>
+      </div>
+    </header>
+    <!-- start: page toolbar -->
+  @include('compagnie.all_element.cadre')
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">

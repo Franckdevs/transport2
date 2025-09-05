@@ -43,13 +43,15 @@
   @include('compagnie.all_element.cadre')
 
     <!-- start: page body -->
-    <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
+    <div class="page-body
+    {{-- px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3 --}}
+    ">
       <div class="container-fluid">
 
 <div class="col-md-12">
   <div class="card">
     <div class="card-body">
-      <h5 class="mb-4">Créer une nouvelle gare</h5>
+      <h5 class="mb-3">Créer une nouvelle gare</h5>
 <form action="{{ route('gares.store') }}" method="POST">
 @csrf
     <style>
@@ -111,6 +113,7 @@
     </style>
 <div class="container">
         <h2 class="mb-4"><i class="fas fa-map-marker-alt me-2"></i>Système de Géolocalisation</h2>
+         <input type="hidden" name="compagnie_id" value="{{ $compagnie_id }}" class="form-control mb-3">
 
         <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
         <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
@@ -407,153 +410,136 @@
 
 
 
+<div class="row">
+  {{-- Nom gare (plein largeur) --}}
+  <div class="col-12 mb-3">
+    <label for="nom_gare" class="form-label">Nom de la gare</label>
+    <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare') }}">
+  </div>
+</div>
 
 <div class="row">
-    {{-- Nom gare (plein largeur) --}}
-    <div class="col-12 mb-3">
-      <label for="nom_gare" class="form-label">Nom de la gare</label>
-      <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare') }}">
-    </div>
+  {{-- Adresse gare --}}
+  <div class="col-md-6 mb-3">
+    <label for="adresse_gare" class="form-label">Adresse</label>
+    <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare') }}">
   </div>
 
-  <div class="row">
-    {{-- Adresse gare --}}
-    {{-- <div class="col-md-6 mb-3">
-      <label for="adresse_gare" class="form-label">Adresse</label>
-      <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare') }}">
-    </div> --}}
+  {{-- Téléphone gare --}}
+  <div class="col-md-6 mb-3">
+    <label for="telephone_gare" class="form-label">Téléphone</label>
+    <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" value="{{ old('telephone_gare') }}">
+  </div>
+</div>
 
-    {{-- Téléphone gare --}}
-    <div class="col-md-6 mb-3">
-      <label for="telephone_gare" class="form-label">Téléphone</label>
-      <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" value="{{ old('telephone_gare') }}">
-    </div>
+<div class="row">
+  {{-- Ville --}}
+  <div class="col-md-6 mb-3">
+    <label for="ville_id" class="form-label">Ville</label>
+    <select name="ville_id" id="ville_id" class="form-select">
+      <option value="">-- Sélectionner une ville --</option>
+      @foreach($villes as $ville)
+        <option value="{{ $ville->id }}" {{ old('ville_id') == $ville->id ? 'selected' : '' }}>
+          {{ $ville->nom_ville ?? $ville->id }}
+        </option>
+      @endforeach
+    </select>
   </div>
 
-  <div class="row">
-    {{-- ville_id --}}
-    <div class="col-md-6 mb-3">
-      <label for="ville_id" class="form-label">Ville</label>
-      <select name="ville_id" id="ville_id" class="form-select">
-        <option value="">-- Sélectionner une ville --</option>
-        @foreach($villes as $ville)
-          <option value="{{ $ville->id }}" {{ old('ville_id') == $ville->id ? 'selected' : '' }}>
-            {{ $ville->nom_ville ?? $ville->id }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+  {{-- Jour d'ouverture --}}
+  <div class="col-md-6 mb-3">
+    <label for="jour_ouvert_id" class="form-label">Jour d'ouverture</label>
+    <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select">
+      <option value="">-- Sélectionner un jour d'ouverture --</option>
+      @foreach($jours as $jour)
+        <option value="{{ $jour->id }}" {{ old('jour_ouvert_id') == $jour->id ? 'selected' : '' }}>
+          {{ $jour->nom_jour ?? $jour->id }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+</div>
+
+<div class="row">
+  {{-- Jour de fermeture --}}
+  <div class="col-md-6 mb-3">
+    <label for="jour_de_fermeture_id" class="form-label">Jour de fermeture</label>
+    <select name="jour_de_fermeture_id" id="jour_de_fermeture_id" class="form-select">
+      <option value="">-- Sélectionner un jour de fermeture --</option>
+      @foreach($jours as $jour)
+        <option value="{{ $jour->id }}" {{ old('jour_de_fermeture_id') == $jour->id ? 'selected' : '' }}>
+          {{ $jour->nom_jour ?? $jour->id }}
+        </option>
+      @endforeach
+    </select>
   </div>
 
-  <div class="row">
-    {{-- jour_id --}}
+  {{-- Nombre de quais --}}
+  <div class="col-md-6 mb-3">
+    <label for="nombre_quais" class="form-label">Nombre de quais</label>
+    <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais') }}" min="0">
+  </div>
+</div>
 
-
-    {{-- jour_ouvert_id --}}
-    <div class="col-md-6 mb-3">
-      <label for="jour_ouvert_id" class="form-label">Jour d'ouverture</label>
-      <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select">
-        <option value="">-- Sélectionner un jour d'ouverture --</option>
-        @foreach($jours as $jour)
-          <option value="{{ $jour->id }}" {{ old('jour_ouvert_id') == $jour->id ? 'selected' : '' }}>
-            {{ $jour->nom_jour ?? $jour->id }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+<div class="row">
+  {{-- Heure ouverture --}}
+  <div class="col-md-6 mb-3">
+    <label for="heure_ouverture" class="form-label">Heure d'ouverture</label>
+    <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture') }}">
   </div>
 
-  <div class="row">
-    {{-- jour_de_fermeture_id --}}
-    <div class="col-md-6 mb-3">
-      <label for="jour_de_fermeture_id" class="form-label">Jour de fermeture</label>
-      <select name="jour_de_fermeture_id" id="jour_de_fermeture_id" class="form-select">
-        <option value="">-- Sélectionner un jour de fermeture --</option>
-        @foreach($jours as $jour)
-          <option value="{{ $jour->id }}" {{ old('jour_de_fermeture_id') == $jour->id ? 'selected' : '' }}>
-            {{ $jour->nom_jour ?? $jour->id }}
-          </option>
-        @endforeach
-      </select>
-    </div>
+  {{-- Heure fermeture --}}
+  <div class="col-md-6 mb-3">
+    <label for="heure_fermeture" class="form-label">Heure de fermeture</label>
+    <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture') }}">
+  </div>
+</div>
 
-    {{-- Nombre de quais --}}
-    {{-- <div class="col-md-6 mb-3">
-      <label for="nombre_quais" class="form-label">Nombre de quais</label>
-      <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais') }}" min="0">
-    </div>
-  </div> --}}
-
-  {{-- <div class="row">
-    <div class="col-md-6 mb-3">
-      <label for="latitude" class="form-label">Latitude</label>
-      <input type="text" name="latitude" id="latitude" class="form-control" value="{{ old('latitude') }}" placeholder="Ex: 48.8566">
-    </div>
-
-    <div class="col-md-6 mb-3">
-      <label for="longitude" class="form-label">Longitude</label>
-      <input type="text" name="longitude" id="longitude" class="form-control" value="{{ old('longitude') }}" placeholder="Ex: 2.3522">
-    </div>
-  </div> --}}
-
-  <div class="row">
-    {{-- Heure ouverture --}}
-    <div class="col-md-6 mb-3">
-      <label for="heure_ouverture" class="form-label">Heure d'ouverture</label>
-      <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture') }}">
-    </div>
-
-    {{-- Heure fermeture --}}
-    <div class="col-md-6 mb-3">
-      <label for="heure_fermeture" class="form-label">Heure de fermeture</label>
-      <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture') }}">
-    </div>
+<div class="row">
+  {{-- Parking disponible --}}
+  <div class="col-md-6 mb-3 form-check">
+    <input class="form-check-input" type="checkbox" value="1" id="parking_disponible" name="parking_disponible" {{ old('parking_disponible') ? 'checked' : '' }}>
+    <label class="form-check-label" for="parking_disponible">Parking disponible</label>
   </div>
 
-  <div class="row">
-    {{-- Parking disponible --}}
-    <div class="col-md-6 mb-3 form-check">
-      <input class="form-check-input" type="checkbox" value="1" id="parking_disponible" name="parking_disponible" {{ old('parking_disponible') ? 'checked' : '' }}>
-      <label class="form-check-label" for="parking_disponible">Parking disponible</label>
-    </div>
+  {{-- Wifi disponible --}}
+  <div class="col-md-6 mb-3 form-check">
+    <input class="form-check-input" type="checkbox" value="1" id="wifi_disponible" name="wifi_disponible" {{ old('wifi_disponible') ? 'checked' : '' }}>
+    <label class="form-check-label" for="wifi_disponible">Wi-Fi disponible</label>
+  </div>
+</div>
 
-    {{-- Wifi disponible --}}
-    <div class="col-md-6 mb-3 form-check">
-      <input class="form-check-input" type="checkbox" value="1" id="wifi_disponible" name="wifi_disponible" {{ old('wifi_disponible') ? 'checked' : '' }}>
-      <label class="form-check-label" for="wifi_disponible">Wi-Fi disponible</label>
-    </div>
+<div class="row">
+  {{-- Téléphone --}}
+  <div class="col-md-6 mb-3">
+    <label for="telephone" class="form-label">Téléphone (contact général)</label>
+    <input type="text" name="telephone" id="telephone" class="form-control" value="{{ old('telephone') }}">
   </div>
 
-  <div class="row">
-    {{-- Téléphone --}}
-    <div class="col-md-6 mb-3">
-      <label for="telephone" class="form-label">Téléphone (contact général)</label>
-      <input type="text" name="telephone" id="telephone" class="form-control" value="{{ old('telephone') }}">
-    </div>
-
-    {{-- Email --}}
-    <div class="col-md-6 mb-3">
-      <label for="email" class="form-label">Email (contact général)</label>
-      <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}">
-    </div>
+  {{-- Email --}}
+  <div class="col-md-6 mb-3">
+    <label for="email" class="form-label">Email (contact général)</label>
+    <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}">
   </div>
+</div>
 
-  {{-- Site web (plein largeur) --}}
-  {{-- <div class="mb-3">
-    <label for="site_web" class="form-label">Site web</label>
-    <input type="url" name="site_web" id="site_web" class="form-control" value="{{ old('site_web') }}">
-  </div> --}}
+{{-- Site web (plein largeur) --}}
+<div class="mb-3">
+  <label for="site_web" class="form-label">Site web</label>
+  <input type="url" name="site_web" id="site_web" class="form-control" value="{{ old('site_web') }}">
+</div>
 
-  {{-- Description (plein largeur) --}}
-  <div class="mb-3">
-    <label for="description" class="form-label">Description</label>
-    <textarea name="description" id="description" class="form-control" rows="3">{{ old('description') }}</textarea>
-  </div>
+{{-- Description (plein largeur) --}}
+<div class="mb-3">
+  <label for="description" class="form-label">Description</label>
+  <textarea name="description" id="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+</div>
+
 
   {{-- Section Administrateur de la gare --}}
   <div class="card mt-4 mb-4">
     <div class="card-header bg-primary text-white">
-      <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Informations de l'Administrateur de la Gare</h6>
+      <h6 class="mb-0"><i class="fas fa-user-tie"></i>Informations de l'Administrateur de la Gare</h6>
     </div>
     <div class="card-body">
       <div class="row">
@@ -627,7 +613,9 @@
 
     </div>
   </div>
-        <button type="submit" class="btn btn-primary">Enregistrer la gare</button>
+    <div class="d-flex justify-content-center mt-4 mb-2">
+        <button type="submit" class="btn btn-primary w-50">Enregistrer la gare</button>
+    </div>
       </form>
 
     </div>

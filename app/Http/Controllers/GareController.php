@@ -74,6 +74,7 @@ class GareController extends Controller
             'admin_telephone' => 'nullable|string|max:20',
             'admin_permissions' => 'nullable|array',
             'admin_permissions.*' => 'exists:permissions,name',
+            'compagnie_id' => 'nullable|exists:compagnies,id',
         ]);
 
         // 2️⃣ Créer l'utilisateur administrateur de la gare si les infos sont fournies
@@ -83,9 +84,13 @@ class GareController extends Controller
             $user = User::create([
                 'name' => trim(($validated['admin_prenom'] ?? '') . ' ' . ($validated['admin_nom'] ?? '')),
                 'email' => $validated['admin_email'],
+                'nome' => $validated['admin_nom'] ?? '',
+                'prenom' => $validated['admin_prenom'] ?? '',
                 // 'password' => Hash::make('password123'), // Mot de passe par défaut
                 'email_verified_at' => now(),
             ]);
+
+            // compagnie_id
 
             // Créer InfoUser associé
             $infoUser = InfoUser::create([
@@ -152,6 +157,7 @@ class GareController extends Controller
         //
         $gare = gare::find($gars);
         // dd($gare);
+
         return view('compagnie.gares.show', compact('gare'));
     }
 
@@ -181,7 +187,7 @@ class GareController extends Controller
 
 public function index2()
 {
-    $listegares = gare::orderBy('id', 'desc')->get();
+    $listegares = Gare::orderBy('id', 'desc')->paginate(10); // 10 par page
     return view('compagnie.gares.index', compact('listegares'));
 }
 
@@ -202,12 +208,14 @@ public function create2()
 {
     // Récupérer toutes les permissions sauf celles qui contiennent "Betro"
     $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
+    $compagnie_id = Auth::user()->info_user->compagnie->id;
 
     return view('compagnie.gares.create', [
         'infoUsers'   => InfoUser::all(),
         'jours'       => Jour::all(),
         'villes'      => Ville::all(),
         'permissions' => $garePermissions,
+        'compagnie_id' => $compagnie_id,
     ]);
 }
 

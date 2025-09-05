@@ -38,21 +38,57 @@
         ];
         $roleText = $roleLabels[$role] ?? $role;
 
-        // Liste des permissions de l’utilisateur
         $permissionsList = Auth::user()->getAllPermissions()->pluck('name')->toArray();
         $permissionsText = empty($permissionsList) ? 'Aucune permission' : implode(", ", $permissionsList);
     @endphp
 
-    <span class="badge bg-primary rounded-pill px-3 py-2"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          title="{{ $permissionsText }}">
-        <i class="fas fa-user-tag me-1"></i>
-        <strong>{{ $roleText }}</strong>
-    </span>
-@endif
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Badge pour le rôle -->
+        <span class="badge bg-primary rounded-pill px-3 py-2"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="{{ $permissionsText }}">
+            <i class="fas fa-user-tag me-1"></i>
+            <strong>{{ $roleText }}</strong>
+        </span>
 
-<!-- Fin du badge dans le header -->
+        <!-- Badge pour la compagnie -->
+        @if(Auth::user()->info_user && Auth::user()->info_user->compagnie)
+            <span class="badge bg-success rounded-pill px-3 py-2"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Compagnie associée">
+                <i class="fas fa-building me-1"></i>
+                <strong>{{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}</strong>
+            </span>
+        @endif
+
+        <!-- Badge pour la gare -->
+        @if(Auth::user()->info_user && Auth::user()->info_user->gare)
+            <span class="badge bg-secondary rounded-pill px-3 py-2"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Gare associée">
+                <i class="fas fa-train me-1"></i>
+                <strong>{{ Auth::user()->info_user->gare->nom_gare }}</strong>
+            </span>
+        @endif
+    </div>
+
+    <!-- Initialiser les tooltips -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+    @endif
+
+
+
+            <!-- Fin du badge dans le header -->
 
             <li>
               <div class="dropdown morphing scale-left user-profile mx-lg-3 mx-2">

@@ -52,6 +52,7 @@ public function show($id)
 public function store(Request $request)
 {
     $user = Auth::user();
+
     $validatedData = $request->validate([
         'itineraire_id' => 'required',
         'montant' => 'required|numeric|min:1',
@@ -63,7 +64,8 @@ public function store(Request $request)
     ]);
 
     $infoUserId = $user->info_user->id ?? null;
-
+    $compagnieID  = $user->info_user->gare->compagnie->id;
+    // dd($compagnieID);
     // Création du voyage
     $voyage = Voyage::create([
         'info_user_id' => $infoUserId,
@@ -73,6 +75,7 @@ public function store(Request $request)
         'date_depart' => $validatedData['date_depart'],
         'bus_id' => $validatedData['bus_id'],
         'chauffeur_id' => $validatedData['chauffeur_id'],
+        'compagnie_id' => $compagnieID,
     ]);
 
     // // Vérifier si 'arrets' existe et est un tableau avant de boucler dessus

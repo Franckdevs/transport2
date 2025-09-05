@@ -12,6 +12,8 @@ class Itineraire extends Model
         'estimation',
         'titre',
         'statut',
+        'compagnie_id',
+        'gare_id',
     ];
 
     // Relation : un itinéraire appartient à un utilisateur
@@ -41,6 +43,17 @@ class Itineraire extends Model
     {
         return $this->belongsTo(Ville::class, 'ville_id');
     }
+
+    public function compagnie()
+    {
+        return $this->belongsTo(Compagnies::class, 'compagnie_id');
+    }
+
+    public function gare()
+    {
+        return $this->belongsTo(gare::class, 'gare_id');
+    }
+
 
 
 }

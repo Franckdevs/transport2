@@ -140,7 +140,7 @@
                         @endif
 
                         <!-- Liens et Boutons -->
-                        <a href="{{ route('itineraire.index') }}"
+                        <a href="{{ route('voyage.index') }}"
                             class="btn btn-primary mt-4 shadow-sm btn-hover-scale">
                             <i class="fas fa-arrow-left me-2"></i> Retour à la liste
                         </a>

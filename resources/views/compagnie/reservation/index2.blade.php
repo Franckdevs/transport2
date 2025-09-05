@@ -55,9 +55,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($voyages as $voyage)
+                                @foreach ($liste_reservation as $voyage)
                                 <tr>
-                                    <td>{{ $voyage->ville->nom_ville }}</td>
+                                    <td>{{ $voyage->ville->nom_ville ?? 'Non défini' }}</td>
                                     <td>{{ $voyage->estimation ?? 'Non défini' }}</td>
                                     <td>{{ $voyage->titre ?? 'Non défini' }}</td>
                                     <td>{{ GlobalHelper::formatCreatedAt($voyage->created_at) }}</td>

@@ -31,7 +31,7 @@
                                 </ul>
                             </div>
                         @endif
-      
+
 
 
                         <!-- Formulaire de création -->
@@ -39,14 +39,41 @@
                             @csrf
 
                             <div class="row">
-                                <!-- Date de départ -->
+                                @if ($villeId)
+                                <input type="hidden"  name="ville_id" value="{{ $villeId }}">
+                                @else
+                                <hr>
+                            <!-- Ville et Gare de départ -->
+                            <p>Profil Super admin</p>
+                            <div class="col-md-6 mb-3">
+                                <label for="ville_id" class="form-label">Ville de départ (optionnelle)</label>
+                                <select name="ville_id" id="ville_id" class="form-control">
+                                    <option value="">-- Sélectionnez une ville --</option>
+                                    @foreach($villes as $ville)
+                                        <option value="{{ $ville->id }}" {{ old('ville_id') == $ville->id ? 'selected' : '' }}>
+                                            {{ $ville->nom_ville }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="gare_id" class="form-label">Gare de départ (optionnelle)</label>
+                                <select name="gare_id" id="gare_id" class="form-control">
+                                    <option value="">-- Sélectionnez une gare --</option>
+                                    @foreach($gars as $gare)
+                                        <option value="{{ $gare->id }}" {{ old('gare_id') == $gare->id ? 'selected' : '' }}>
+                                            {{ $gare->nom_gare  }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('gare_id')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
 
 
-                                <!-- Ville de départ -->
-                                 <input type="hidden" name="ville_id" value="{{ $villeId }}">
-
-
-
+                                @endif
 
                                 <!-- Heure d'arrivée -->
                                 <div class="col-md-6 mb-3">

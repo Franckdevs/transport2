@@ -29,7 +29,7 @@ use App\Helpers\GlobalHelper;
                                 </div>
 
                                 <!-- Barre de recherche personnalisée -->
-                       
+
 
                                 <!-- Tableau -->
                                 <table id="myTable" class="table display nowrap table-hover" style="width:100%">

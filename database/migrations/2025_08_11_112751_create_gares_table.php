@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('gares', function (Blueprint $table) {
             $table->id();
             $table->foreignId('info_user_id')->nullable()->constrained('info_users', 'id');
+            $table->foreignId('compagnie_id')->nullable()->constrained('compagnies', 'id');
                 $table->foreignId('jour_id')->nullable()->constrained('jours',  'id');
                 $table->foreignId('ville_id')->nullable()->constrained('villes', 'id');
                 $table->foreignId('jour_ouvert_id')->nullable()->constrained('jours',  'id');
