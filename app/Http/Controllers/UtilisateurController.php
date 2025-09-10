@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\FinalisationInscription;
 use App\Models\Compagnies;
 use App\Models\Otp;
 use App\Models\reservation;
@@ -29,15 +30,70 @@ class UtilisateurController extends Controller
 
     }
 
-    public function inscription(Request $request)
+    public function inscription_finalisation_inscription(Request $request)
     {
         // ✅ Validation
         $request->validate([
-            'email' => 'required',
+            // 'email' => 'required',
+            'token'=> 'nullable',
             'telephone' => 'nullable',
             'nom' => 'nullable',
             'prenom' => 'nullable',
             'password' => 'nullable',
+        ]);
+
+        $retrouverutilisateur = Utilisateur::where('token', $request->token)->first();
+
+        if (!$retrouverutilisateur) {
+            return response()->json([
+                'Erreure'=>'cette utilisateur existe pas'
+                ]);
+        }
+        // if (UtilisateurEnAttente::where('email', $request->email)->exists()) {
+        //     return response()->json(['message' => 'Email déjà utilisé'], 422);
+        // }
+
+        // ✅ Création de l'utilisateur en attente
+        // $retrouverutilisateur = new retrouverutilisateurEnAttente();
+        // $retrouverutilisateur->email = $request->email;
+        $retrouverutilisateur->telephone = $request->telephone;
+        $retrouverutilisateur->nom = $request->nom;
+        $retrouverutilisateur->prenom = $request->prenom;
+        $retrouverutilisateur->password = $request->password;
+        $retrouverutilisateur->save(); // 🔑 sauvegarde avant token
+
+        // ✅ Génération du token API
+        // $token = $utilisateur->createToken('API Token')->plainTextToken;
+        // $utilisateur->token = $token;
+        // $utilisateur->save();
+
+        // ✅ Génération d’un code OTP unique (6 chiffres)
+        // do {
+        //     $otpCode = rand(100000, 999999);
+        // } while (Otp::where('code', $otpCode)->exists());
+
+        // // ✅ Enregistrement de l’OTP
+        // Otp::create([
+        //     'utilisateur_id' => $utilisateur->id,
+        //     'code' => $otpCode,
+        //     'status' => '1', // actif
+        // ]);
+
+        // ✅ Envoi de l’OTP par mail
+        // Mail::to($utilisateur->email)->send(new FinalisationInscription($otpCode, $utilisateur));
+
+        // ✅ Réponse JSON
+        return response()->json([
+            'message' => 'Inscription réussie, code OTP envoyé par email',
+            'utilisateur' => $retrouverutilisateur,
+        ], 200);
+    }
+
+    public function inscription_via_mail(Request $request)
+    {
+        // ✅ Validation
+        $request->validate([
+            'email' => 'required',
         ]);
 
         if (UtilisateurEnAttente::where('email', $request->email)->exists()) {
@@ -46,10 +102,10 @@ class UtilisateurController extends Controller
         // ✅ Création de l'utilisateur en attente
         $utilisateur = new UtilisateurEnAttente();
         $utilisateur->email = $request->email;
-        $utilisateur->telephone = $request->telephone;
-        $utilisateur->nom = $request->nom;
-        $utilisateur->prenom = $request->prenom;
-        $utilisateur->password = $request->password;
+        // $utilisateur->telephone = $request->telephone;
+        // $utilisateur->nom = $request->nom;
+        // $utilisateur->prenom = $request->prenom;
+        // $utilisateur->password = $request->password;
         $utilisateur->save(); // 🔑 sauvegarde avant token
 
         // ✅ Génération du token API
@@ -87,25 +143,37 @@ class UtilisateurController extends Controller
             'otp' => $otpCode,
             // 'token' => $token,
             // 'token' => $token, // à utiliser côté client pour authentification API
-        ], 201);
+        ], 200);
     }
-
-
 
 
     public function verifierOtp(Request $request)
 {
+
     // ✅ Validation de la requête
     $request->validate([
         'token' => 'required|string',
         'code'  => 'required',
     ]);
-
+  
     // ✅ Récupération de l'utilisateur via token
     $utilisateur = UtilisateurEnAttente::where('token', $request->token)->first();
-    if (!$utilisateur) {
-        return response()->json(['message' => 'Token invalide'], 404);
+   
+if (!$utilisateur) {
+    $verifier_utilisateur = Utilisateur::where('token', $request->token)->first();
+    
+    if ($verifier_utilisateur) {
+        return response()->json([
+            'message' => 'Cet utilisateur est déjà validé.',
+        ], 200);
     }
+
+    return response()->json([
+        'message' => 'Token invalide',
+    ], 404);
+}
+  
+       
 //    return response()->json(['message' => 'Utilisateur trouvé', 'utilisateur' => $utilisateur], 200);
     // ✅ Vérification de l'OTP
     $otp = Otp::where('utilisateur_id', $utilisateur->id)
@@ -126,20 +194,26 @@ class UtilisateurController extends Controller
     // return response()->json(['message' => 'ok'], 200);
     // ✅ OTP correct : marquer comme utilisé
     $otp->status = '3'; // utilisé
-    $otp->save();
+    $otp->delete();
+
+    //  return response()->json([
+    //     'message'=> 'ds',
+    //     'tzst'=> $utilisateur,
+    //     'd'=> $otp
+    //     ],200);
 
     // 🔑 Générer un token API via Sanctum
-    $apiToken = $utilisateur->createToken('API Token')->plainTextToken;
-    $utilisateur->token = $apiToken;
-    $utilisateur->save();
+    // $apiToken = $utilisateur->createToken('API Token')->plainTextToken;
+    // $utilisateur->token = $apiToken;
+    // $utilisateur->save();
 
     //creation de l'utilisateur
     $user = new Utilisateur();
-    $user->nom = $utilisateur->nom;
-    $user->prenom = $utilisateur->prenom;
+    // $user->nom = $utilisateur->nom;
+    // $user->prenom = $utilisateur->prenom;
     $user->email = $utilisateur->email;
-    $user->telephone = $utilisateur->telephone;
-    $user->password = $utilisateur->password;
+    // $user->telephone = $utilisateur->telephone;
+    // $user->password = $utilisateur->password;
     $user->token = $utilisateur->token;
     $user->save();
 

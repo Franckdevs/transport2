@@ -98,16 +98,12 @@
 <body>
     <div class="container">
         <div class="header">
-            {{-- <h1>Bonjour {{ $utilisateur->nom ?? ' '}} {{ $utilisateur->prenom ?? ' ' }}</h1> --}}
+            <h1>Bonjour {{ $utilisateur->nom ?? ' '}} {{ $utilisateur->prenom ?? ' ' }}</h1>
             <p>Nous sommes ravis de vous accueillir sur <strong>BETRO</strong></p>
         </div>
 
         <div class="content">
             <p>Merci pour votre inscription. Voici votre code OTP personnel pour finaliser votre compte :</p>
-
-            <div class="otp-box">
-                <div class="otp-code">{{ $otp }}</div>
-            </div>
 
             <p>Ce code est valable uniquement pour une courte période. Ne le partagez avec personne.</p>
 
