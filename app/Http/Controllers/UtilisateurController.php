@@ -260,23 +260,23 @@ public function listevoayge(Request $request , $id)
     return response()->json([
         'message' => 'Compagnie trouvée',
         'compagnie' => $compagnie,
-        'gares' => $compagnie->gares->map(function($gare) {
-            return [
-                'gare' => $gare,
-                'itineraires' => $gare->itineraires->map(function($itineraire) {
-                    return [
-                        'itineraire' => $itineraire,
-                        'voyages' => $itineraire->voyages
-                    ];
-                }),
-            ];
-        }),
-        'itineraires_compagnie' => $compagnie->itineraires->map(function($itineraire) {
-            return [
-                'itineraire' => $itineraire,
-                'voyages' => $itineraire->voyages
-            ];
-        }),
+        // 'gares' => $compagnie->gares->map(function($gare) {
+        //     return [
+        //         'gare' => $gare,
+        //         'itineraires' => $gare->itineraires->map(function($itineraire) {
+        //             return [
+        //                 'itineraire' => $itineraire,
+        //                 'voyages' => $itineraire->voyages
+        //             ];
+        //         }),
+        //     ];
+        // }),
+        // 'itineraires_compagnie' => $compagnie->itineraires->map(function($itineraire) {
+        //     return [
+        //         'itineraire' => $itineraire,
+        //         'voyages' => $itineraire->voyages
+        //     ];
+        // }),
     ], 200);
 }
 
