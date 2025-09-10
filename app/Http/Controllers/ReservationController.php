@@ -11,7 +11,8 @@ use App\Models\Voyage;
 use App\Http\Controllers\Controller;
 
 class ReservationController extends Controller
-{    public function index(Request $request)
+{
+     public function index(Request $request)
     {
         $buses = Bus::all();
         $selectedBus = null;
@@ -32,10 +33,39 @@ class ReservationController extends Controller
         return view('compagnie.reservation.index', compact('buses', 'selectedBus', 'voyages', 'selectedVoyage', 'reservations'));
     }
 
-    public function liste_reservation()
-    {
-        $liste_reservation = reservation::all();
-        return view('compagnie.reservation.index2', compact('liste_reservation'));
+// public function liste_reservation()
+// {
+//     $liste_reservation = Reservation::with(['voyage', 'utilisateur'])->get();
+//     return view('compagnie.reservation.index2', compact('liste_reservation'));
+// }
+
+public function liste_reservation(Request $request)
+{
+    $query = Reservation::with(['voyage', 'utilisateur']);
+
+    // Filtre par date départ du voyage
+    if ($request->date_debut) {
+        $query->whereHas('voyage', function($q) use ($request) {
+            $q->whereDate('date_depart', '>=', $request->date_debut);
+        });
     }
+
+    if ($request->date_fin) {
+        $query->whereHas('voyage', function($q) use ($request) {
+            $q->whereDate('date_depart', '<=', $request->date_fin);
+        });
+    }
+
+    $liste_reservation = $query->get();
+
+        // Calcul du coût total (somme des montants des voyages réservés)
+    $total_montant = $liste_reservation->sum(function($reservation) {
+        return $reservation->voyage->montant ?? 0;
+    });
+
+    return view('compagnie.reservation.index2', compact('liste_reservation' ,'total_montant'));
+}
+
+
 
 }
