@@ -247,9 +247,15 @@ public function listeCompagnie(Request $request)
 
 public function listevoayge(Request $request , $id)
 {
+    // $compagnie = Compagnies::with([
+    //     'gares.itineraires.voyages' // on ajoute voyages ici
+    // ])->find($id);
+
     $compagnie = Compagnies::with([
-        'gares.itineraires.voyages' // on ajoute voyages ici
-    ])->find($id);
+    'gares.itineraires.voyages.bus',
+    'gares.itineraires.voyages.chauffeur',
+])->find($id);
+
 
     if (!$compagnie) {
         return response()->json([
