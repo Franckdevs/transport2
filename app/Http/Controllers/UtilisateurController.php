@@ -252,8 +252,8 @@ public function listevoayge(Request $request , $id)
     // ])->find($id);
 
     $compagnie = Compagnies::with([
-    'gares.itineraires.voyages.bus',
     'gares.itineraires.voyages.chauffeur',
+    'gares.itineraires.voyages.bus',
 ])->find($id);
 
 
@@ -294,7 +294,6 @@ public function reservation(Request $request)
         'numero_place' => 'required',
     ]);
 
-
     $id = $request->input('voyage_id');
     $voyage = Voyage::find($id);
     if (!$voyage) {
@@ -310,6 +309,11 @@ public function reservation(Request $request)
         ], 404);
     }
 
+    // $compagnie = Compagnies::with([
+    //     'gares.itineraires.voyages.chauffeur',
+    //     'gares.itineraires.voyages.bus',
+    // ])->find($voyage->compagnie_id);
+
     $reservation = new reservation();
     $reservation->voyages_id = $voyage->id;
     $reservation->utilisateurs_id = $utilisateur->id;
@@ -318,7 +322,8 @@ public function reservation(Request $request)
     return response()->json([
         'message' => 'Reservation effectuer',
         'voyage' => $voyage,
-        'utilisateur' => $utilisateur
+        'utilisateur' => $utilisateur,
+        // 'compagnie'=>$compagnie
     ]);
 
     // return response()->json([
