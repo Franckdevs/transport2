@@ -229,6 +229,22 @@ if (!$utilisateur) {
     ], 200);
 }
 
+// public function listeCompagnie(Request $request)
+// {
+//     $listeCompagnie = Compagnies::all();
+
+//     if ($listeCompagnie->isEmpty()) {
+//         return response()->json([
+//             'message' => 'Aucune compagnie trouvée',
+//             'listecompagnie' => []
+//         ], 200);
+//     }
+
+//     return response()->json([
+//         'message' => 'Liste des Compagnies',
+//         'listecompagnie' => $listeCompagnie
+//     ], 200);
+// }
 public function listeCompagnie(Request $request)
 {
     $listeCompagnie = Compagnies::all();
@@ -240,11 +256,23 @@ public function listeCompagnie(Request $request)
         ], 200);
     }
 
+    $listeCompagnie = $listeCompagnie->map(function ($compagnie) {
+        if ($compagnie->logo_compagnies) {
+            $compagnie->logo_url  = url($compagnie->logo_compagnies);  // URL complète pour frontend
+            $compagnie->logo_path = 'logo_compagnie/' . $compagnie->logo_compagnies; // chemin relatif avec dossier
+        } else {
+            $compagnie->logo_url  = url('assets/img/default-user.png'); 
+            $compagnie->logo_path = null;
+        }
+        return $compagnie;
+    });
+
     return response()->json([
         'message' => 'Liste des Compagnies',
         'listecompagnie' => $listeCompagnie
     ], 200);
 }
+
 
 public function listevoayge(Request $request , $id)
 {

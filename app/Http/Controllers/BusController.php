@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\bus;
+use App\Models\ConfigurationPlaceBus;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
@@ -132,7 +133,8 @@ public function store(Request $request)
     {
         //
         $bus = Bus::find($bus->id);
-        return view("compagnie.bus.show",compact("bus"));
+        $configuration = ConfigurationPlaceBus::where('id', $bus->configuration_place_buses_id)->first();
+        return view("compagnie.bus.show",compact("bus","configuration"));
     }
 
     /**

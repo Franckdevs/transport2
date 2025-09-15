@@ -130,13 +130,13 @@ use App\Helpers\GlobalHelper;
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
         
-        <form action="{{ route('compagnies.destroy', $compagnie->id) }}" method="POST" style="display:inline;">
+        {{-- <form action="{{ route('compagnies.destroy', $compagnie->id) }}" method="POST" style="display:inline;">
             @csrf
-            {{-- @method('DELETE') --}}
+            @method('DELETE')
             <button type="submit" class="btn btn-danger">
                 <i class="fa fa-ban"></i> Bloquer
             </button>
-        </form>
+        </form> --}}
       </div>
     </div>
   </div>

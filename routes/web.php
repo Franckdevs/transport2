@@ -131,6 +131,13 @@ Route::controller(ChauffeurController::class)->group(function () {
     Route::get('/chauffeur/create', 'create')->name('chauffeur.create');
     Route::post('/chauffeur/store', 'store')->name('chauffeur.store');
     Route::get('edit-modifier/{id}', 'edit')->name('modifier.edit');
+    Route::post('update/{id}', 'update')->name('modifier.update');
+    Route::get('show/{id}', 'show')->name('voir.show');
+
+    Route::post('destroy/{id}', 'destroy')->name('activer.destroy');
+    Route::post('destroy_reactivation/{id}', 'destroy_reactivation')->name('activer.destroy_reactivation');
+
+
 });
 
 Route::controller(Voyage2Controller::class)->group(function () {

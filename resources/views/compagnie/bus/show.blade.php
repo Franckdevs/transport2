@@ -64,6 +64,10 @@
         <div class="col-md-6 mb-2">
             <p><strong>Localisation :</strong> {{ $bus->localisation_bus }}</p>
         </div>
+
+           <div class="col-md-6 mb-2">
+            <p><strong>configuration :</strong> {{ $configuration->nom_complet }} - {{ $configuration->disposition }}</p>
+        </div>
     </div>
 </div>
 

@@ -76,22 +76,60 @@
                                             </td>
                                             <td>
 
-                                               <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-primary btn-sm">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
+                                          <!-- Actions Chauffeur -->
+<div class="gap-1">
+    <!-- Bouton Modifier -->
+    <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-primary btn-sm">
+        <i class="fa fa-edit"></i>
+    </a>
+
+    <!-- Bouton Voir -->
+    <a href="{{ route('voir.show',$chauffeur->id) }}" class="btn btn-info btn-sm">
+        <i class="fa fa-eye"></i>
+    </a>
+
+    @if($chauffeur->status == 3)
+        <!-- Bouton Réactiver -->
+        <form action="{{ route('activer.destroy_reactivation', $chauffeur->id) }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="submit" class="btn btn-success btn-sm">
+                <i class="fa fa-undo"></i> <!-- icône réactivation -->
+            </button>
+        </form>
+    @else
+        <!-- Bouton Supprimer -->
+        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteChauffeurModal{{ $chauffeur->id }}">
+            <i class="fa fa-trash"></i>
+        </button>
+
+        <!-- Modal Suppression -->
+        <div class="modal fade" id="deleteChauffeurModal{{ $chauffeur->id }}" tabindex="-1" aria-labelledby="deleteChauffeurLabel{{ $chauffeur->id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deleteChauffeurLabel{{ $chauffeur->id }}">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+              </div>
+              <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer ce chauffeur : 
+                <strong>{{ $chauffeur->nom }} {{ $chauffeur->prenom }}</strong> ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+
+                <form action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
+                  @csrf
+                  <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+    @endif
+</div>
 
 
 
-                                                <a href="" class="btn btn-info btn-sm">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                                <form action="" method="POST" style="display:inline;" onsubmit="return confirm('Supprimer ce chauffeur ?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </form>
                                             </td>
                                             
                                         </tr>
