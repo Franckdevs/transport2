@@ -22,7 +22,8 @@
                 <i class="fa fa-user fa-lg position-absolute top-0 end-0 p-3"></i>
                 <div class="mb-2 text-uppercase">NOMBRE DE COMPAGNIE</div>
                 <div><span class="h4">{{ $nombres_compagnie ?? 0 }}</span>
-                    <span class="small text-muted"><i class="fa fa-level-up"></i>
+                    <span class="small text-muted">
+                      {{-- <i class="fa fa-level-up"></i> --}}
                          {{-- 13% --}}
                         </span>
                 </div>
@@ -35,8 +36,10 @@
             <div class="card overflow-hidden">
               <div class="card-body">
                 <i class="fa fa-user fa-lg position-absolute top-0 end-0 p-3"></i>
-                <div class="mb-2 text-uppercase">NEW EMPLOYEE</div>
-                <div><span class="h4">51</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 13%</span></div>
+                <div class="mb-2 text-uppercase">NOMBRE DE GARE</div>
+                <div><span class="h4">{{$nombre_de_gare ?? 0}}</span> <span class="small text-muted">
+                  {{-- <i class="fa fa-level-up"></i> 13% --}}
+                </span></div>
               </div>
 
             </div>
@@ -46,8 +49,10 @@
             <div class="card overflow-hidden">
               <div class="card-body">
                 <i class="fa fa-group fa-lg position-absolute top-0 end-0 p-3"></i>
-                <div class="mb-2 text-uppercase">TOTAL EMPLOYEE</div>
-                <div><span class="h4">372</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 8%</span></div>
+                <div class="mb-2 text-uppercase">ITINERAIRE</div>
+                <div><span class="h4">{{$itineraie_de_gare ?? 0}}</span> <span class="small text-muted">
+                  {{-- <i class="fa fa-level-up"></i> 8% --}}
+                </span></div>
               </div>
 
             </div>
@@ -57,8 +62,10 @@
             <div class="card overflow-hidden">
               <div class="card-body">
                 <i class="fa fa-credit-card fa-lg position-absolute top-0 end-0 p-3"></i>
-                <div class="mb-2 text-uppercase">TOTAL SALARY</div>
-                <div><span class="h4">$25 k</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 4.26%</span></div>
+                <div class="mb-2 text-uppercase">VOYAGES</div>
+                <div><span class="h4">{{$voyages_de_gare ?? 0}}</span> <span class="small text-muted">
+                  {{-- <i class="fa fa-level-up"></i> 4.26% --}}
+                </span></div>
               </div>
 
             </div>
@@ -68,12 +75,44 @@
             <div class="card overflow-hidden">
               <div class="card-body">
                 <i class="fa fa-pie-chart fa-lg position-absolute top-0 end-0 p-3"></i>
-                <div class="mb-2 text-uppercase">AVG. SALARY</div>
-                <div><span class="h4">$1050</span> <span class="small text-muted"><i class="fa fa-level-up"></i> 11.2%</span></div>
+                <div class="mb-2 text-uppercase">RESERVATION</div>
+                <div><span class="h4">{{$reservation_de_gare ?? 0}}</span> <span class="small text-muted">
+                  {{-- <i class="fa fa-level-up"></i> 11.2% --}}
+                </span></div>
               </div>
 
             </div>
           </div>
+
+
+           <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-pie-chart fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">PAIEMENT</div>
+                <div><span class="h4">0</span> FCFA <span class="small text-muted">
+                  {{-- <i class="fa fa-level-up"></i> 11.2% --}}
+                </span></div>
+              </div>
+
+            </div>
+          </div>
+
+
+
+          {{-- <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card overflow-hidden">
+              <div class="card-body">
+                <i class="fa fa-pie-chart fa-lg position-absolute top-0 end-0 p-3"></i>
+                <div class="mb-2 text-uppercase">RESERVATION</div>
+                <div><span class="h4">{{$reservation_de_gare ?? 0}}</span> <span class="small text-muted">
+                  <i class="fa fa-level-up"></i> 11.2%
+                </span></div>
+              </div>
+
+            </div>
+          </div> --}}
+          
 
 
         </div> <!-- .row end -->

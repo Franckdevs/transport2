@@ -114,13 +114,10 @@
                           @if (Auth::user()->can('voyages') || Auth::user()->can('tout-les-permissions'))
                             <li class="{{ request()->routeIs('liste_reservation.*') ? 'active' : '' }}">
                                 <a class="m-link" href="{{ route('liste_reservation') }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18"
-                                        fill="currentColor" viewBox="0 0 16 16">
-                                        <path
-                                            d="M1 2a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H1zM1 4h14v8H1V4z" />
-                                        <path d="M3 12a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1h-10z" />
+                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-life-preserver" viewBox="0 0 16 16">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m6.43-5.228a7.03 7.03 0 0 1-3.658 3.658l-1.115-2.788a4 4 0 0 0 1.985-1.985zM5.228 14.43a7.03 7.03 0 0 1-3.658-3.658l2.788-1.115a4 4 0 0 0 1.985 1.985zm9.202-9.202-2.788 1.115a4 4 0 0 0-1.985-1.985l1.115-2.788a7.03 7.03 0 0 1 3.658 3.658m-8.087-.87a4 4 0 0 0-1.985 1.985L1.57 5.228A7.03 7.03 0 0 1 5.228 1.57zM8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
                                     </svg>
-                                    <span class="ms-3">Liste reservation</span>
+                                    <span class="ms-3">RESERVATION</span>
                                 </a>
                             </li>
                         @endcan

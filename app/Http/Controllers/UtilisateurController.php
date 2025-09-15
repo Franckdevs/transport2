@@ -11,6 +11,7 @@ use App\Models\UtilisateurEnAttente;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
 use App\Mail\OtpMail; // Assure-toi d'avoir créé ce Mailable
+use App\Models\Bus;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -286,51 +287,158 @@ public function listevoayge(Request $request , $id)
     ], 200);
 }
 
+// public function reservation(Request $request)
+// {
+//     $request->validate([
+//         'voyage_id' => 'required|exists:voyages,id',
+//         'token' => 'required',
+//         'numero_place' => 'required',
+//     ]);
+
+//     $id = $request->input('voyage_id');
+//     $voyage = Voyage::find($id);
+//     if (!$voyage) {
+//         return response()->json([
+//             'message' => 'Voyage non trouvée',
+//         ], 404);
+//     }
+
+//     $utilisateur = Utilisateur::where('token', $request->token)->first();
+//     if (!$utilisateur) {
+//         return response()->json([
+//             'message' => 'Utilisateur non trouvée',
+//         ], 404);
+//     }
+
+//     // $compagnie = Compagnies::with([
+//     //     'gares.itineraires.voyages.chauffeur',
+//     //     'gares.itineraires.voyages.bus',
+//     // ])->find($voyage->compagnie_id);
+//     $bus = Bus::where('id', $voyage->bus_id)->first();
+
+//     $reservation = new reservation();
+//     $reservation->voyages_id = $voyage->id;
+//     $reservation->utilisateurs_id = $utilisateur->id;
+//     $reservation->numero_place = $request->input('numero_place');
+//     $reservation->save();
+
+
+
+//     return response()->json([
+//         'message' => 'Reservation effectuer',
+//         'voyage' => $voyage,
+//         'bus'=> $bus,
+//         'utilisateur' => $utilisateur,
+//         // 'compagnie'=>$compagnie
+//     ]);
+
+//     // return response()->json([
+//     //     'message' => 'Reservation effectuer',
+//     //     'reservation' => $reservation,
+//     // ], 200);
+
+// }
+
+
 public function reservation(Request $request)
 {
     $request->validate([
         'voyage_id' => 'required|exists:voyages,id',
         'token' => 'required',
-        'numero_place' => 'required',
+        'numero_place' => 'required|integer|min:1',
     ]);
 
     $id = $request->input('voyage_id');
     $voyage = Voyage::find($id);
     if (!$voyage) {
         return response()->json([
-            'message' => 'Voyage non trouvée',
+            'message' => 'Voyage non trouvé',
         ], 404);
     }
 
     $utilisateur = Utilisateur::where('token', $request->token)->first();
     if (!$utilisateur) {
         return response()->json([
-            'message' => 'Utilisateur non trouvée',
+            'message' => 'Utilisateur non trouvé',
         ], 404);
     }
 
-    // $compagnie = Compagnies::with([
-    //     'gares.itineraires.voyages.chauffeur',
-    //     'gares.itineraires.voyages.bus',
-    // ])->find($voyage->compagnie_id);
+$bus = Bus::with('configurationPlace')->find($voyage->bus_id);
+    // Vérifier si la place demandée existe dans le bus
+    if ($request->numero_place > $bus->nombre_places) {
+        return response()->json([
+            'message' => "Le bus ne contient que {$bus->nombre_places} places",
+        ], 400);
+    }
 
-    $reservation = new reservation();
+    // Vérifier si la place est déjà réservée pour ce voyage
+    $placeDejaPrise = Reservation::where('voyages_id', $voyage->id)
+        ->where('numero_place', $request->numero_place)
+        ->exists();
+
+    if ($placeDejaPrise) {
+        return response()->json([
+            'message' => "La place numéro {$request->numero_place} est déjà réservée.",
+        ], 409);
+    }
+
+    // Enregistrer la réservation
+    $reservation = new Reservation();
     $reservation->voyages_id = $voyage->id;
     $reservation->utilisateurs_id = $utilisateur->id;
-    $reservation->numero_place = $request->input('numero_place');
+    $reservation->numero_place = $request->numero_place;
     $reservation->save();
+
     return response()->json([
-        'message' => 'Reservation effectuer',
+        'message' => 'Réservation effectuée avec succès',
         'voyage' => $voyage,
+        'bus' => $bus,
         'utilisateur' => $utilisateur,
-        // 'compagnie'=>$compagnie
+        'reservation' => $reservation,
+    ], 201);
+}
+
+
+public function placesRestantes(Request $request)
+{
+    $request->validate([
+        'voyage_id' => 'required',
     ]);
+    
+    // Récupérer le voyage
+    $voyage = Voyage::find($request->voyage_id);
+    if (!$voyage) {
+        return response()->json([
+            'message' => 'Voyage non trouvé',
+        ], 404);
+    }
 
-    // return response()->json([
-    //     'message' => 'Reservation effectuer',
-    //     'reservation' => $reservation,
-    // ], 200);
+    // Récupérer le bus associé
+    $bus = Bus::find($voyage->bus_id);
+    if (!$bus) {
+        return response()->json([
+            'message' => 'Bus non trouvé',
+        ], 404);
+    }
 
+    // Nombre total de places dans le bus
+    $totalPlaces = (int) $bus->nombre_places;
+
+    // Liste des places déjà réservées pour ce voyage
+    $placesReservees = Reservation::where('voyages_id', $voyage->id)
+        ->pluck('numero_place')
+        ->toArray();
+
+    // Calcul des places restantes
+    $placesRestantes = array_diff(range(1, $totalPlaces), $placesReservees);
+
+    return response()->json([
+        'voyage_id' => $voyage->id,
+        'bus_id' => $bus->id,
+        'total_places' => $totalPlaces,
+        'places_reservees' => $placesReservees,       // liste des places déjà prises
+        'places_restantes' => array_values($placesRestantes), // liste des places libres
+    ]);
 }
 
 

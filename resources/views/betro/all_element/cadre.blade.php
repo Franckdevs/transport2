@@ -11,7 +11,7 @@
 
 @switch($routeName)
     @case('dashboard')
-        <span>DASHBOARD</span>
+        <span>TABLEAU DE BORD</span>
         @break
 
     @case('compagnies')
@@ -21,6 +21,10 @@
     @case('compagnies/create')
         <span>Ajouter une compagnie</span>
         @break
+
+    @case('paiement.index')
+    <span>LISTE PAIEMENT</span>
+    @break
 
     @default
         <span></span> {{-- ou tu peux mettre "Titre inconnu" --}}

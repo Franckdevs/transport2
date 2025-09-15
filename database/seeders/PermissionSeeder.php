@@ -28,6 +28,5 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'ajouter-une-gars']);
 
         Permission::firstOrCreate(['name' => 'tout-les-permissions']);
-
     }
 }

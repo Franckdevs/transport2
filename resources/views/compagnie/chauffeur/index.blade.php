@@ -26,17 +26,17 @@
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
                 <div class="row g-3 row-deck">
+                    <!-- 🔹 Titre + bouton -->
+                    <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                        <h5 class="mb-0">Liste des chauffeurs</h5>
+                        <a href="{{ route('chauffeur.create') }}" class="btn btn-success">
+                            <i class="fa fa-plus"></i> Ajouter un chauffeur
+                        </a>
+                    </div>
                     <div class="col-md-12 mt-4">
                         <div class="card">
                             <div class="card-body">
 
-                                <!-- 🔹 Titre + bouton -->
-                                <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                                    <h5 class="mb-0">Liste des chauffeurs</h5>
-                                    <a href="{{ route('chauffeur.create') }}" class="btn btn-success">
-                                        <i class="fa fa-plus"></i> Ajouter un chauffeur
-                                    </a>
-                                </div>
 
                                 <!-- 🔹 Barre de recherche -->
 
@@ -60,7 +60,7 @@
                                         <tr>
                                             <td>
                                                 @if($chauffeur->photo)
-                                                <img src="{{ Storage::url($chauffeur->photo) }}" alt="Photo"
+                                                <img src="{{ ($chauffeur->photo) }}" alt="Photo"
                                                     width="50" height="50" style="object-fit: cover; border-radius: 50%;">
                                                 @else
                                                 Aucune photo
@@ -75,9 +75,13 @@
                                                 {{ $chauffeur->date_naissance ? Carbon::parse($chauffeur->date_naissance)->format('d/m/Y') : 'Non renseignée' }}
                                             </td>
                                             <td>
-                                                <a href="" class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-bus"></i> Bus
-                                                </a>
+
+                                               <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+
+
+
                                                 <a href="" class="btn btn-info btn-sm">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
@@ -89,6 +93,7 @@
                                                     </button>
                                                 </form>
                                             </td>
+                                            
                                         </tr>
                                         @endforeach
                                     </tbody>

@@ -80,14 +80,27 @@
 
         <div class="col-md-3 mb-3">
             <label for="configuration_car" class="form-label">Configuration</label>
-            <select name="configuration_car" id="configuration_car" class="form-select">
+            {{-- <select name="configuration_car" id="configuration_car" class="form-select">
                 <option value="">-- Choisir --</option>
                 <option value="1" {{ old('configuration_car') == '2-1' ? 'selected' : '' }}>2-1 (2 sièges gauche, 1 siège droite)</option>
                 <option value="2" {{ old('configuration_car') == '2-2' ? 'selected' : '' }}>2-2 (2 sièges gauche, 2 sièges droite)</option>
                 <option value="3" {{ old('configuration_car') == '3-2' ? 'selected' : '' }}>3-2 (3 sièges gauche, 2 sièges droite)</option>
                 <option value="4" {{ old('configuration_car') == '1-1' ? 'selected' : '' }}>1-1 (1 siège gauche, 1 siège droite)</option>
-            </select>
+            </select> --}}
+
+<select name="configuration_place_id" id="configuration_place_id" class="form-select">
+    @foreach(App\Models\ConfigurationPlaceBus::all() as $config)
+        <option value="{{ $config->id }}" {{ old('configuration_place_id') == $config->id ? 'selected' : '' }}>
+            {{ $config->disposition }} ({{ $config->nom_complet }})
+        </option>
+    @endforeach
+</select>
+
+
+
         </div>
+
+        
     </div>
 
     <button type="submit" class="btn btn-primary">Enregistrer le bus</button>

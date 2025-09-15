@@ -21,11 +21,31 @@ class CompagniesController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index()
+// public function index()
+// {
+// $compagnies = Compagnies::
+// // ('status', 1)
+//     orderBy('id', 'desc')
+//     ->get();
+//     return view('betro.compagnie.index', compact('compagnies'));
+// }
+public function index(Request $request)
 {
-    $compagnies = Compagnies::orderBy('id', 'desc')->where('status', 1)->get();
+    $query = Compagnies::orderBy('id', 'desc');
+
+    // Filtrage par date si fourni
+    if ($request->filled('start_date')) {
+        $query->whereDate('created_at', '>=', $request->start_date);
+    }
+    if ($request->filled('end_date')) {
+        $query->whereDate('created_at', '<=', $request->end_date);
+    }
+
+    $compagnies = $query->get();
+
     return view('betro.compagnie.index', compact('compagnies'));
 }
+
 
     /**
      * Show the form for creating a new resource.
@@ -161,7 +181,8 @@ public function index()
         //
         $users = InfoUser::where('id', $compagnies->info_user_id)->first();
         // dd($users);
-        return view('betro.compagnie.edit', compact('compagnies' , 'users'));
+            $villes = Ville::all();
+        return view('betro.compagnie.edit', compact('compagnies' , 'users' ,'villes'));
     }
 
     /**
@@ -184,13 +205,14 @@ public function index()
             'prenom' => 'required',
             'telephone' => 'required',
             'email' => $emailRules,
-            'password' => 'required|confirmed',
+            // 'password' => 'required|confirmed',
             'nom_complet_compagnies' => 'required',
             'email_compagnies' => 'required',
             'telephone_compagnies' => 'required',
             'adresse_compagnies' => 'required',
             'description_compagnies' => 'nullable|string',
             'logo_compagnies' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'villes_id' => 'required|exists:villes,id',
         ], [
             'required' => 'Ce champ est obligatoire.',
             'confirmed' => 'Les mots de passe ne correspondent pas.',
@@ -204,14 +226,14 @@ public function index()
             $users->prenom = $validated['prenom'];
             $users->telephone = $validated['telephone'];
             $users->email = $validated['email'];
-            $users->password = Hash::make($validated['password']);
+            // $users->password = Hash::make($validated['password']);
             $users->update();
 
             $info_users->nom = $validated['nom'];
             $info_users->prenom = $validated['prenom'];
             $info_users->telephone = $validated['telephone'];
             $info_users->email = $validated['email'];
-            $info_users->password = Hash::make($validated['password']);
+            // $info_users->password = Hash::make($validated['password']);
             $info_users->update();
 
             $compagnies->nom_complet_compagnies = $validated['nom_complet_compagnies'];
@@ -219,32 +241,33 @@ public function index()
             $compagnies->telephone_compagnies = $validated['telephone_compagnies'];
             $compagnies->adresse_compagnies = $validated['adresse_compagnies'];
             $compagnies->description_compagnies = $validated['description_compagnies'];
+            $compagnies->villes_id = $validated['villes_id'];
 
                   $logoPath = null;
 
-if ($request->hasFile('logo_compagnies')) {
-    $folder = public_path('logo_compagnie'); // dossier à la racine du dossier public
+        if ($request->hasFile('logo_compagnies')) {
+            $folder = public_path('logo_compagnie'); // dossier à la racine du dossier public
 
-    // Crée le dossier s'il n'existe pas
-    if (!file_exists($folder)) {
-        mkdir($folder, 0755, true);
-    }
+            // Crée le dossier s'il n'existe pas
+            if (!file_exists($folder)) {
+                mkdir($folder, 0755, true);
+            }
 
-    // Récupère le fichier
-    $file = $request->file('logo_compagnies');
+            // Récupère le fichier
+            $file = $request->file('logo_compagnies');
 
-    // Génère un nom unique pour éviter les conflits
-    $filename = time() . '_' . $file->getClientOriginalName();
+            // Génère un nom unique pour éviter les conflits
+            $filename = time() . '_' . $file->getClientOriginalName();
 
-    // Déplace le fichier dans le dossier
-    $file->move($folder, $filename);
+            // Déplace le fichier dans le dossier
+            $file->move($folder, $filename);
 
-    // Chemin relatif pour sauvegarder en base ou afficher
-    $logoPath =$filename;
-}
+            // Chemin relatif pour sauvegarder en base ou afficher
+            $logoPath =$filename;
+        }
 
-   $compagnies->logo_compagnies = $logoPath;
-  $compagnies->update();
+        $compagnies->logo_compagnies = $logoPath;
+        $compagnies->update();
 
         return redirect()->route('compagnies')->with('success', 'Compagnie modifiée avec succès.');
     }
@@ -252,9 +275,22 @@ if ($request->hasFile('logo_compagnies')) {
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Compagnies $compagnies)
+    public function destroy(Compagnies $compagnies , $id)
     {
         //
+        // dd($compagnies , $id);
+        $recupere_compagnie = Compagnies::find($id);
+        $recupere_compagnie->status = 3;
+        $recupere_compagnie->save();
+    return redirect()->route('compagnies')->with('success', 'Désactivation réussie.');
+    }
+
+        public function reactiver_supprimer(Compagnies $compagnies , $id)
+    {
+        $recupere_compagnie = Compagnies::find($id);
+        $recupere_compagnie->status = 1;
+        $recupere_compagnie->save();
+    return redirect()->route('compagnies')->with('success', 'Réactivation réussie.');
     }
 
     public function creerAcces($encryptedId)

@@ -23,7 +23,7 @@
     <i class="fas fa-building-user me-2"></i> Ajouter une compagnie et administrateur
 </h6>
          </div> --}}
-                        <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center">
     <h6 class="card-title mb-0">
         <i class="fas fa-building-user me-2"></i> Ajouter une compagnie et administrateur
     </h6>

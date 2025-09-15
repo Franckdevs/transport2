@@ -61,8 +61,8 @@
                     <div class="card-body border-bottom d-flex">
                       <img class="avatar rounded-circle" src="../assets/img/profile_av.png" alt="">
                       <div class="flex-fill ms-3">
-                        <h6 class="card-title mb-0">Allie Grater</h6>
-                        <span class="text-muted">alliegrater@luno.com</span>
+                        <h6 class="card-title mb-0">{{Auth::user()->nom}} {{Auth::user()->prenom}}</h6>
+                        <span class="text-muted">{{Auth::user()->email}}</span>
                       </div>
                     </div>
                     <div class="list-group m-2 mb-3">

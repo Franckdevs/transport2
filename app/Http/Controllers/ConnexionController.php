@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateConnexionRequest;
 use App\Models\Bus;
 use App\Models\gare;
 use App\Models\Itineraire;
+use App\Models\Reservation;
 use App\Models\Utilisateur;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
@@ -129,7 +130,11 @@ public function login(Request $request)
     public function dashboardbetro()
     {
         $nombres_compagnie = Compagnies::count();
-        return view('betro.index' , compact('nombres_compagnie'));
+        $nombre_de_gare = gare::count();
+        $itineraie_de_gare = Itineraire::count();
+        $voyages_de_gare = Voyage::count();
+        $reservation_de_gare = Reservation::count();
+        return view('betro.index' , compact('nombres_compagnie','nombre_de_gare','itineraie_de_gare','voyages_de_gare','reservation_de_gare'));
     }
 
     public function dashboardcompagnie()

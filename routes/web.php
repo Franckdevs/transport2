@@ -13,8 +13,9 @@ use App\Http\Controllers\ConnexionController;
 use App\Http\Controllers\CompagniesController;
 use App\Http\Controllers\AdminGareSetupController;
 use App\Http\Controllers\ItineraireController;
+use App\Http\Controllers\PaiementTransactionController;
 use App\Http\Controllers\ReservationController;
-
+use App\Http\Controllers\ReservationTicketController;
 
 // Route::get('/', [ConnexionController::class, 'premierePage'])->name('login');
 Route::get('/login', [ConnexionController::class, 'logins'])->name('login');
@@ -65,8 +66,18 @@ Route::controller(CompagniesController::class)->group(function () {
     Route::get('/compagnies-show/{compagnies}', 'show')->name('compagnies.show');
     Route::get('/compagnies-edit/{compagnies}', 'edit')->name('compagnies.edit');
     Route::post('compagnies-update/{compagnies}', 'update')->name('compagnies.update');
+Route::post('/destroy/{id}', 'destroy')->name('compagnies.destroy');
+Route::post('reactiver_supprimer/{id}', 'reactiver_supprimer')->name('compagnies.reactivate');
     // Route::get('/creer-acces/{id}', 'creerAcces')->name('creer.acces');
     // Route::put('/update-password/{id}', 'updatePassword')->name('acces.update.password');
+});
+
+Route::controller(PaiementTransactionController::class)->group(function () {
+    Route::get('/paiement','index')->name('paiement.index');
+});
+
+Route::controller(ReservationTicketController::class)->group(function () {
+    Route::get('/ticket-reservation','index')->name('ticket_reservation.index');
 });
 
 // Route::controller(GareController::class)->group(function () {
@@ -104,6 +115,7 @@ Route::post('/bus-update/{bus}', 'update')->name('bus.update');
     Route::get('/bus', 'index')->name('compagnie.bus');
     Route::get('/bus-create', 'create')->name('bus.create');
     Route::post('/bus/store', 'store')->name('bus.store');
+    Route::post('destroy_reactivation/{id}','destroy_reactivation')->name('activation.bus');
 });
 
 Route::post('/bus/destroy/{bus}', [BusController::class, 'destroy'])->name('bus.destroy');
@@ -118,6 +130,7 @@ Route::controller(ChauffeurController::class)->group(function () {
     Route::get('/chauffeur', 'index')->name('chauffeur.index');
     Route::get('/chauffeur/create', 'create')->name('chauffeur.create');
     Route::post('/chauffeur/store', 'store')->name('chauffeur.store');
+    Route::get('edit-modifier/{id}', 'edit')->name('modifier.edit');
 });
 
 Route::controller(Voyage2Controller::class)->group(function () {

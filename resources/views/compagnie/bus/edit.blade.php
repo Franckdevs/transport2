@@ -23,8 +23,27 @@
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
 
+                    {{-- <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="mb-0">Modifier le bus</h5>
+        <a href=" " class="btn btn-success">
+            <i class="fa fa-arrow-left"></i> Retour
+        </a>
+    </div> --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0">Modifier le bus</h5>
+    <a href="{{ route('liste.bus') }}" class="btn btn-light" title="Retour">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+</div>
+
+
                 <div class="col-md-12 mt-4">
                     <div class="card">
+
+                        <div class="card-body">
+
+
+
                         <div class="card-body">
                             <h5 class="mb-4">Modifier le bus</h5>
 
@@ -80,7 +99,41 @@
                                         <input type="text" name="localisation_bus" id="localisation_bus"
                                             class="form-control" value="{{ old('localisation_bus' , $bus->localisation_bus) }}">
                                     </div>
+
+
+                                    
+           <div class="col-md-6 mb-3">
+            <label for="configuration_car" class="form-label">Configuration</label>
+            {{-- <select name="configuration_car" id="configuration_car" class="form-select">
+                <option value="">-- Choisir --</option>
+                <option value="1" {{ old('configuration_car') == '2-1' ? 'selected' : '' }}>2-1 (2 sièges gauche, 1 siège droite)</option>
+                <option value="2" {{ old('configuration_car') == '2-2' ? 'selected' : '' }}>2-2 (2 sièges gauche, 2 sièges droite)</option>
+                <option value="3" {{ old('configuration_car') == '3-2' ? 'selected' : '' }}>3-2 (3 sièges gauche, 2 sièges droite)</option>
+                <option value="4" {{ old('configuration_car') == '1-1' ? 'selected' : '' }}>1-1 (1 siège gauche, 1 siège droite)</option>
+            </select> --}}
+
+{{-- <select name="configuration_place_id" id="configuration_place_id" class="form-select">
+    @foreach(App\Models\ConfigurationPlaceBus::all() as $config)
+        <option value="{{ $config->id }}" {{ old('configuration_place_id') == $config->id ? 'selected' : '' }}>
+            {{ $config->disposition }} ({{ $config->nom_complet }})
+        </option>
+    @endforeach
+</select> --}}
+
+<select name="configuration_place_id" id="configuration_place_id" class="form-select">
+    @foreach(App\Models\ConfigurationPlaceBus::all() as $config)
+        <option value="{{ $config->id }}" 
+            {{ old('configuration_place_id', $bus->configuration_place_id) == $config->id ? 'selected' : '' }}>
+            {{ $config->disposition }} ({{ $config->nom_complet }})
+        </option>
+    @endforeach
+</select>
+</div>
+
                                 </div>
+ 
+
+
 
                                 <button type="submit" class="btn btn-primary">Enregistrer le bus</button>
                             </form>

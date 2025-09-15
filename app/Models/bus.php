@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bus extends Model
 {
+    protected $table = "buses";
     protected $fillable = [
         'info_user_id',
         'nom_bus',
@@ -17,6 +18,7 @@ class Bus extends Model
         'localisation_bus',
         'nombre_places',
         'configuration_car',
+        'configuration_place_buses_id',
         'status',
     ];
 
@@ -31,4 +33,13 @@ class Bus extends Model
     {
         return $this->hasMany(Voyage::class);
     }
+
+    public function configurationPlace()
+    {
+        return $this->belongsTo(ConfigurationPlaceBus::class, 'configuration_place_buses_id');
+    }
+
+
+
+
 }

@@ -20,6 +20,26 @@ use App\Helpers\GlobalHelper;
       <div class="container-fluid">
         <div class="row g-3 row-deck">
 
+           <!-- Filtre par date -->
+          <form id="filterForm" class="row g-3 mb-3" method="GET" action="{{ route('compagnies') }}">
+    <div class="col-md-3">
+        <label for="start_date" class="form-label">Date début</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}">
+    </div>
+    <div class="col-md-3">
+        <label for="end_date" class="form-label">Date fin</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date') }}">
+    </div>
+    <div class="col-md-3 align-self-end">
+        <button type="submit" class="btn btn-primary mt-2">
+            <i class="fa fa-filter"></i> Filtrer
+        </button>
+        <a href="{{ route('compagnies') }}" class="btn btn-secondary mt-2">
+            <i class="fa fa-refresh"></i> Réinitialiser
+        </a>
+    </div>
+</form>
+
 
              <div class="col-md-12 mt-4">
             <div class="card">
@@ -59,9 +79,71 @@ use App\Helpers\GlobalHelper;
                         <a href="{{ route('compagnies.show', $compagnie->id) }}" class="btn btn-info">
                           <i class="fa fa-eye"></i>
                         </a>
-                        <a href="" class="btn btn-danger">
-                          <i class="fa fa-trash"></i>
-                        </a>
+                      {{-- <form action="{{ route('compagnies.destroy', $compagnie->id) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette compagnie ?')">
+        <i class="fa fa-trash"></i>
+    </button>
+</form> --}}
+<!-- Bouton de suppression -->
+@if($compagnie->status == 1)
+    <!-- Bouton Supprimer -->
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal{{ $compagnie->id }}">
+<i class="fa fa-ban"></i>    </button>
+@else
+    <!-- Bouton Réactiver -->
+    <form action="{{ route('compagnies.reactivate', $compagnie->id) }}" method="POST" style="display:inline;">
+        @csrf
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-refresh"></i>
+        </button>
+    </form>
+@endif
+@if($compagnie->status == 1)
+<div class="modal fade" id="confirmDeleteModal{{ $compagnie->id }}" tabindex="-1" aria-labelledby="confirmDeleteLabel{{ $compagnie->id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg"> <!-- Ajout de modal-lg -->
+    <div class="modal-content">
+      
+      <!-- Header -->
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteLabel{{ $compagnie->id }}">
+          Confirmation de blocage
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+      
+      <!-- Body -->
+      <div class="modal-body">
+        <p>
+          Attention ! En bloquant <strong>{{ $compagnie->nom_complet_compagnies }}</strong> :
+        </p>
+        <ul>
+          <li>Toutes les gares associées seront désactivées.</li>
+          <li>Tous les utilisateurs possédant des droits seront déconnectés.</li>
+          <li>Ils ne pourront plus se connecter tant que la compagnie est bloquée.</li>
+        </ul>
+        <p>Voulez-vous continuer ?</p>
+      </div>
+      
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        
+        <form action="{{ route('compagnies.destroy', $compagnie->id) }}" method="POST" style="display:inline;">
+            @csrf
+            {{-- @method('DELETE') --}}
+            <button type="submit" class="btn btn-danger">
+                <i class="fa fa-ban"></i> Bloquer
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@endif
+
                       </td>
 
 

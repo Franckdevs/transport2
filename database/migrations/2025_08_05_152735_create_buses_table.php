@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('info_user_id')->nullable()->constrained('info_users', 'id');
             $table->foreignId('compagnies_id')->nullable()->constrained('compagnies', 'id');
+            $table->foreignId('configuration_place_buses_id')->nullable()->constrained('configuration_place_buses');
             $table->string('nom_bus');
             $table->string('marque_bus');
             $table->string('modele_bus');

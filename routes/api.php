@@ -18,3 +18,5 @@ Route::get('/listeCompagnie', [UtilisateurController::class, 'listeCompagnie']);
 Route::get('/listevoayge/{id}', [UtilisateurController::class, 'listevoayge']);
 
 Route::post('/reservation', [UtilisateurController::class, 'reservation']);
+
+Route::post('/places-restantes', [UtilisateurController::class, 'placesRestantes']);

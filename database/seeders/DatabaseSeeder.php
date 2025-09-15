@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ConfigurationPlaceBus;
 use App\Models\User;
 use App\Models\Ville;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
             JourSeeder::class,
             VilleSeeder::class,
             SuperAdminBetroSeeder::class,
+            ConfigurationPlaceBus::class,
         ]);
 
         // User::factory(10)->create();

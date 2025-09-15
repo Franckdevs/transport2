@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('chauffeurs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('info_user_id')->constrained('info_users', 'id');
-            $table->string('nom');
-            $table->string('prenom');
-            $table->string('telephone');
-            $table->string('adresse');
-            $table->string('numeros_permis');
-            $table->string('date_naissance');
-            $table->string(column: 'status');
-            $table->string('photo');
+            $table->string('nom')->nullable();
+            $table->string('prenom')->nullable();
+            $table->string('telephone')->nullable();
+            $table->string('adresse')->nullable();
+            $table->string('numeros_permis')->nullable();
+            $table->string('date_naissance')->nullable();
+            $table->string( 'status')->nullable();
+            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }
