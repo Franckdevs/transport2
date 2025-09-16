@@ -19,6 +19,7 @@ class Utilisateur extends Model
         return $this->hasMany(Otp::class, 'utilisateur_id');
     }
 
+    
 
 
 

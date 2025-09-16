@@ -126,6 +126,7 @@ Route::controller(PersonelController::class)->group(function () {
     Route::get('/personnel/create', 'create')->name('personnel.create');
     Route::post('/personnel/store', 'store')->name('personnel.store');
 });
+        
 Route::controller(ChauffeurController::class)->group(function () {
     Route::get('/chauffeur', 'index')->name('chauffeur.index');
     Route::get('/chauffeur/create', 'create')->name('chauffeur.create');
@@ -136,8 +137,6 @@ Route::controller(ChauffeurController::class)->group(function () {
 
     Route::post('destroy/{id}', 'destroy')->name('activer.destroy');
     Route::post('destroy_reactivation/{id}', 'destroy_reactivation')->name('activer.destroy_reactivation');
-
-
 });
 
 Route::controller(Voyage2Controller::class)->group(function () {

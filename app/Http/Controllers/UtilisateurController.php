@@ -160,19 +160,19 @@ class UtilisateurController extends Controller
     // ✅ Récupération de l'utilisateur via token
     $utilisateur = UtilisateurEnAttente::where('token', $request->token)->first();
    
-if (!$utilisateur) {
-    $verifier_utilisateur = Utilisateur::where('token', $request->token)->first();
-    
-    if ($verifier_utilisateur) {
-        return response()->json([
-            'message' => 'Cet utilisateur est déjà validé.',
-        ], 200);
-    }
+    if (!$utilisateur) {
+        $verifier_utilisateur = Utilisateur::where('token', $request->token)->first();
+        
+        if ($verifier_utilisateur) {
+            return response()->json([
+                'message' => 'Cet utilisateur est déjà validé.',
+            ], 200);
+        }
 
-    return response()->json([
-        'message' => 'Token invalide',
-    ], 404);
-}
+        return response()->json([
+            'message' => 'Token invalide',
+        ], 404);
+    }
   
        
 //    return response()->json(['message' => 'Utilisateur trouvé', 'utilisateur' => $utilisateur], 200);
@@ -246,32 +246,33 @@ if (!$utilisateur) {
 //     ], 200);
 // }
 public function listeCompagnie(Request $request)
-{
-    $listeCompagnie = Compagnies::all();
+    {
+        $listeCompagnie = Compagnies::all();
 
-    if ($listeCompagnie->isEmpty()) {
+        if ($listeCompagnie->isEmpty()) {
+            return response()->json([
+                'message' => 'Aucune compagnie trouvée',
+                'listecompagnie' => []
+            ], 200);
+        }
+
+        $listeCompagnie = $listeCompagnie->map(function ($compagnie) {
+            if ($compagnie->logo_compagnies) {
+                // Tes fichiers sont dans /public/logo_compagnie/
+                $compagnie->logo_url  = asset('logo_compagnie/' . $compagnie->logo_compagnies);
+                $compagnie->logo_path = 'logo_compagnie/' . $compagnie->logo_compagnies;
+            } else {
+                $compagnie->logo_url  = asset('assets/img/default-user.png');
+                $compagnie->logo_path = null;
+            }
+            return $compagnie;
+        });
+
         return response()->json([
-            'message' => 'Aucune compagnie trouvée',
-            'listecompagnie' => []
+            'message' => 'Liste des Compagnies',
+            'listecompagnie' => $listeCompagnie
         ], 200);
     }
-
-    $listeCompagnie = $listeCompagnie->map(function ($compagnie) {
-        if ($compagnie->logo_compagnies) {
-            $compagnie->logo_url  = url($compagnie->logo_compagnies);  // URL complète pour frontend
-            $compagnie->logo_path = 'logo_compagnie/' . $compagnie->logo_compagnies; // chemin relatif avec dossier
-        } else {
-            $compagnie->logo_url  = url('assets/img/default-user.png'); 
-            $compagnie->logo_path = null;
-        }
-        return $compagnie;
-    });
-
-    return response()->json([
-        'message' => 'Liste des Compagnies',
-        'listecompagnie' => $listeCompagnie
-    ], 200);
-}
 
 
 public function listevoayge(Request $request , $id)

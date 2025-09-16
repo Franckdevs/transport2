@@ -33,8 +33,6 @@ use App\Helpers\GlobalHelper;
           </a>
         </div>
 
-
-
         <div class="card">
           <div class="card-body">
             <table id="myTable" class="table display nowrap table-hover" style="width:100%">
