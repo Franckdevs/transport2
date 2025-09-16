@@ -427,6 +427,41 @@ $bus = Bus::with('configurationPlace')->find($voyage->bus_id);
     ], 201);
 }
 
+public function recu_reservation(Request $request, $token)
+{
+    // Récupérer l'utilisateur via son token
+    $utilisateur = Utilisateur::where('token', $token)->first();
+
+    if (!$utilisateur) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Utilisateur non trouvé',
+        ], 404);
+    }
+
+    // Récupérer toutes les réservations liées à cet utilisateur avec la relation voyage
+    // $reservations = Reservation::with('voyage')
+    //     ->where('utilisateurs_id', $utilisateur->id)
+    //     ->get();
+    $reservations = Reservation::with([
+    'voyage.itineraire',
+    'voyage.info_user',
+    'voyage.bus',
+    'voyage.chauffeur',
+    'voyage.compagnie',
+    'voyage.gare',
+])
+->where('utilisateurs_id', $utilisateur->id)
+->get();
+
+    return response()->json([
+        'status' => true,
+        'reservations' => $reservations,
+        'utilisateur' => $utilisateur,
+    ], 200);
+}
+
+
 
 public function placesRestantes(Request $request)
 {

@@ -65,6 +65,7 @@ public function store(Request $request)
 
     $infoUserId = $user->info_user->id ?? null;
     $compagnieID  = $user->info_user->gare->compagnie->id;
+    $garesID = $user->info_user->gare->id;
     // dd($compagnieID);
     // Création du voyage
     $voyage = Voyage::create([
@@ -76,6 +77,7 @@ public function store(Request $request)
         'bus_id' => $validatedData['bus_id'],
         'chauffeur_id' => $validatedData['chauffeur_id'],
         'compagnie_id' => $compagnieID,
+        'gare_id'=>$garesID ?? null,
     ]);
 
     // // Vérifier si 'arrets' existe et est un tableau avant de boucler dessus
