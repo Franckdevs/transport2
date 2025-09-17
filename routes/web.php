@@ -14,6 +14,7 @@ use App\Http\Controllers\CompagniesController;
 use App\Http\Controllers\AdminGareSetupController;
 use App\Http\Controllers\ItineraireController;
 use App\Http\Controllers\PaiementTransactionController;
+use App\Http\Controllers\ParamettreController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationTicketController;
 
@@ -193,5 +194,16 @@ Route::controller(VoyageController::class)->group(function () {
 
 Route::controller(ReservationController::class)->group(function () {
     Route::get('/liste_reservation', 'liste_reservation')->name('liste_reservation');
+    Route::get('detail_reservatiion-detail/{id}', 'voir_detail_reservation')->name('voir_detail_reservation.show');
+});
+
+// Route::controller(ParamettreController::class)->group(function () {
+//     Route::get('/parametre', 'index')->name('parametre.index');
+// });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/paramettre', [ParamettreController::class, 'index'])->name('paramettre.index');
+    Route::put('/paramettre/update-infos', [ParamettreController::class, 'updateInfos'])->name('paramettre.updateInfos');
+    Route::put('/paramettre/update-password', [ParamettreController::class, 'updatePassword'])->name('paramettre.updatePassword');
 });
 

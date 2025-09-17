@@ -93,9 +93,9 @@
                             </span>
                         </td>
                         <td>
-                            <div class="d-flex gap-1">
-                                {{-- Actions possibles --}}
-                            </div>
+                            <a href="{{ route('voir_detail_reservation.show' , $reservation->id ) }}" class="btn btn-info btn-sm">
+                            <i class="fa fa-eye"></i>
+                            </a>
                         </td>
                     </tr>
                 @endforeach
