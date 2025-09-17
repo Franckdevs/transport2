@@ -15,6 +15,7 @@ class Voyage extends Model
         'date_depart',
         'compagnie_id',
         'gare_id',
+        'status'
     ];
 
     // Relation : un voyage appartient à un itinéraire

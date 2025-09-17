@@ -16,6 +16,16 @@
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                </h5>
+                <a href="{{ route('itineraire.index') }}" class="btn btn-light" title="Retour">
+                    <i class="fa fa-arrow-left"></i> Retour
+                </a>
+            </div>
+
+
                 <div class="row">
                     <div class="col-12 animate-fadeInUp">
 
@@ -27,7 +37,7 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Ville de départ</label>
-                                <p class="fs-5 mb-0">{{ $voyage->vdepart ?? 'Non défini' }}</p>
+                                <p class="fs-5 mb-0">{{ $voyage->ville->nom_ville ?? 'Non défini' }}</p>
                             </div>
 
                             <div class="col-md-6">
@@ -60,23 +70,35 @@
 
                         <h5 class="fw-semibold mb-3 text-secondary">Arrêts du voyage</h5>
 
-                        @if ($voyage->arrets && $voyage->arrets->count() > 0)
-                            <ul class="list-group list-group-flush">
-                                @foreach ($voyage->arrets as $arret)
-                                    <li
-                                        class="list-group-item d-flex align-items-center border-0 px-0 py-2 animate-slideInLeft">
-                                        <i class="fas fa-map-marker-alt text-primary fs-5 me-3"></i>
-                                        <span class="fs-6 text-dark">{{ $arret->nom ?? 'Nom non défini' }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted fst-italic">Aucun arrêt défini pour ce voyage.</p>
-                        @endif
+                    @if ($voyage->arrets && $voyage->arrets->count() > 0)
+    <ul class="list-group list-group-flush">
+        @foreach ($voyage->arrets as $index => $arret)
+            @php
+                $total = $voyage->arrets->count();
+                if ($index == 0) {
+                    $label = 'Ville de départ';
+                } elseif ($index == $total - 1) {
+                    $label = 'Ville d\'arrivée';
+                } else {
+                    $label = 'Arrêt';
+                }
+            @endphp
+            <li class="list-group-item d-flex align-items-center border-0 px-0 py-2 animate-slideInLeft">
+                <i class="fas fa-map-marker-alt text-primary fs-5 me-3"></i>
+                <span class="fs-6 text-dark">
+                    <strong>{{ $label }} :</strong> {{ $arret->nom ?? 'Nom non défini' }}
+                </span>
+            </li>
+        @endforeach
+    </ul>
+@else
+    <p class="text-muted fst-italic">Aucun arrêt défini pour ce voyage.</p>
+@endif
 
-                        <a href="{{ route('itineraire.index') }}" class="btn btn-primary mt-4 shadow-sm btn-hover-scale">
+
+                        {{-- <a href="{{ route('itineraire.index') }}" class="btn btn-primary mt-4 shadow-sm btn-hover-scale">
                             <i class="fas fa-arrow-left me-2"></i> Retour à la liste
-                        </a>
+                        </a> --}}
 
                     </div>
                 </div>

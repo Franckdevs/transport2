@@ -31,7 +31,7 @@
             <div class="container-fluid">
 
                 <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-                    <h5 class="mb-0">Liste des gares</h5>
+                    <h5 class="mb-0">Liste des itinéraires</h5>
                     <a href="{{ route('itineraire.create') }}" class="btn btn-success">
                         <i class="fa fa-plus"></i> Ajouter un itineraire
                     </a>
@@ -66,21 +66,79 @@
                                             {{ $voyage->statut == 1 ? 'Actif' : 'Inactif' }}
                                         </span>
                                     </td>
-                                    <td>
-                                        <a href="{{ route('itineraire.show', $voyage->id) }}" class="btn btn-info btn-sm">
-                                            <i class="fa fa-eye"></i> Voir
-                                        </a>
-                                        <a href="" class="btn btn-primary btn-sm">
-                                            <i class="fa fa-edit"></i> Modifier
-                                        </a>
-                                        <form action="" method="POST" style="display:inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm"
-                                                onclick="return confirm('Supprimer ce voyage ?')">
-                                                <i class="fa fa-trash"></i> Supprimer
-                                            </button>
-                                        </form>
+                                    
+                                 <td>
+    <a href="{{ route('itineraire.show', $voyage->id) }}" class="btn btn-info btn-sm">
+        <i class="fa fa-eye"></i>
+    </a>
+    <a href="
+    {{ route('itineraire.edit', $voyage->id) }}
+     " class="btn btn-primary btn-sm">
+        <i class="fa fa-edit"></i>
+    </a>
+
+    @if($voyage->status == 1)
+        <!-- Bouton Désactiver -->
+        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalDesactiver{{ $voyage->id }}">
+            <i class="fa fa-trash"></i>
+        </button>
+
+        <!-- Modal Désactiver -->
+        <div class="modal fade" id="modalDesactiver{{ $voyage->id }}" tabindex="-1" aria-labelledby="modalDesactiverLabel{{ $voyage->id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalDesactiverLabel{{ $voyage->id }}">Confirmer la désactivation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+              </div>
+              <div class="modal-body">
+                Voulez-vous vraiment désactiver ce voyage ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form action="{{ route('itineraire.destroy', $voyage->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Désactiver</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    @elseif($voyage->status == 3)
+        <!-- Bouton Réactiver -->
+        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalReactiver{{ $voyage->id }}">
+            <i class="fa fa-undo"></i>
+        </button>
+
+        <!-- Modal Réactiver -->
+        <div class="modal fade" id="modalReactiver{{ $voyage->id }}" tabindex="-1" aria-labelledby="modalReactiverLabel{{ $voyage->id }}" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalReactiverLabel{{ $voyage->id }}">Confirmer la réactivation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+              </div>
+              <div class="modal-body">
+                Voulez-vous réactiver ce voyage ?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form action="{{ route('itineraire.reactivation', $voyage->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" class="btn btn-success">Réactiver</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+    @endif
+</td>
+
+
+
                                     </td>
                                 </tr>
                                 @endforeach

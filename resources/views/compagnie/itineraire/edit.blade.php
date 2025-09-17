@@ -41,8 +41,9 @@
 
 
                         <!-- Formulaire de création -->
-                        <form action="{{ route('itineraire.store') }}" method="POST">
-                            @csrf
+                        <form action="{{ route('itineraire.update' , $itineraire->id ) }}" method="POST">
+                              @csrf
+                              @method('PUT')
 
                             <div class="row">
                                 @if ($villeId)
@@ -68,7 +69,7 @@
                                 <select name="gare_id" id="gare_id" class="form-control">
                                     <option value="">-- Sélectionnez une gare --</option>
                                     @foreach($gars as $gare)
-                                        <option value="{{ $gare->id }}" {{ old('gare_id') == $gare->id ? 'selected' : '' }}>
+                                        <option value="{{ $gare->id }}" {{ old('gare_id' , $gars) == $gare->id ? 'selected' : '' }}>
                                             {{ $gare->nom_gare  }}
                                         </option>
                                     @endforeach
@@ -85,7 +86,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="harriver" class="form-label">Estimation du voyage (en H)</label>
                                     <input type="time" name="estimation" id="harriver" class="form-control"
-                                           value="{{ old('estimation') }}">
+                                           value="{{ old('estimation' , $itineraire->estimation) }}">
                                 </div>
 
                                  {{-- <div class="col-md-6 mb-3">
@@ -95,7 +96,7 @@
                                 </div> --}}
                                 <div class="col-md-6 mb-3">
                                     <label for="titre" class="form-label">Titre du trajet à enregistrer</label>
-                                    <textarea name="titre" id="titre" class="form-control" rows="3">{{ old('titre') }}</textarea>
+                                    <textarea name="titre" id="titre" class="form-control" rows="3">{{ old('titre' ,$itineraire) }}</textarea>
                                 </div>
 
 
@@ -104,7 +105,7 @@
                             <hr>
 
                             <!-- Arrêts -->
-                            <div class="mb-4">
+                            {{-- <div class="mb-4">
                                 <label class="form-label">Arrêts</label>
                                 <small class="form-text text-muted">
                                         ⚠️ Le dernier arrêt indiqué sera considéré comme <strong>l’arrêt final</strong> du trajet.
@@ -122,7 +123,46 @@
                                 </div>
 
                                 <button type="button" class="btn btn-secondary" id="add-arret">+ Ajouter un arrêt</button>
-                            </div>
+                            </div> --}}
+
+                            <div class="mb-4">
+    <label class="form-label">Arrêts</label>
+    <small class="form-text text-muted">
+        ⚠️ Le dernier arrêt indiqué sera considéré comme <strong>l’arrêt final</strong> du trajet.
+    </small>
+
+    <div id="arrets-container">
+        @forelse ($itineraire->arrets as $i => $arret)
+            <div class="row arret mb-3">
+                <div class="col-md-6">
+                    <input type="text" name="arrets[{{ $i }}][nom]" 
+                           class="form-control"
+                           value="{{ $arret->nom }}"
+                           list="liste-villes"
+                           placeholder="Lieu d'arrêt" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-center">
+                    <button type="button" class="btn btn-danger btn-remove-arret">Supprimer</button>
+                </div>
+            </div>
+        @empty
+            <div class="row arret mb-3">
+                <div class="col-md-6">
+                    <input type="text" name="arrets[0][nom]" 
+                           class="form-control"
+                           list="liste-villes" 
+                           placeholder="Lieu d'arrêt" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-center">
+                    <button type="button" class="btn btn-danger btn-remove-arret">Supprimer</button>
+                </div>
+            </div>
+        @endforelse
+    </div>
+
+    <button type="button" class="btn btn-secondary" id="add-arret">+ Ajouter un arrêt</button>
+</div>
+
 
                             <div class="text-end">
                                 <button type="submit" class="btn btn-primary">Enregistrer le voyage</button>
@@ -149,7 +189,8 @@
 <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
 <script>
-    let index = 1;
+  //  let index = 1;
+let index = {{ $itineraire->arrets->count() ?? 1 }};
 
     // Ajouter un arrêt
     document.getElementById('add-arret').addEventListener('click', function () {

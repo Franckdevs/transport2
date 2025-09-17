@@ -43,7 +43,7 @@ public function show($id)
     // Récupérer le voyage avec toutes les informations associées
     $voyage = Voyage::with(['itineraire', 'info_user', 'bus', 'chauffeur'])->findOrFail($id);
 
-    return view('compagnie.voyage.details', compact('voyage'));
+    return view('compagnie.voyage.show', compact('voyage'));
 }
 
 
@@ -78,6 +78,7 @@ public function store(Request $request)
         'chauffeur_id' => $validatedData['chauffeur_id'],
         'compagnie_id' => $compagnieID,
         'gare_id'=>$garesID ?? null,
+        'status'=>1,
     ]);
 
     // // Vérifier si 'arrets' existe et est un tableau avant de boucler dessus
@@ -99,6 +100,57 @@ public function store(Request $request)
 }
 
 
+public function update(Request $request, $id)
+{
+    $user = Auth::user();
+
+    $validatedData = $request->validate([
+        'itineraire_id' => 'required',
+        'montant' => 'required|numeric|min:1',
+        'heure_depart' => 'required',
+        'date_depart' => 'required',
+        'bus_id' => 'required|exists:buses,id',
+        'chauffeur_id' => 'required|exists:chauffeurs,id',
+        'arrets.*.nom' => 'required|string|max:255',
+    ]);
+
+    $voyage = Voyage::findOrFail($id);
+
+    $infoUserId = $user->info_user->id ?? null;
+    $compagnieID  = $user->info_user->gare->compagnie->id ?? null;
+    $garesID = $user->info_user->gare->id ?? null;
+
+    // Mise à jour des données du voyage
+    $voyage->update([
+        'info_user_id' => $infoUserId,
+        'itineraire_id' => $request->itineraire_id,
+        'montant' => $validatedData['montant'],
+        'heure_depart' => $validatedData['heure_depart'],
+        'date_depart' => $validatedData['date_depart'],
+        'bus_id' => $validatedData['bus_id'],
+        'chauffeur_id' => $validatedData['chauffeur_id'],
+        'compagnie_id' => $compagnieID,
+        'gare_id' => $garesID,
+    ]);
+
+    // Mise à jour des arrêts
+    if (isset($request->arrets) && is_array($request->arrets)) {
+        // Supprimer les anciens arrêts
+        $voyage->arrets()->delete();
+
+        // Créer les nouveaux arrêts
+        foreach ($request->arrets as $arretData) {
+            $voyage->arrets()->create([
+                'nom' => $arretData['nom'],
+                'info_user_id' => $infoUserId,
+            ]);
+        }
+    }
+
+    return redirect()->route('voyage.index')->with('success', 'Le voyage a été mis à jour avec succès.');
+}
+
+
    public function create()
 {
     // Récupérer les itinéraires, buses, chauffeurs et villes (si nécessaire)
@@ -106,8 +158,40 @@ public function store(Request $request)
     $buses = Bus::all();               // Récupère tous les buses
     $chauffeurs = Chauffeur::all();     // Récupère tous les chauffeurs
     $villes = Ville::all();             // Si tu as besoin de villes pour les arrêts
-
     // Passer ces données à la vue
     return view('compagnie.voyage.create', compact('itineraires', 'buses', 'chauffeurs', 'villes'));
 }
+
+   public function edit($id)
+{
+    // Récupérer les itinéraires, buses, chauffeurs et villes (si nécessaire)
+    $itineraires = Itineraire::all();  // Récupère tous les itinéraires
+    $buses = Bus::all();               // Récupère tous les buses
+    $chauffeurs = Chauffeur::all();     // Récupère tous les chauffeurs
+    $villes = Ville::all();             // Si tu as besoin de villes pour les arrêts
+    // Passer ces données à la vue
+    $voyage = Voyage::with(['itineraire', 'info_user', 'bus', 'chauffeur'])->findOrFail($id);
+
+    return view('compagnie.voyage.edit', compact('itineraires', 'buses', 'chauffeurs', 'villes','voyage'));
+}
+
+
+public function destroy($id)
+{
+    $voyage = Voyage::findOrFail($id);
+    $voyage->status = 3; // Supprimé / Inactif
+    $voyage->save();
+
+    return redirect()->back()->with('success', 'Personnel supprimé avec succès.');
+}
+
+public function destroy_reactivation($id)
+{
+    $voyage = Voyage::findOrFail($id);
+    $voyage->status = 1; // Réactivation
+    $voyage->save();
+
+    return redirect()->back()->with('success', 'Personnel réactivé avec succès.');
+}
+
 }

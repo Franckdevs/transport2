@@ -1,18 +1,28 @@
 @php
-use App\Helpers\GlobalHelper;
+    use App\Helpers\GlobalHelper;
 @endphp
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
+
 @include('compagnie.all_element.header')
 
-<link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-yH+uXGx9Rw2XxEt5Y6YMPJHepcTspU/3tkQ0+5m6I/MeGe/EQKmL7cFfgH7i/2Xx6cGJ0r0PPZ8lks5kJ4Cj+w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
 <body class="layout-1" data-luno="theme-blue">
+    <!-- start: sidebar -->
     @include('compagnie.all_element.sidebar')
 
     <div class="wrapper">
-        @include('compagnie.all_element.navbar')
+        <!-- start: page header -->
+        <header class="page-header sticky-top px-xl-4 px-sm-2 px-0 py-lg-2 py-1">
+            <div class="container-fluid">
+                <nav class="navbar">
+                    @include('compagnie.all_element.navbar')
+                </nav>
+            </div>
+        </header>
+
+        <!-- start: page toolbar -->
         @include('compagnie.all_element.cadre')
 
+        <!-- start: page body -->
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
 
@@ -28,15 +38,15 @@ use App\Helpers\GlobalHelper;
             </div>
         </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                {{-- <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
                     <h5 class="mb-0">Listes des réservations</h5>
                     <a href="{{ route('itineraire.create') }}" class="btn btn-success">
                         <i class="fa fa-plus"></i> Ajouter un itinéraire
                     </a>
-                </div>
+                </div> --}}
 
-                <div class="card">
-                 <div class="card-body">
+    <div class="card">
+    <div class="card-body">
     <!-- Formulaire de filtre par date -->
     <form method="GET" action="{{ route('liste_reservation') }}" class="mb-3 d-flex gap-2 align-items-end">
         <div class="form-group">
@@ -75,7 +85,7 @@ use App\Helpers\GlobalHelper;
                         <td>{{ $reservation->voyage->itineraire->estimation ?? 'Non défini' }}</td>
                         {{-- <td>{{ $reservation->voyage->date_depart ?? 'Non défini' }}</td> --}}
                         <td>{{ GlobalHelper::formatCreatedAt($reservation->voyage->date_depart) }}</td>
-                        <td>{{ $reservation->voyage->itineraire->titre ?? 'Non défini' }}</td>
+<td>{{ \Illuminate\Support\Str::limit($reservation->voyage->itineraire->titre ?? 'Non défini', 10) }}</td>
                         <td>{{ GlobalHelper::formatCreatedAt($reservation->created_at) }}</td>
                         <td>
                             <span class="badge bg-{{ $reservation->statut == 1 ? 'success' : 'secondary' }}">

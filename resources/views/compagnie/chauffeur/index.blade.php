@@ -111,7 +111,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
               </div>
               <div class="modal-body">
-                Êtes-vous sûr de vouloir supprimer ce chauffeur : 
+                Êtes-vous sûr de vouloir supprimer ce chauffeur : <br>
                 <strong>{{ $chauffeur->nom }} {{ $chauffeur->prenom }}</strong> ?
               </div>
               <div class="modal-footer">

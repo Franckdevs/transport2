@@ -21,6 +21,13 @@
         <!-- start: page body -->
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                </h5>
+                <a href="{{ route('voyage.index') }}" class="btn btn-light" title="Retour">
+                    <i class="fa fa-arrow-left"></i> Retour
+                </a>
+            </div>
                 <div class="row">
                     <div class="col-12 animate-fadeInUp">
                         <!-- Title Section -->
@@ -33,7 +40,7 @@
                             <!-- Ville de départ -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Ville de départ</label>
-                                <p class="fs-5 mb-0">{{ $voyage->itineraire->vdepart ?? 'Non défini' }}</p>
+                                <p class="fs-5 mb-0">{{ $voyage->itineraire->ville->nom_ville ?? 'Non défini' }}</p>
                             </div>
 
                             <!-- Estimation du trajet -->
@@ -55,7 +62,7 @@
                             </div>
 
                             <!-- Statut -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Statut</label>
                                 <div>
                                     <span
@@ -63,32 +70,103 @@
                                         {{ $voyage->statut == 1 ? 'Actif' : 'Inactif' }}
                                     </span>
                                 </div>
-                            </div>
+                            </div> --}}
+                            {{-- <div class="col-md-6">
+    <label class="form-label text-muted fw-semibold">Statut</label>
+    <div>
+        <span
+            class="badge fs-6 px-3 py-2 rounded-pill
+                {{ $voyage->status == 1 ? 'bg-success' : ($voyage->status == 2 ? 'bg-warning text-dark' : ($voyage->status == 3 ? 'bg-danger' : 'bg-secondary')) }}">
+            {{ $voyage->status == 1 ? 'Actif' : ($voyage->status == 2 ? 'En attente' : ($voyage->status == 3 ? 'Inactif' : 'Inconnu')) }}
+        </span>
+    </div>
+</div> --}}
+
+
                         </div>
 
                         <!-- Bus Information -->
                         <hr class="my-4">
                         <h5 class="fw-semibold mb-3 text-secondary">Informations sur le Bus</h5>
-                        <div class="row g-4">
-                            <!-- Nom du bus -->
-                            <div class="col-md-6">
-                                <label class="form-label text-muted fw-semibold">Nom du Bus</label>
-                                <p class="fs-5 mb-0">{{ $voyage->bus->nom_bus ?? 'Non défini' }}</p>
-                            </div>
-
-                            <!-- Chauffeur -->
-                            <div class="col-md-6">
-                                <label class="form-label text-muted fw-semibold">Chauffeur</label>
-                                <p class="fs-5 mb-0">{{ $voyage->chauffeur->nom ?? 'Non défini' }}</p>
-                            </div>
-
-                            <!-- Nombre de places -->
-                            <div class="col-md-6">
-                                <label class="form-label text-muted fw-semibold">Nombre de places</label>
-                                <p class="fs-5 mb-0">{{ $voyage->bus->nombre_places ?? 'Non défini' }} Places
-                                    disponibles</p>
-                            </div>
+                        
+                       <div class="row g-4">
+                        <!-- Nom du bus -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Nom du Bus</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->nom_bus ?? 'Non défini' }}</p>
                         </div>
+
+                        <!-- Chauffeur -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Chauffeur</label>
+                            <p class="fs-5 mb-0">{{ $voyage->chauffeur->nom ?? 'Non défini' }} {{ $voyage->chauffeur->prenom ?? 'Non défini' }}</p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Numero de telephone du chauffeur</label>
+                            <p class="fs-5 mb-0">{{ $voyage->chauffeur->telephone ?? 'Non défini' }}</p>
+                        </div>
+
+                            <!-- Photo du bus -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Photo du chauffeur</label>
+                            <p class="fs-5 mb-0">
+                        <img src="{{ asset($voyage->chauffeur->photo) }}" alt="Photo du chauffeur" class="img-fluid rounded" style="max-height:120px;">
+                            </p>
+                        </div>
+
+                        <!-- Nombre de places -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Nombre de places</label>
+                            <p class="fs-5 mb-0">
+                                {{ $voyage->bus->nombre_places ?? 'Non défini' }} Places disponibles (Dans le bus)
+                            </p>
+                        </div>
+
+                        <!-- Photo du bus -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Photo du Bus</label>
+                            <p class="fs-5 mb-0">
+                                <img src="{{ url($voyage->bus->photo_bus) }}" alt="Photo du bus" class="img-fluid rounded" style="max-height:120px;">
+                            </p>
+                        </div>
+
+                        <!-- Marque -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Marque du Bus</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->marque_bus ?? 'Non défini' }}</p>
+                        </div>
+
+                        <!-- Modèle -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Modèle du Bus</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->modele_bus ?? 'Non défini' }}</p>
+                        </div>
+
+                        <!-- Immatriculation -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Immatriculation du Bus</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->immatriculation_bus ?? 'Non défini' }}</p>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Description du Bus</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->description_bus ?? 'Non défini' }}</p>
+                        </div>
+
+                        <!-- Disposition -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Disposition du Bus</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->configurationPlace->disposition ?? 'Non défini' }}</p>
+                        </div>
+
+                        <!-- Nom complet -->
+                        <div class="col-md-4">
+                            <label class="form-label text-muted fw-semibold">Nom complet</label>
+                            <p class="fs-5 mb-0">{{ $voyage->bus->configurationPlace->nom_complet ?? 'Non défini' }}</p>
+                        </div>
+                    </div>
 
                         <!-- Itinéraire -->
                         <hr class="my-4">
@@ -97,7 +175,7 @@
                             <!-- Départ -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Point de départ</label>
-                                <p class="fs-5 mb-0">{{ $voyage->itineraire->vdepart ?? 'Non défini' }}</p>
+                                <p class="fs-5 mb-0">{{ $voyage->itineraire->ville->nom_ville ?? 'Non défini' }}</p>
                             </div>
 
                             <!-- Arrivée -->
@@ -107,6 +185,18 @@
                                     {{ $voyage->itineraire->arrets->last()->nom ?? 'Non défini' }}
                                 </p>
                             </div>
+
+                              <div class="col-md-6">
+                                <label class="form-label text-muted fw-semibold">Estimation</label>
+                                <p class="fs-5 mb-0">{{ $voyage->itineraire->estimation ?? 'Non défini' }} </p>
+                            </div>
+
+                            
+                             <div class="col-md-6">
+                                <label class="form-label text-muted fw-semibold">Titre</label>
+                                <p class="fs-5 mb-0">{{ $voyage->itineraire->titre ?? 'Non défini' }}</p>
+                            </div>
+
 
 
                             <!-- Durée du trajet -->
@@ -140,13 +230,13 @@
                         @endif
 
                         <!-- Liens et Boutons -->
-                        <a href="{{ route('voyage.index') }}"
+                        {{-- <a href="{{ route('voyage.index') }}"
                             class="btn btn-primary mt-4 shadow-sm btn-hover-scale">
                             <i class="fas fa-arrow-left me-2"></i> Retour à la liste
                         </a>
                         <a href="" class="btn btn-warning mt-4 shadow-sm btn-hover-scale">
                             <i class="fas fa-edit me-2"></i> Modifier ce voyage
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
             </div>

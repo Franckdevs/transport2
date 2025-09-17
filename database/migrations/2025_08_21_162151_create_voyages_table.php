@@ -22,6 +22,7 @@ class CreateVoyagesTable extends Migration
             $table->integer('montant')->nullable();
             $table->time('heure_depart')->nullable();
             $table->date('date_depart')->nullable();
+            $table->enum('status', ['1', '2', '3'])->default('1');
             $table->timestamps();
             $table->foreign('itineraire_id')->references('id')->on('itineraires')->onDelete('cascade');
             $table->foreign('info_user_id')->references('id')->on('info_users')->onDelete('cascade');

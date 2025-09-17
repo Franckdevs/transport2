@@ -36,22 +36,22 @@
             <div class="col-md-12 mt-4">
   <div class="card">
     <div class="card-body">
-      <h5 class="mb-4">Cree un nouveau utilisateur
+      <h5 class="mb-4">Modifier l'utilisateur
 
       </h5>
 
-<form action="{{ route('personnel.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('personnel.update' ,$personnel->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
-
+    @method('PUT')
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="nom" class="form-label">Nom</label>
-            <input type="text" name="nom" id="nom" class="form-control" value="{{ old('nom') }}">
+            <input type="text" name="nom" id="nom" class="form-control" value="{{ old('nom' ,$personnel) }}">
         </div>
 
         <div class="col-md-6 mb-3">
             <label for="prenom" class="form-label">Prénoms</label>
-            <input type="text" name="prenom" id="prenom" class="form-control" value="{{ old('prenom') }}">
+            <input type="text" name="prenom" id="prenom" class="form-control" value="{{ old('prenom',$personnel) }}">
         </div>
     </div>
 
@@ -70,7 +70,7 @@
             +225
         </span>
         <input type="text" name="telephone" id="telephone" class="form-control" 
-               value="{{ old('telephone') }}" placeholder="0123456789">
+               value="{{ old('telephone',$personnel) }}" placeholder="0123456789">
     </div>
 </div>
 
@@ -82,7 +82,7 @@
         name="email" 
         id="email" 
         class="form-control" 
-        value="{{ old('email') }}"
+        value="{{ old('email' ,$personnel) }}"
         placeholder="exemple@domaine.com"
         required
         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
@@ -92,10 +92,24 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="photo" class="form-label">Photo</label>
-            <input type="file" name="photo" id="photo" class="form-control">
+
+<div class="col-md-6 mb-3">
+    <label for="photo" class="form-label">Photo</label>
+
+    {{-- Si une photo existe déjà, on l'affiche --}}
+    @if(!empty($personnel->photo))
+        <div class="mb-2">
+            <img src="{{ asset($personnel->photo) }}" 
+                 alt="Photo actuelle"
+                 class="img-thumbnail rounded shadow-sm"
+                 style="max-width: 150px; height: auto;">
         </div>
+    @endif
+
+    {{-- Champ upload --}}
+    <input type="file" name="photo" id="photo" class="form-control">
+</div>
+
 
 
         
@@ -107,7 +121,7 @@
               @foreach($rolepersonnels as $role)
                   <option value="{{ $role->id }}" 
                       data-description="{{ $role->description }}" 
-                      {{ old('role_utilisateurs_id') == $role->id ? 'selected' : '' }}>
+                      {{ old('role_utilisateurs_id',$personnel) == $role->id ? 'selected' : '' }}>
                       {{ $role->nom_role }}
                   </option>
               @endforeach

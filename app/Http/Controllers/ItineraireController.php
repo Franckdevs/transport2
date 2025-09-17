@@ -107,10 +107,118 @@ public function create()
     }
 
 
+    public function update(Request $request, $id)
+{
+    $user = Auth::user();
+
+    // Validation
+    $validated = $request->validate([
+        'ville_id'     => 'nullable|exists:villes,id',
+        'estimation'   => 'nullable',
+        'titre'        => 'nullable|string|max:255',
+        'arrets'       => 'nullable|array',
+        'arrets.*.nom' => 'required_with:arrets|string|max:255',
+    ], [
+        'ville_id.exists'     => 'La ville sélectionnée est invalide.',
+        'titre.max'           => 'Le titre ne doit pas dépasser 255 caractères.',
+        'arrets.*.nom.required_with' => 'Le nom de chaque arrêt est obligatoire lorsque des arrêts sont ajoutés.',
+        'arrets.*.nom.string'        => 'Le nom de chaque arrêt doit être une chaîne de caractères.',
+    ]);
+
+    if ($validated['ville_id'] === null) {
+        return back()->withErrors(['Erreur : La ville de départ est obligatoire.'])->withInput();
+    }
+
+    // Récupération de info_user_id
+    $infoUserId = $user->info_user->id ?? null;
+    if (!$infoUserId) {
+        return back()->withErrors(['Erreur : info_user_id manquant pour l\'utilisateur.']);
+    }
+
+    // Récupérer l’itinéraire à modifier
+    $voyage = Itineraire::findOrFail($id);
+
+    // Mise à jour du voyage
+    $voyage->update([
+        'ville_id'     => $request->ville_id,
+        'estimation'   => $request->estimation,
+        'titre'        => $request->titre,
+        'compagnie_id' => $user->info_user?->gare?->compagnie?->id
+                        ?? $user->info_user?->compagnie?->id
+                        ?? 0,
+        'gare_id'      => $user->info_user->gare->id ?? null,
+    ]);
+
+    // Supprimer les arrêts existants
+    $voyage->arrets()->delete();
+
+    // Réenregistrer les arrêts envoyés
+    if ($request->has('arrets')) {
+        foreach ($request->arrets as $arretData) {
+            Arret::create([
+                'itineraire_id' => $voyage->id,
+                'info_user_id'  => $infoUserId,
+                'nom'           => $arretData['nom'],
+            ]);
+        }
+    }
+
+    return redirect()->route('itineraire.index')->with('success', 'Voyage mis à jour avec succès.');
+}
+
+
     public function show($id)
     {
         $voyage = itineraire::with('arrets')->findOrFail($id);
         return view('compagnie.itineraire.detail', compact('voyage'));
     }
+
+    // public function edit($id)
+    // {
+    //     $itineraire = itineraire::with('arrets')->findOrFail($id);
+    //     return view('compagnie.itineraire.edit', compact('itineraire'));
+    // }
+
+    public function edit($id)
+{
+    $userId = Auth::id();
+    // Récupération de la ville de départ via la gare de l'utilisateur
+    $gare = \App\Models\Gare::join('info_users', 'gares.info_user_id', '=', 'info_users.id')
+                ->where('info_users.user_id', $userId)
+                ->select('gares.ville_id')
+                ->first();
+    $villeId = $gare->ville_id ?? null;
+    // Pour afficher toutes les villes si besoin dans un select
+    $villes = \App\Models\Ville::orderBy('nom_ville')->get();
+    // Pour afficher toutes les gares si besoin dans un select
+    $gars = null;
+    
+    if ($villeId == null) {
+        $compagnie = \App\Models\Compagnies::where('info_user_id', $userId)->first();
+        $gars = gare::where('compagnie_id', $compagnie->id)->get();
+    }
+
+    $itineraire = itineraire::with('arrets')->findOrFail($id);
+
+    return view("compagnie.itineraire.edit", compact("villes", "villeId" , "gars","itineraire"));
+}
+
+    public function destroy($id)
+{
+    $chauffeur = itineraire::findOrFail($id);
+    $chauffeur->status = 3; // Supprimé ou inactif
+    $chauffeur->save();
+
+    return redirect()->back()->with('success', 'Chauffeur supprimé avec succès.');
+}
+
+public function destroy_reactivation($id)
+{
+    $chauffeur = itineraire::findOrFail($id);
+    $chauffeur->status = 1; // Réactivation
+    $chauffeur->save();
+
+    return redirect()->back()->with('success', 'Chauffeur réactivé avec succès.');
+}
 
 }

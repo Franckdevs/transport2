@@ -35,43 +35,139 @@ use App\Helpers\GlobalHelper;
 
         <div class="card">
           <div class="card-body">
-            <table id="myTable" class="table display nowrap table-hover" style="width:100%">
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Prénoms</th>
-                  <th>Téléphone</th>
-                  <th>E-mail</th>
-                  <th>Fonction</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($personnels as $personnel)
-                  <tr>
-                    <td>{{ $personnel->nom ?? 'Aucun nom' }}</td>
-                    <td>{{ $personnel->prenom ?? 'Aucun prénom' }}</td>
-                    <td>{{ $personnel->telephone ?? 'Aucun téléphone' }}</td>
-                    <td>{{ $personnel->email ?? 'Aucun email' }}</td>
-                    <td>{{ $personnel->fonction ?? 'Aucune fonction' }}</td>
-                    <td>
-                      <form action="" method="POST" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn btn-primary btn-sm">
-                          <i class="fa fa-bus"></i>
-                        </button>
-                      </form>
-                      <a href="" class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>
-                      <form action="" method="POST" style="display:inline;" onsubmit="return confirm('Supprimer cet utilisateur ?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
-                      </form>
-                    </td>
-                  </tr>
-                @endforeach
-              </tbody>
-            </table>
+
+<table id="myTable" class="table display nowrap table-hover" style="width:100%">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Prénoms</th>
+      <th>Téléphone</th>
+      <th>E-mail</th>
+      <th>Fonction</th>
+      <th>Statut</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach ($personnels as $personnel)
+      <tr>
+        <td>{{ $personnel->nom ?? 'Aucun nom' }}</td>
+        <td>{{ $personnel->prenom ?? 'Aucun prénom' }}</td>
+        <td>{{ $personnel->telephone ?? 'Aucun téléphone' }}</td>
+        <td>{{ $personnel->email ?? 'Aucun email' }}</td>
+        <td>{{ $personnel->RolePersonnel->nom_role ?? 'Aucune fonction' }}</td>
+
+        <!-- Affichage du statut -->
+        <td>
+          @if($personnel->status == 1)
+            <span class="badge bg-success">Actif</span>
+          @elseif($personnel->status == 3)
+            <span class="badge bg-danger">Inactif</span>
+          @else
+            <span class="badge bg-secondary">Inconnu</span>
+          @endif
+        </td>
+
+        <!-- Boutons d'action -->
+        <td>
+          <!-- Voir -->
+          <a href="{{ route('personnel.show', $personnel->id) }}" class="btn btn-sm btn-info" title="Voir">
+            <i class="fa fa-eye"></i>
+          </a>
+
+          <!-- Modifier -->
+          <a href="{{ route('personnel.edit', $personnel->id) }}" class="btn btn-sm btn-warning" title="Modifier">
+            <i class="fa fa-edit"></i>
+          </a>
+
+          <!-- Désactiver ou Réactiver -->
+          {{-- @if($personnel->status == 1)
+            <form action="{{ route('personnel.destroy', $personnel->id) }}" method="POST" style="display:inline-block;">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-sm btn-danger" title="Désactiver" onclick="return confirm('Voulez-vous vraiment désactiver ce personnel ?')">
+                <i class="fa fa-trash"></i>
+              </button>
+            </form>
+          @elseif($personnel->status == 3)
+            <form action="{{ route('personnel.reactivation', $personnel->id) }}" method="POST" style="display:inline-block;">
+              @csrf
+              @method('PUT')
+              <button type="submit" class="btn btn-sm btn-success" title="Réactiver" onclick="return confirm('Voulez-vous réactiver ce personnel ?')">
+                <i class="fa fa-undo"></i>
+              </button>
+            </form>
+          @endif --}}
+
+          @if($personnel->status == 1)
+    <!-- Bouton Désactiver -->
+    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDesactivate{{ $personnel->id }}">
+        <i class="fa fa-trash"></i>
+    </button>
+
+    <!-- Modal Désactivation -->
+    <div class="modal fade" id="confirmDesactivate{{ $personnel->id }}" tabindex="-1" aria-labelledby="confirmDesactivateLabel{{ $personnel->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="confirmDesactivateLabel{{ $personnel->id }}">Confirmation de désactivation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            Voulez-vous vraiment <strong class="text-danger">désactiver</strong> le personnel <br>
+            <strong>{{ $personnel->nom }} {{ $personnel->prenom }}</strong> ?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <form action="{{ route('personnel.destroy', $personnel->id) }}" method="POST">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-danger">Oui, désactiver</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+@elseif($personnel->status == 3)
+    <!-- Bouton Réactiver -->
+    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#confirmReactivate{{ $personnel->id }}">
+        <i class="fa fa-undo"></i>
+    </button>
+
+    <!-- Modal Réactivation -->
+    <div class="modal fade" id="confirmReactivate{{ $personnel->id }}" tabindex="-1" aria-labelledby="confirmReactivateLabel{{ $personnel->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="confirmReactivateLabel{{ $personnel->id }}">Confirmation de réactivation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            Voulez-vous vraiment <strong class="text-success">réactiver</strong> le personnel <br> 
+            <strong>{{ $personnel->nom }} {{ $personnel->prenom }}</strong> ?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <form action="{{ route('personnel.reactivation', $personnel->id) }}" method="POST">
+              @csrf
+              @method('PUT')
+              <button type="submit" class="btn btn-success">Oui, réactiver</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+@endif
+
+
+        </td>
+      </tr>
+    @endforeach
+  </tbody>
+</table>
+
+
+
           </div>
         </div>
 
@@ -102,3 +198,4 @@ use App\Helpers\GlobalHelper;
 
 </body>
 </html>
+ 

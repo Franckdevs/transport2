@@ -109,13 +109,12 @@ public function show($id)
         'telephone.unique'    => 'Ce numéro de téléphone existe déjà.',
         'photo.image'         => 'Le fichier doit être une image valide.',
         'photo.mimes'         => 'Le fichier doit être au format jpg, jpeg, png ou gif.',
-        'photo.max'           => 'La taille maximale de l\'image est de 2 Mo.',
+        'photo.max'           => 'La taille maximale de l\'image est de 100 Mo.',
         'date_naissance.date' => 'La date de naissance n\'est pas valide.',
     ];
 
     // Récupération du chauffeur
     $chauffeur = Chauffeur::findOrFail($id);
-
     // Validation
     $validated = $request->validate([
         'nom'            => 'required|string|max:255',
@@ -145,13 +144,11 @@ public function show($id)
         // Si aucune image fournie, mettre à null
         $validated['photo'] = null;
     }
-
     // Mise à jour du chauffeur
     $chauffeur->update($validated);
-
     // Redirection avec message succès
     return redirect()->route('chauffeur.index')
-                     ->with('success', 'Chauffeur mis à jour avec succès !');
+    ->with('success', 'Chauffeur mis à jour avec succès !');
 }
 
 

@@ -47,6 +47,7 @@
                                             <th>Date de départ</th>
                                             <th>Bus</th>
                                             <th>Chauffeur</th>
+                                    <th>Statut</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -54,17 +55,91 @@
                                         @foreach ($voyages as $voyage)
                                             <tr>
                                                 <td>{{ $voyage->id }}</td>
-                                                <td>{{ $voyage->itineraire->titre ?? 'N/A' }}</td>
-                                                <td>{{ $voyage->info_user->nom ?? 'N/A' }}</td>
+<td>{{ \Illuminate\Support\Str::limit($voyage->itineraire->titre ?? 'N/A', 10, '....') }}</td>
+<td>{{ \Illuminate\Support\Str::limit($voyage->info_user->nom ?? 'N/A', 10, '...') }}</td>
+
                                                 <td>{{ number_format($voyage->montant, 0, ',', ' ') }} FCFA</td>
                                                 <td>{{ $voyage->heure_depart ? \Carbon\Carbon::parse($voyage->heure_depart)->format('H:i') : 'N/A' }}</td>
                                                 <td>{{ $voyage->date_depart ? \Carbon\Carbon::parse($voyage->date_depart)->format('d/m/Y') : 'N/A' }}</td>
-                                                <td>{{ $voyage->bus->nom_bus ?? 'N/A' }}</td>
-                                                <td>{{ $voyage->chauffeur->nom ?? 'N/A' }} {{ $voyage->chauffeur->prenom ?? '' }}</td>
+<td>{{ \Illuminate\Support\Str::limit($voyage->bus->nom_bus ?? 'N/A', 10) }}</td>
+<td>
+    {{ \Illuminate\Support\Str::limit(($voyage->chauffeur->nom ?? 'N/A') . ' ' . ($voyage->chauffeur->prenom ?? ''), 10, '') }}
+</td>
+<td>
+    <span class="badge 
+        {{ $voyage->status == 1 ? 'bg-success' : ($voyage->status == 2 ? 'bg-warning' : 'bg-danger') }}">
+        {{ $voyage->status == 1 ? 'Actif' : ($voyage->status == 2 ? 'En attente' : 'Inactif') }}
+    </span>
+</td>
                                                 <td>
                                                     <a href="{{ route('voyage.show', $voyage->id) }}" class="btn btn-primary btn-sm">
-                                                        Voir
+                                                        <i class="fa fa-eye"></i>
                                                     </a>
+
+                                                    <a href="{{ route('voyage.edit', $voyage->id) }}" class="btn btn-info btn-sm">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    {{-- <a href="
+                                                    {{ route('itineraire.edit', $voyage->id) }}
+                                                    " class="btn btn-primary btn-sm">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a> --}}
+
+                                                    @if($voyage->status == 1)
+            <!-- Bouton Désactiver -->
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDestroy{{ $voyage->id }}">
+                <i class="fa fa-trash"></i>
+            </button>
+
+            <!-- Modal Désactivation -->
+            <div class="modal fade" id="confirmDestroy{{ $voyage->id }}" tabindex="-1" aria-labelledby="modalLabel{{ $voyage->id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel{{ $voyage->id }}">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    Voulez-vous vraiment désactiver ce voyage ?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form action="{{ route('voyage.destroy', $voyage->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-danger">Oui, désactiver</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        @elseif($voyage->status == 3)
+            <!-- Bouton Réactiver -->
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmReactivate{{ $voyage->id }}">
+                <i class="fa fa-undo"></i>
+            </button>
+
+            <!-- Modal Réactivation -->
+            <div class="modal fade" id="confirmReactivate{{ $voyage->id }}" tabindex="-1" aria-labelledby="modalReactivateLabel{{ $voyage->id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalReactivateLabel{{ $voyage->id }}">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    Voulez-vous vraiment réactiver ce voyage ?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <form action="{{ route('voyage.reactivation', $voyage->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-success">Oui, réactiver</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        @endif
                                                 </td>
                                             </tr>
                                         @endforeach
