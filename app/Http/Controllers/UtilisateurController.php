@@ -284,6 +284,7 @@ public function listevoayge(Request $request , $id)
     $compagnie = Compagnies::with([
     'gares.itineraires.voyages.chauffeur',
     'gares.itineraires.voyages.bus',
+     'gares.itineraires.arrets', // <- on ajoute les arrêts ici
 ])->find($id);
 
 

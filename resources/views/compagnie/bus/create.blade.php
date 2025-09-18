@@ -23,6 +23,15 @@
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
 
+     <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="mb-0">
+
+    </h5>
+    <a href="{{ route('liste.bus') }}" class="btn btn-light" title="Retour">
+        <i class="fa fa-arrow-left"></i> Retour
+    </a>
+</div>
+
             <div class="col-md-12 mt-4">
   <div class="card">
     <div class="card-body">

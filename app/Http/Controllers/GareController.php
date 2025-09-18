@@ -13,6 +13,7 @@ use App\Mail\AdminGareCreatedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Permission;
 
@@ -149,6 +150,137 @@ class GareController extends Controller
     }
 
 
+public function update2(Request $request, $id)
+{
+    $currentUser = Auth::user();
+
+    try {
+        // 1️⃣ Validation
+        $validated = $request->validate([
+            'nom_gare' => 'nullable',
+            'adresse_gare'=> 'nullable',
+            'telephone_gare'=> 'nullable',
+            'ville_id'=> 'nullable|exists:villes,id',
+            'jour_ouvert_id'=> 'nullable|exists:jours,id',
+            'jour_de_fermeture_id'=> 'nullable|exists:jours,id',
+            'latitude'=> 'nullable',
+            'longitude'=> 'nullable',
+            'heure_ouverture'=> 'nullable',
+            'heure_fermeture'=> 'nullable',
+            'parking_disponible'=> 'boolean',
+            'wifi_disponible'=> 'boolean',
+            'telephone'=> 'nullable',
+            'email'=> 'nullable|email',
+            'site_web'=> 'nullable',
+            'description'=> 'nullable',
+            // Champs administrateur
+            'admin_nom' => 'nullable|string|max:255',
+            'admin_prenom' => 'nullable|string|max:255',
+            'admin_email' => [
+                'nullable',
+                'email',
+                Rule::unique('users', 'email')->ignore($request->user_id), // ignore l'utilisateur existant
+            ],
+            'admin_telephone' => 'nullable|string|max:20',
+            'admin_permissions' => 'nullable|array',
+            'admin_permissions.*' => 'exists:permissions,name',
+        ]);
+
+        // 2️⃣ Récupérer la gare existante
+        $gare = Gare::findOrFail($id);
+
+        // 3️⃣ Récupérer l'utilisateur/admin existant lié à la gare
+        $user = $gare->infoUser ? $gare->infoUser->user : null;
+
+        if ($validated['admin_email'] && ($validated['admin_nom'] || $validated['admin_prenom'])) {
+
+            // Vérifier si un autre utilisateur avec ce mail existe
+            $existingUser = User::where('email', $validated['admin_email'])->first();
+            if ($existingUser && (!$user || $existingUser->id !== $user->id)) {
+                return redirect()->back()->withErrors(['admin_email' => 'Cet email est déjà utilisé par un autre utilisateur.'])->withInput();
+            }
+
+            if ($user) {
+                // Mettre à jour l'utilisateur existant
+               // Vérifier si un autre User possède déjà cet email
+$existingUser = User::where('email', $validated['admin_email'])->first();
+if ($existingUser && $existingUser->id !== $user->id) {
+    return redirect()->back()
+        ->withErrors(['admin_email' => 'Cet email est déjà utilisé par un autre utilisateur.'])
+        ->withInput();
+}
+
+// Vérifier si un autre InfoUser possède déjà cet email
+$existingInfoUser = InfoUser::where('email', $validated['admin_email'])->first();
+if ($existingInfoUser && $existingInfoUser->id !== $user->info_user->id) {
+    return redirect()->back()
+        ->withErrors(['admin_email' => 'Cet email est déjà utilisé par un autre administrateur.'])
+        ->withInput();
+}
+
+// Mettre à jour User
+$user->update([
+    'name' => trim(($validated['admin_prenom'] ?? '') . ' ' . ($validated['admin_nom'] ?? '')),
+    'email' => $validated['admin_email'],
+    'prenom' => $validated['admin_prenom'] ?? '',
+    'nom' => $validated['admin_nom'] ?? '',
+]);
+
+// Mettre à jour InfoUser
+$user->info_user->update([
+    'nom' => $validated['admin_nom'],
+    'prenom' => $validated['admin_prenom'],
+    'telephone' => $validated['admin_telephone'],
+    'email' => $validated['admin_email'],
+]);
+
+            } else {
+                // Créer un nouvel utilisateur admin
+                $user = User::create([
+                    'name' => trim(($validated['admin_prenom'] ?? '') . ' ' . ($validated['admin_nom'] ?? '')),
+                    'email' => $validated['admin_email'],
+                    'prenom' => $validated['admin_prenom'] ?? '',
+                    'nom' => $validated['admin_nom'] ?? '',
+                    'email_verified_at' => now(),
+                ]);
+
+                $infoUser = InfoUser::create([
+                    'user_id' => $user->id,
+                    'nom' => $validated['admin_nom'],
+                    'prenom' => $validated['admin_prenom'],
+                    'telephone' => $validated['admin_telephone'],
+                    'email' => $validated['admin_email'],
+                ]);
+
+                $user->assignRole('super-admin-gare');
+
+                // Lier la gare au nouvel InfoUser
+                $gare->info_user_id = $infoUser->id;
+            }
+
+            // 4️⃣ Assigner les permissions
+            if (!empty($validated['admin_permissions'])) {
+                $user->syncPermissions($validated['admin_permissions']); // remplace les permissions existantes
+            }
+        }
+
+        // 5️⃣ Mettre à jour les données de la gare
+        $gareData = collect($validated)->except(['admin_nom', 'admin_prenom', 'admin_email', 'admin_telephone', 'admin_permissions'])->toArray();
+        $gare->update($gareData);
+
+        return redirect()->route('gares.index.2')
+            ->with('success', 'Gare mise à jour avec succès ✅');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return redirect()->back()->withErrors($e->validator)->withInput();
+    } catch (\Exception $e) {
+        \Log::error('Erreur lors de la mise à jour de la gare: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Erreur lors de la mise à jour de la gare: ' . $e->getMessage())->withInput();
+    }
+}
+
+
+
     /**
      * Display the specified resource.
      */
@@ -164,10 +296,26 @@ class GareController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(gare $gare)
-    {
-        //
-    }
+public function edit(gare $gare ,$id)
+{
+    $gare = Gare::find($id);
+    $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
+    $compagnie_id = Auth::user()->info_user->compagnie->id;
+
+    // Récupérer l'utilisateur lié à la gare
+    $user = $gare->infoUser ? $gare->infoUser->user : null;
+
+    return view('compagnie.gares.edit', [
+        'infoUsers'    => InfoUser::all(),
+        'jours'        => Jour::all(),
+        'villes'       => Ville::all(),
+        'permissions'  => $garePermissions,
+        'compagnie_id' => $compagnie_id,
+        'gare'         => $gare,
+        'user'         => $user, // ← ajouté ici
+    ]);
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -225,6 +373,25 @@ public function ajouterbUS(gare $gare)
     $gares = gare::where('id', $gare->id);
     // dd($gares );
     return view('compagnie.gares.bus', compact('gares'));
+}
+
+
+public function destroy_desactiver($id)
+{
+    $personnel = gare::findOrFail($id);
+    $personnel->status = 3; // Supprimé / Inactif
+    $personnel->save();
+
+    return redirect()->back()->with('success', 'Personnel supprimé avec succès.');
+}
+
+public function destroy_reactivation($id)
+{
+    $personnel = gare::findOrFail($id);
+    $personnel->status = 1; // Réactivation
+    $personnel->save();
+
+    return redirect()->back()->with('success', 'Personnel réactivé avec succès.');
 }
 
 }

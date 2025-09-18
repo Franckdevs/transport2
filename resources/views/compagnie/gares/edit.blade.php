@@ -48,7 +48,7 @@
     ">
       <div class="container-fluid">
 
-          <div class="d-flex justify-content-between align-items-center mb-4">
+           <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="mb-0">
                 </h5>
                 <a href="{{ route('gares.index.2') }}" class="btn btn-light" title="Retour">
@@ -59,9 +59,10 @@
 <div class="col-md-12">
   <div class="card">
     <div class="card-body">
-      <h5 class="mb-3">Créer une nouvelle gare</h5>
-<form action="{{ route('gares.store') }}" method="POST">
+<h5 class="mb-3">Modifier cette gare</h5>
+<form action="{{ route('gares.update2' , $gare) }}" method="POST">
 @csrf
+@method('PUT')
     <style>
         #map {
             height: 300px;
@@ -123,12 +124,12 @@
         <h2 class="mb-4"><i class="fas fa-map-marker-alt me-2"></i>Système de Géolocalisation</h2>
          <input type="hidden" name="compagnie_id" value="{{ $compagnie_id }}" class="form-control mb-3">
 
-        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
-        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude' ,$gare) }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude' ,$gare) }}">
 
         <div class="row">
             <div class="col-md-12 mb-3 d-flex">
-                <input id="searchInput" name="adresse_gare" value="{{ old('adresse_gare') }}" class="form-control me-2" type="text" placeholder="Entrer une adresse ou un lieu">
+                <input id="searchInput" name="adresse_gare" value="{{ old('adresse_gare' ,$gare) }}" class="form-control me-2" type="text" placeholder="Entrer une adresse ou un lieu">
                 <button type="button" id="locateBtn" class="btn btn-primary">
                     <i class="fas fa-location-arrow me-1"></i> Me localiser
                 </button>
@@ -422,7 +423,7 @@
   {{-- Nom gare (plein largeur) --}}
   <div class="col-12 mb-3">
     <label for="nom_gare" class="form-label">Nom de la gare</label>
-    <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare') }}">
+    <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare' ,$gare) }}">
   </div>
 </div>
 
@@ -430,13 +431,13 @@
   {{-- Adresse gare --}}
   <div class="col-md-6 mb-3">
     <label for="adresse_gare" class="form-label">Adresse</label>
-    <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare') }}">
+    <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare',$gare) }}">
   </div>
 
   {{-- Téléphone gare --}}
   <div class="col-md-6 mb-3">
     <label for="telephone_gare" class="form-label">Téléphone</label>
-    <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" value="{{ old('telephone_gare') }}">
+    <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" value="{{ old('telephone_gare',$gare) }}">
   </div>
 </div>
 
@@ -447,7 +448,7 @@
     <select name="ville_id" id="ville_id" class="form-select">
       <option value="">-- Sélectionner une ville --</option>
       @foreach($villes as $ville)
-        <option value="{{ $ville->id }}" {{ old('ville_id') == $ville->id ? 'selected' : '' }}>
+        <option value="{{ $ville->id }}" {{ old('ville_id',$gare) == $ville->id ? 'selected' : '' }}>
           {{ $ville->nom_ville ?? $ville->id }}
         </option>
       @endforeach
@@ -460,7 +461,7 @@
     <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select">
       <option value="">-- Sélectionner un jour d'ouverture --</option>
       @foreach($jours as $jour)
-        <option value="{{ $jour->id }}" {{ old('jour_ouvert_id') == $jour->id ? 'selected' : '' }}>
+        <option value="{{ $jour->id }}" {{ old('jour_ouvert_id',$gare) == $jour->id ? 'selected' : '' }}>
           {{ $jour->nom_jour ?? $jour->id }}
         </option>
       @endforeach
@@ -475,7 +476,7 @@
     <select name="jour_de_fermeture_id" id="jour_de_fermeture_id" class="form-select">
       <option value="">-- Sélectionner un jour de fermeture --</option>
       @foreach($jours as $jour)
-        <option value="{{ $jour->id }}" {{ old('jour_de_fermeture_id') == $jour->id ? 'selected' : '' }}>
+        <option value="{{ $jour->id }}" {{ old('jour_de_fermeture_id',$gare) == $jour->id ? 'selected' : '' }}>
           {{ $jour->nom_jour ?? $jour->id }}
         </option>
       @endforeach
@@ -485,7 +486,7 @@
   {{-- Nombre de quais --}}
   <div class="col-md-6 mb-3">
     <label for="nombre_quais" class="form-label">Nombre de quais</label>
-    <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais') }}" min="0">
+    <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais',$gare) }}" min="0">
   </div>
 </div>
 
@@ -493,26 +494,26 @@
   {{-- Heure ouverture --}}
   <div class="col-md-6 mb-3">
     <label for="heure_ouverture" class="form-label">Heure d'ouverture</label>
-    <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture') }}">
+    <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture',$gare) }}">
   </div>
 
   {{-- Heure fermeture --}}
   <div class="col-md-6 mb-3">
     <label for="heure_fermeture" class="form-label">Heure de fermeture</label>
-    <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture') }}">
+    <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture',$gare) }}">
   </div>
 </div>
 
 <div class="row">
   {{-- Parking disponible --}}
   <div class="col-md-6 mb-3 form-check">
-    <input class="form-check-input" type="checkbox" value="1" id="parking_disponible" name="parking_disponible" {{ old('parking_disponible') ? 'checked' : '' }}>
+    <input class="form-check-input" type="checkbox" value="1" id="parking_disponible" name="parking_disponible" {{ old('parking_disponible',$gare) ? 'checked' : '' }}>
     <label class="form-check-label" for="parking_disponible">Parking disponible</label>
   </div>
 
   {{-- Wifi disponible --}}
   <div class="col-md-6 mb-3 form-check">
-    <input class="form-check-input" type="checkbox" value="1" id="wifi_disponible" name="wifi_disponible" {{ old('wifi_disponible') ? 'checked' : '' }}>
+    <input class="form-check-input" type="checkbox" value="1" id="wifi_disponible" name="wifi_disponible" {{ old('wifi_disponible',$gare) ? 'checked' : '' }}>
     <label class="form-check-label" for="wifi_disponible">Wi-Fi disponible</label>
   </div>
 </div>
@@ -521,26 +522,26 @@
   {{-- Téléphone --}}
   <div class="col-md-6 mb-3">
     <label for="telephone" class="form-label">Téléphone (contact général)</label>
-    <input type="text" name="telephone" id="telephone" class="form-control" value="{{ old('telephone') }}">
+    <input type="text" name="telephone" id="telephone" class="form-control" value="{{ old('telephone',$gare) }}">
   </div>
 
   {{-- Email --}}
   <div class="col-md-6 mb-3">
     <label for="email" class="form-label">Email (contact général)</label>
-    <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}">
+    <input type="email" name="email" id="email" class="form-control" value="{{ old('email',$gare) }}">
   </div>
 </div>
 
 {{-- Site web (plein largeur) --}}
 <div class="mb-3">
   <label for="site_web" class="form-label">Site web</label>
-  <input type="url" name="site_web" id="site_web" class="form-control" value="{{ old('site_web') }}">
+  <input type="url" name="site_web" id="site_web" class="form-control" value="{{ old('site_web',$gare) }}">
 </div>
 
 {{-- Description (plein largeur) --}}
 <div class="mb-3">
   <label for="description" class="form-label">Description</label>
-  <textarea name="description" id="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+  <textarea name="description" id="description" class="form-control" rows="3">{{ old('description',$gare) }}</textarea>
 </div>
 
 
@@ -554,13 +555,13 @@
         {{-- Nom admin --}}
         <div class="col-md-6 mb-3">
           <label for="admin_nom" class="form-label">Nom de l'administrateur</label>
-          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom') }}" placeholder="Nom de famille">
+          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom',$gare->infoUser->nom) }}" placeholder="Nom de famille">
         </div>
 
         {{-- Prénom admin --}}
         <div class="col-md-6 mb-3">
           <label for="admin_prenom" class="form-label">Prénom de l'administrateur</label>
-          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom') }}" placeholder="Prénom">
+          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom' ,$gare->infoUser->prenom) }}" placeholder="Prénom">
         </div>
       </div>
 
@@ -568,55 +569,68 @@
         {{-- Email admin --}}
         <div class="col-md-6 mb-3">
           <label for="admin_email" class="form-label">Email de l'administrateur</label>
-          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email') }}" placeholder="admin@exemple.com">
+          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email',$gare->infoUser->email) }}" placeholder="admin@exemple.com">
         </div>
 
         {{-- Téléphone admin --}}
         <div class="col-md-6 mb-3">
           <label for="admin_telephone" class="form-label">Téléphone de l'administrateur</label>
-          <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" value="{{ old('admin_telephone') }}" placeholder="+33 1 23 45 67 89">
+          <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" value="{{ old('admin_telephone',$gare->infoUser->telephone) }}" placeholder="+33 1 23 45 67 89">
         </div>
       </div>
 
       {{-- Section Permissions --}}
-      <div class="mt-4">
-        <h6 class="text-primary mb-3"><i class="fas fa-key me-2"></i>Permissions de l'Administrateur</h6>
-        <p class="text-muted small mb-3">Sélectionnez les permissions spécifiques que vous souhaitez accorder à cet administrateur de gare (en plus des permissions par défaut du rôle).</p>
-
-        <div class="row">
-          @foreach($permissions as $permission)
-            <div class="col-md-6 col-lg-4 mb-2">
-              <div class="form-check">
+     <div class="row">
+    @foreach($permissions as $permission)
+        <div class="col-md-6 col-lg-4 mb-2">
+            <div class="form-check">
                 <input class="form-check-input" type="checkbox"
                        name="admin_permissions[]"
                        value="{{ $permission->name }}"
                        id="perm_{{ $permission->id }}"
-                       {{ is_array(old('admin_permissions')) && in_array($permission->name, old('admin_permissions')) ? 'checked' : '' }}>
+                       {{ 
+                          // coche si l'ancienne saisie existe
+                          (is_array(old('admin_permissions')) && in_array($permission->name, old('admin_permissions'))) 
+                          // ou coche si l'utilisateur a déjà cette permission
+                          || (!old('admin_permissions') && $user && $user->hasPermissionTo($permission->name)) 
+                          ? 'checked' : '' 
+                       }}>
                 <label class="form-check-label" for="perm_{{ $permission->id }}">
-                  <span class="fw-bold">{{ ucfirst(str_replace('-', ' ', $permission->name)) }}</span>
-                  <br><small class="text-muted">{{ $permission->name }}</small>
+                    <span class="fw-bold">{{ ucfirst(str_replace('-', ' ', $permission->name)) }}</span>
+                    <br><small class="text-muted">{{ $permission->name }}</small>
                 </label>
-              </div>
             </div>
-          @endforeach
         </div>
+    @endforeach
+</div>
 
-        @if($permissions->isEmpty())
-          <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>
-            Aucune permission disponible. Exécutez d'abord les seeders pour créer les permissions.
-          </div>
-        @endif
+@if($permissions->isEmpty())
+    <div class="alert alert-info mt-2">
+        <i class="fas fa-info-circle me-2"></i>
+        Aucune permission disponible. Exécutez d'abord les seeders pour créer les permissions.
+    </div>
+@endif
 
-        <div class="mt-3">
-          <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
-            <i class="fas fa-check-double me-1"></i>Tout sélectionner
-          </button>
-          <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="deselectAllPermissions()">
-            <i class="fas fa-times me-1"></i>Tout désélectionner
-          </button>
-        </div>
-      </div>
+<div class="mt-3">
+    <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
+        <i class="fas fa-check-double me-1"></i>Tout sélectionner
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="deselectAllPermissions()">
+        <i class="fas fa-times me-1"></i>Tout désélectionner
+    </button>
+</div>
+
+<script>
+function selectAllPermissions() {
+    const checkboxes = document.querySelectorAll('input[name="admin_permissions[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+}
+
+function deselectAllPermissions() {
+    const checkboxes = document.querySelectorAll('input[name="admin_permissions[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
+</script>
 
 
     </div>
@@ -649,7 +663,7 @@
   <!-- Vendor Script -->
   <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
-  <script>
+  {{-- <script>
     function selectAllPermissions() {
       const checkboxes = document.querySelectorAll('input[name="admin_permissions[]"]');
       checkboxes.forEach(checkbox => checkbox.checked = true);
@@ -659,7 +673,7 @@
       const checkboxes = document.querySelectorAll('input[name="admin_permissions[]"]');
       checkboxes.forEach(checkbox => checkbox.checked = false);
     }
-  </script>
+  </script> --}}
 
 </body>
 

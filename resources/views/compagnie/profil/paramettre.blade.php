@@ -2,6 +2,11 @@
 <body class="layout-1" data-luno="theme-blue">
   <!-- start: sidebar -->
   @include('compagnie.all_element.sidebar')
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<!-- AOS (Animate On Scroll) -->
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css"/>
 
   <!-- start: body area -->
   <div class="wrapper">
@@ -26,7 +31,7 @@
           <div class="col-lg-6 mb-4">
             <div class="card shadow-sm border-0">
               <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Mes informations</h5>
+<h5 class="mb-0">Mes informations administrateur (optionnel)</h5>
               </div>
               <div class="card-body">
                 <form action="{{ route('paramettre.updateInfos') }}" method="POST">

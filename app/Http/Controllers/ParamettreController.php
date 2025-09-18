@@ -21,10 +21,10 @@ class ParamettreController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
+            'nom' => 'string|max:255',
+            'prenom' => 'string|max:255',
             'telephone' => 'nullable|string|max:20',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'email|unique:users,email,' . $user->id,
         ]);
 
         $user->update($request->only(['nom', 'prenom', 'telephone', 'email']));

@@ -68,11 +68,13 @@
                                 <label for="gare_id" class="form-label">Gare de départ (optionnelle)</label>
                                 <select name="gare_id" id="gare_id" class="form-control">
                                     <option value="">-- Sélectionnez une gare --</option>
-                                    @foreach($gars as $gare)
-                                        <option value="{{ $gare->id }}" {{ old('gare_id' , $gars) == $gare->id ? 'selected' : '' }}>
-                                            {{ $gare->nom_gare  }}
-                                        </option>
-                                    @endforeach
+                                   @foreach($gars as $gare)
+    <option value="{{ $gare->id }}" 
+        {{ old('gare_id', $itineraire->gare_id ?? null) == $gare->id ? 'selected' : '' }}>
+        {{ $gare->nom_gare }}
+    </option>
+@endforeach
+
                                 </select>
                                 @error('gare_id')
                                     <div class="text-danger">{{ $message }}</div>

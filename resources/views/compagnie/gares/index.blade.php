@@ -67,12 +67,73 @@
                                             <td>{{ $gare->heure_fermeture ?? 'Aucune heure' }}</td>
                                             <td>{{ GlobalHelper::formatCreatedAt($gare->created_at) }}</td>
                                             <td>
+                                                 <a href="
+                                                 {{ route('gares.edit', $gare->id) }}
+                                                  " class="btn btn-warning btn-sm">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+
                                                 <a href="{{ route('gares.show', $gare->id) }}" class="btn btn-info btn-sm">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-danger btn-sm">
-                                                    <i class="fa fa-trash"></i>
-                                                </a>
+ @if($gare->status == 1) 
+    <!-- Bouton désactiver -->
+    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#desactiverModal{{ $gare->id }}">
+        <i class="fa fa-ban"></i> 
+        {{-- Désactiver --}}
+    </button>
+
+    <!-- Modal Désactivation -->
+    <div class="modal fade" id="desactiverModal{{ $gare->id }}" tabindex="-1" aria-labelledby="desactiverModalLabel{{ $gare->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="desactiverModalLabel{{ $gare->id }}">Confirmation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            Voulez-vous vraiment <strong>désactiver</strong> cette gare ?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <form action="{{ route('gares.destroy_desactiver', $gare->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-danger">Oui, désactiver</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+@elseif($gare->status == 3) 
+    <!-- Bouton activer -->
+    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#activerModal{{ $gare->id }}">
+        <i class="fa fa-check"></i>
+         {{-- Activer --}}
+    </button>
+
+    <!-- Modal Activation -->
+    <div class="modal fade" id="activerModal{{ $gare->id }}" tabindex="-1" aria-labelledby="activerModalLabel{{ $gare->id }}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="activerModalLabel{{ $gare->id }}">Confirmation</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            Voulez-vous vraiment <strong>réactiver</strong> cette gare ?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <form action="{{ route('gares.destroy_reactivation', $gare->id) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-success">Oui, activer</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+@endif
+
                                             </td>
                                         </tr>
                                         @endforeach

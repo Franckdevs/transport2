@@ -103,6 +103,13 @@ Route::controller(ReservationTicketController::class)->group(function () {
     Route::post('/gares/store', 'store2')->name('gares.store');
     Route::post('/gares-ajouterbUS/{gares}', 'ajouterbUS')->name('gares.ajouterbUS');
     Route::get('/gares-show/{gares}', 'show')->name('gares.show');
+    Route::post('/destroy_desactiver/{gares}', 'destroy_desactiver')->name('gares.destroy_desactiver');
+    Route::post('/destroy_reactivation/{gares}', 'destroy_reactivation')->name('gares.destroy_reactivation');
+
+    Route::get('/gares-modifier/{id}', 'edit')->name('gares.edit');
+        Route::put( '/update2-gare/{id}', 'update2')->name('gares.update2');
+
+
 });
 
 

@@ -26,7 +26,7 @@
 
     </h5>
     <a href="{{ route('liste.bus') }}" class="btn btn-light" title="Retour">
-        <i class="fa fa-arrow-left"></i>
+        <i class="fa fa-arrow-left"></i> Retour
     </a>
 </div>
 
