@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('arret_voyages', function (Blueprint $table) {
             $table->id();
-        $table->foreignId('voyage_id')->nullable()->constrained('voyages');
-        $table->foreignId('arret_id')->nullable()->constrained('arrets');
-        $table->string('montant')->nullable();
+            $table->foreignId('voyage_id')->nullable()->constrained('voyages');
+            $table->foreignId('arret_id')->nullable()->constrained('arrets');
+            $table->string('montant')->nullable();
             $table->timestamps();
         });
     }
