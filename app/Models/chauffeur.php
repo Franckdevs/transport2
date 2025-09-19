@@ -28,4 +28,11 @@ class Chauffeur extends Model
     {
         return $this->hasMany(Voyage::class);
     }
+
+    //
+    public function getPhotoAttribute($value)
+{
+    return $value ? asset( $value) : null;
+}
+
 }

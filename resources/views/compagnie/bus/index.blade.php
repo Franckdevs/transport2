@@ -78,10 +78,9 @@ use App\Helpers\GlobalHelper;
     </button>
 @else
     <!-- Bouton Réactiver -->
-    <form action="{{ route('activation.bus', $bu->id) }}" method="POST" style="display:inline;">
-        @csrf
+<form action="{{ route('activation.bus', $bu->id) }}" method="POST" style="display:inline;">        @csrf
         <button type="submit" class="btn btn-success btn-sm">
-            <i class="fa fa-check"></i> Réactiver
+            <i class="fa fa-check"></i> 
         </button>
     </form>
 @endif

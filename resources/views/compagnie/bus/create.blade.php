@@ -97,13 +97,13 @@
                 <option value="4" {{ old('configuration_car') == '1-1' ? 'selected' : '' }}>1-1 (1 siège gauche, 1 siège droite)</option>
             </select> --}}
 
-<select name="configuration_place_id" id="configuration_place_id" class="form-select">
-    @foreach(App\Models\ConfigurationPlaceBus::all() as $config)
-        <option value="{{ $config->id }}" {{ old('configuration_place_id') == $config->id ? 'selected' : '' }}>
-            {{ $config->disposition }} ({{ $config->nom_complet }})
-        </option>
-    @endforeach
-</select>
+        <select name="configuration_place_id" id="configuration_place_id" class="form-select">
+            @foreach(App\Models\ConfigurationPlaceBus::all() as $config)
+                <option value="{{ $config->id }}" {{ old('configuration_place_id') == $config->id ? 'selected' : '' }}>
+                    {{ $config->disposition }} ({{ $config->nom_complet }})
+                </option>
+            @endforeach
+        </select>
 
 
 

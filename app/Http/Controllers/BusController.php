@@ -76,7 +76,7 @@ public function store(Request $request)
         'marque_bus'           => 'required|string|max:255',
         'modele_bus'           => 'required|string|max:255',
         'immatriculation_bus'  => 'required|string|max:50|unique:buses,immatriculation_bus',
-        'photo_bus'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        'photo_bus'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:102400',
         'description_bus'      => 'nullable|string',
         'localisation_bus'     => 'nullable|string|max:255',
         'nombre_places'        => 'required|integer|min:1',
@@ -114,7 +114,7 @@ public function store(Request $request)
     $file->move($folder, $filename);
 
     // Sauvegarde le chemin relatif pour la base de données
-    $validated['photo_bus'] = 'buses/' . $filename;
+    $validated['photo_bus'] = $filename;
 }
     // dd($validated);
     // 3. Sauvegarde en base de données
@@ -196,7 +196,7 @@ public function store(Request $request)
         $file->move($folder, $filename);
 
         // Sauvegarde le chemin relatif pour la base de données
-        $busupdate->photo_bus = 'buses/' . $filename;
+        $busupdate->photo_bus = $filename;
     }
 
     // Mise à jour des autres champs
@@ -227,6 +227,7 @@ public function store(Request $request)
 
         public function destroy_reactivation($id)
     {
+        // dd($id);
         $bus = Bus::find($id);
         $bus->status = 1;
         $bus->save();

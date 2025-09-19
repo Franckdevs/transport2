@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\PaiementController;
+use App\Http\Controllers\PaiementEnAttenteController;
 use App\Http\Controllers\UtilisateurController;
+use App\Models\Paiement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +25,11 @@ Route::post('/reservation', [UtilisateurController::class, 'reservation']);
 Route::post('/places-restantes', [UtilisateurController::class, 'placesRestantes']);
 
 Route::get('recu_reservation/{token}', [UtilisateurController::class,'recu_reservation']);
+
+Route::post('InitiationPaiement', [PaiementEnAttenteController::class,'InitiationPaiement']);
+
+Route::post('callback', [PaiementController::class,'callback']);
+
+
+
+

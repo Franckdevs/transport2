@@ -28,7 +28,7 @@
 
     </h5>
     <a href="{{ route('chauffeur.index') }}" class="btn btn-light" title="Retour">
-        <i class="fa fa-arrow-left"></i>
+        <i class="fa fa-arrow-left"></i> Retour
       </a>
   </div>
 

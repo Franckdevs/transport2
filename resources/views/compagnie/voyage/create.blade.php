@@ -51,23 +51,95 @@
 
                                 <div class="row">
                                     <!-- Itinéraire -->
-                                    <div class="col-md-6 mb-3">
-                                        <label for="itineraire_id" class="form-label">Itinéraire</label>
-                                        <select name="itineraire_id" id="itineraire_id" class="form-control" required>
-                                            <option value="">Sélectionner un itinéraire</option>
-                                            @foreach ($itineraires as $itineraire)
-                                                <option value="{{ $itineraire->id }}">{{ $itineraire->titre }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                         <div class="col-md-6 mb-3">
+    <label for="itineraire_id" class="form-label">Itinéraire</label>
+    <select name="itineraire_id" id="itineraire_id" class="form-control" required>
+        <option value="">Sélectionner un itinéraire</option>
+        @foreach ($itineraires as $itineraire)
+            <option value="{{ $itineraire->id }}">{{ $itineraire->titre }}</option>
+        @endforeach
+    </select>
+</div>
+
+<!-- Zone pour afficher les infos -->
+<div id="itineraire-info" class="mt-3"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectItineraire = document.getElementById('itineraire_id');
+    const infoDiv = document.getElementById('itineraire-info');
+
+    if (!selectItineraire) return;
+
+    selectItineraire.addEventListener('change', function() {
+        const itineraireId = this.value;
+
+        if (!itineraireId) {
+            infoDiv.innerHTML = "";
+            return;
+        }
+
+        fetch(`/itineraire/${itineraireId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Itinéraire non trouvé');
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    infoDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                    return;
+                }
+
+                // Création du HTML pour les arrêts avec champ montant
+                let arretsHtml = '';
+                if (data.arrets && data.arrets.length > 0) {
+                    arretsHtml = `<ul class="list-group list-group-flush mb-0">
+                        ${data.arrets.map(arret => `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>${arret.nom}</span>
+                                <input type="number" class="form-control form-control-sm w-25" placeholder="Montant" name="montant[${arret.id}]" min="0" step="0.01">
+                            </li>
+                        `).join('')}
+                    </ul>`;
+                } else {
+                    arretsHtml = '<p>Aucun arrêt pour cet itinéraire.</p>';
+                }
+
+                // Affichage des informations dans une carte
+                infoDiv.innerHTML = `
+                    <div class="card shadow-sm p-3 mb-3">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">${data.titre}</h4>
+                            <div class="row mb-2">
+                                <div class="col-md-4"><strong>Estimation:</strong> ${data.estimation}</div>
+                                <div class="col-md-4"><strong>Ville:</strong> <span class="badge bg-primary">${data.ville ? data.ville.nom : 'N/A'}</span></div>
+                            </div>
+                           
+                            <h5 class="mt-3">Arrêts et montants:</h5>
+                            ${arretsHtml}
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                infoDiv.innerHTML = `<p class="text-danger">Impossible de récupérer les informations de l'itinéraire.</p>`;
+                console.error(error);
+            });
+    });
+});
+</script>
+
+
+
+
 
                                     <!-- Montant -->
-                                    <div class="col-md-6 mb-3">
+                                    {{-- <div class="col-md-6 mb-3">
                                         <label for="montant" class="form-label">Montant du voyage (FCFA)</label>
                                         <input type="text" name="montant" id="montant" class="form-control"
                                             value="{{ old('montant') }}" required
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                    </div>
+                                    </div> --}}
                                <div class="col-md-6 mb-3">
     <label for="heure_depart" class="form-label">Heure de départ</label>
     <input type="time" name="heure_depart" id="heure_depart" class="form-control" required>

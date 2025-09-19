@@ -39,6 +39,11 @@ class Bus extends Model
         return $this->belongsTo(ConfigurationPlaceBus::class, 'configuration_place_buses_id');
     }
 
+    public function getPhotoBusAttribute($value)
+{
+    return $value ? asset('buses/' . $value) : null;
+}
+
 
 
 

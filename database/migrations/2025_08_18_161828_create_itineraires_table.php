@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('itineraires1', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('voyages_id')->nullable()->constrained('voyages1', 'id');
-            // $table->foreignId('voyages_id')->constrained('voyages', 'id');
-            $table->string('start_address');
-            $table->string('end_address');
-            $table->float('distance')->nullable();
-            $table->integer('duration')->nullable();
-            $table->timestamps();
-        });
+        // Schema::create('itineraires1', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('voyages_id')->nullable()->constrained('voyages1', 'id');
+        //     // $table->foreignId('voyages_id')->constrained('voyages', 'id');
+        //     $table->string('start_address');
+        //     $table->string('end_address');
+        //     $table->float('distance')->nullable();
+        //     $table->integer('duration')->nullable();
+        //     $table->timestamps();
+        // });
     }
 
     /**

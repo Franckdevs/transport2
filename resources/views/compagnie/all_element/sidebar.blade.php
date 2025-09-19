@@ -40,7 +40,8 @@
                         <!-- BUS / CARS -->
                         @if (Auth::user()->can('bus-cars') || Auth::user()->can('tout-les-permissions'))
                             <li class="{{ request()->routeIs('dashboardcompagnie_name') ? 'active' : '' }}">
-                            <li class="{{ request()->routeIs('compagnie.bus') ? 'active' : '' }}">
+                            {{-- <li class="{{ request()->routeIs('compagnie.bus') ? 'active' : '' }}"> --}}
+                            <li class="{{ request()->routeIs('liste.bus', 'bus.*', 'compagnie.bus', 'activation.bus') ? 'active' : '' }}">
                                 <a class="m-link" href="{{ route('compagnie.bus') }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="currentColor"
                                         viewBox="0 0 16 16">
@@ -54,7 +55,8 @@
 
                         <!-- CHAUFFEURS -->
                         @if (Auth::user()->can('chauffeurs') || Auth::user()->can('tout-les-permissions'))
-                            <li class="{{ request()->routeIs('chauffeur.*') ? 'active' : '' }}">
+                            {{-- <li class="{{ request()->routeIs('chauffeur.*') ? 'active' : '' }}"> --}}
+                                    <li class="{{ request()->routeIs('chauffeur.*') || request()->routeIs('modifier.*') || request()->routeIs('voir.*') || request()->routeIs('activer.*') ? 'active' : '' }}">
                                 <a class="m-link" href="{{ route('chauffeur.index') }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="currentColor"
                                         viewBox="0 0 16 16">

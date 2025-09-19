@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 
+use App\Models\ArretVoyage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -49,55 +50,146 @@ public function show($id)
 
 
 
+// public function store(Request $request)
+// {
+//     $user = Auth::user();
+
+//     $validatedData = $request->validate([
+//         'itineraire_id' => 'required',
+//         'heure_depart' => 'required',
+//         'date_depart' => 'required',
+//         'bus_id' => 'required|exists:buses,id',
+//         'chauffeur_id' => 'required|exists:chauffeurs,id',
+//         'arrets.*.nom' => 'required|string|max:255',
+//     ]);
+
+//     dd($validatedData);
+
+//     $infoUserId = $user->info_user->id ?? null;
+//     $compagnieID = $user->info_user->gare->compagnie->id ?? $user->info_user->compagnie->id ?? null;
+//     //dd($garesID , $compagnieID );
+//     $garesID = $user->info_user->gare->id;
+//     // dd($compagnieID);
+//     // Création du voyage
+//     $voyage = Voyage::create([
+//         'info_user_id' => $infoUserId,
+//         'itineraire_id' => $request->itineraire_id,
+//         'heure_depart' => $validatedData['heure_depart'],
+//         'date_depart' => $validatedData['date_depart'],
+//         'bus_id' => $validatedData['bus_id'],
+//         'chauffeur_id' => $validatedData['chauffeur_id'],
+//         'compagnie_id' => $compagnieID ?? null,
+//         'gare_id'=>$garesID ?? null,
+//         'status'=>1,
+//     ]);
+//     // Redirection vers la liste des voyages avec un message de succès
+//     return redirect()->route('voyage.index')->with('success', 'Le voyage a été créé avec succès.');
+// }
+
 public function store(Request $request)
 {
     $user = Auth::user();
 
+    // Validation principale
     $validatedData = $request->validate([
-        'itineraire_id' => 'required',
-        'montant' => 'required|numeric|min:1',
+        'itineraire_id' => 'required|exists:itineraires,id',
         'heure_depart' => 'required',
-        'date_depart' => 'required',
+        'date_depart' => 'required|date',
         'bus_id' => 'required|exists:buses,id',
         'chauffeur_id' => 'required|exists:chauffeurs,id',
-        'arrets.*.nom' => 'required|string|max:255',
+        'montant'   => 'array',
+        'montant.*' => 'numeric|min:0', // chaque montant est requis et >= 0
     ]);
 
-    $infoUserId = $user->info_user->id ?? null;
-    $compagnieID  = $user->info_user->gare->compagnie->id;
-    $garesID = $user->info_user->gare->id;
-    // dd($compagnieID);
+    $infoUserId  = $user->info_user->id ?? null;
+    $compagnieID = $user->info_user->gare->compagnie->id 
+                ?? $user->info_user->compagnie->id 
+                ?? null;
+    $garesID     = $user->info_user->gare->id ?? null;
+
     // Création du voyage
     $voyage = Voyage::create([
         'info_user_id' => $infoUserId,
-        'itineraire_id' => $request->itineraire_id,
-        'montant' => $validatedData['montant'],
+        'itineraire_id' => $validatedData['itineraire_id'],
         'heure_depart' => $validatedData['heure_depart'],
         'date_depart' => $validatedData['date_depart'],
         'bus_id' => $validatedData['bus_id'],
         'chauffeur_id' => $validatedData['chauffeur_id'],
         'compagnie_id' => $compagnieID,
-        'gare_id'=>$garesID ?? null,
-        'status'=>1,
+        'gare_id'=> $garesID,
+        'status'=> 1,
     ]);
 
-    // // Vérifier si 'arrets' existe et est un tableau avant de boucler dessus
-    // if (isset($request->arrets) && is_array($request->arrets)) {
-    //     foreach ($request->arrets as $arretData) {
-    //         Arret::create([
-    //             'nom' => $arretData['nom'],
-    //             'voyage_id' => $voyage->id,
-    //         ]);
-    //     }
-    // } else {
-    //     // Si 'arrets' est vide ou non fourni, gérer cela comme un cas spécial ou afficher un message d'erreur
-    //     // Par exemple :
-    //     return redirect()->route('voyage.index')->with('error', 'Aucun arrêt fourni pour le voyage.');
-    // }
+    // Sauvegarde des montants pour chaque arrêt
+    if (!empty($validatedData['montant'])) {
+        $arretsData = [];
+        foreach ($validatedData['montant'] as $arretId => $montant) {
+            $arretsData[] = [
+                'voyage_id' => $voyage->id,
+                'arret_id' => $arretId,
+                'montant'  => $montant,
+            ];
+        }
 
-    // Redirection vers la liste des voyages avec un message de succès
-    return redirect()->route('voyage.index')->with('success', 'Le voyage a été créé avec succès.');
+        // Débogage : voir toutes les données des arrêts avant insertion
+        // dd($arretsData);
+
+        // Insertion des arrêts liés au voyage
+        foreach ($arretsData as $arret) {
+            ArretVoyage::create($arret);
+        }
+    }
+
+    return redirect()
+        ->route('voyage.index')
+        ->with('success', 'Le voyage a été créé avec succès.');
 }
+
+
+
+
+public function details($id)
+{
+    // Récupère l'itinéraire
+    $itineraire = Itineraire::with(['ville', 'compagnie', 'gare', 'arrets'])->find($id);
+
+    if (!$itineraire) {
+        return response()->json(['error' => 'Itinéraire non trouvé'], 404);
+    }
+
+    return response()->json([
+        'id' => $itineraire->id,
+        // 'user_id' => $itineraire->user_id,
+        // 'info_user_id' => $itineraire->info_user_id,
+        'titre' => $itineraire->titre,
+        'estimation' => $itineraire->estimation,
+        // 'statut' => $itineraire->statut,
+        // Infos liées
+        'ville' => $itineraire->ville ? [
+            'id' => $itineraire->ville->id,
+            'nom' => $itineraire->ville->nom_ville, // adapte selon tes colonnes
+        ] : null,
+        // 'compagnie' => $itineraire->compagnie ? [
+        //     'id' => $itineraire->compagnie->id,
+        //     'nom' => $itineraire->compagnie->nom,
+        // ] : null,
+        // 'gare' => $itineraire->gare ? [
+        //     'id' => $itineraire->gare->id,
+        //     'nom' => $itineraire->gare->nom,
+        // ] : null,
+        // Arrets associés
+        'arrets' => $itineraire->arrets->map(function($arret){
+            return [
+                'id' => $arret->id,
+                'nom' => $arret->nom,
+                'info_user_id' => $arret->info_user_id,
+                'created_at' => $arret->created_at,
+                'updated_at' => $arret->updated_at,
+            ];
+        }),
+    ]);
+}
+
 
 
 public function update(Request $request, $id)

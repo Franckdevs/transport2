@@ -118,13 +118,13 @@ Route::get('/bus-liste','index')->name('liste.bus');
 Route::get('/bus/{bus}', 'show')->name('bus.show');
 Route::get('/bus-edit/{bus}', 'edit')->name('bus.edit');
 Route::post('/bus-update/{bus}', 'update')->name('bus.update');
-
 // Route::controller(BusController::class)->group(function () {
     Route::get('/bus', 'index')->name('compagnie.bus');
     Route::get('/bus-create', 'create')->name('bus.create');
     Route::post('/bus/store', 'store')->name('bus.store');
-    Route::post('destroy_reactivation/{id}','destroy_reactivation')->name('activation.bus');
+    // Route::post('destroy_reactivation/{bus}','destroy_reactivation')->name('activation.bus');
 });
+Route::post('/bus/destroy_reactivation/{id}', [BusController::class, 'destroy_reactivation'])->name('activation.bus');
 
 Route::post('/bus/destroy/{bus}', [BusController::class, 'destroy'])->name('bus.destroy');
 
@@ -146,10 +146,10 @@ Route::put('/personnel/{id}/reactiver', [PersonelController::class, 'destroy_rea
 
 
 Route::controller(ChauffeurController::class)->group(function () {
-    Route::get('/chauffeur', 'index')->name('chauffeur.index');
+    Route::get('/chauffeur', 'index2')->name('chauffeur.index');
     Route::get('/chauffeur/create', 'create')->name('chauffeur.create');
     Route::post('/chauffeur/store', 'store')->name('chauffeur.store');
-    Route::get('edit-modifier/{id}', 'edit')->name('modifier.edit');
+    Route::get('/edit-modifier/{id}', 'edit')->name('modifier.edit');
     Route::post('update/{id}', 'update')->name('modifier.update');
     Route::get('show/{id}', 'show')->name('voir.show');
     Route::post('destroy/{id}', 'destroy')->name('activer.destroy');
@@ -175,7 +175,7 @@ Route::controller(ItineraireController::class)->group(function () {
     Route::get('/itineraire', 'index')->name('itineraire.index');
     Route::get('/itineraire/create', 'create')->name('itineraire.create');
     Route::post('/itineraire/store', 'store')->name('itineraire.store');
-    Route::get('/itineraire/{id}', 'show')->name('itineraire.show');
+    Route::get('/itineraire-details/{id}', 'show')->name('itineraire.show');
     Route::delete('/itineraire/{id}/destroy', 'destroy')->name('itineraire.destroy');
     Route::put('/itineraire/{id}/reactivation', 'destroy_reactivation')->name('itineraire.reactivation');
     Route::get('/itineraire-update-route/{id}', 'edit')->name('itineraire.edit');
@@ -194,6 +194,7 @@ Route::controller(VoyageController::class)->group(function () {
     Route::post('/voyage/destroy/{id}', 'destroy')->name('voyage.destroy');
 // Réactiver / Activer
     Route::post('/voyage/reactivation/{id}', 'destroy_reactivation')->name('voyage.reactivation');
+    Route::get('/itineraire/{id}', 'details');
 
 });
 

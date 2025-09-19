@@ -10,7 +10,7 @@ class Voyage extends Model
         'info_user_id',
         'bus_id',
         'chauffeur_id',
-        'montant',
+        // 'montant',
         'heure_depart',
         'date_depart',
         'compagnie_id',
@@ -50,6 +50,12 @@ class Voyage extends Model
     public function gare()
     {
         return $this->belongsTo(gare::class, 'gare_id');
+    }
+
+    // Relation avec les arrêts du voyage
+    public function arretVoyages()
+    {
+        return $this->hasMany(ArretVoyage::class);
     }
 
 

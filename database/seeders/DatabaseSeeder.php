@@ -22,8 +22,9 @@ class DatabaseSeeder extends Seeder
             JourSeeder::class,
             VilleSeeder::class,
             SuperAdminBetroSeeder::class,
-            ConfigurationPlaceBus::class,
-        ]);
+            ConfigurationPlaceBusSeeder::class, // ✅ ici
+            RoleUtilisateurSeeder::class,
+            ]);
 
         // User::factory(10)->create();
 

@@ -10,7 +10,7 @@ use App\Models\chauffeur;
 
 class ChauffeurController extends Controller
 {
-    public function index()
+    public function index2()
     {
         $chauffeurs = Chauffeur::get();
 
@@ -65,7 +65,7 @@ public function store(Request $request)
             $validated['photo'] = 'chauffeurs/' . $filename;
         }
 
-        $validated['status'] = 'disponible';
+        $validated['status'] = 1;
 
         // Création du chauffeur
         $chauffeur = Chauffeur::create($validated);
@@ -92,7 +92,7 @@ public function show($id)
         return view("compagnie.chauffeur.create");
     }
 
-        public function edit($id)
+    public function edit($id)
     {
         $chauffeur = Chauffeur::find($id);
         return view("compagnie.chauffeur.edit" , compact("chauffeur"));

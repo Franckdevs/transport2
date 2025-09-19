@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Mail\FinalisationInscription;
 use App\Models\Compagnies;
 use App\Models\Otp;
+use App\Models\PaiementEnAttente;
 use App\Models\reservation;
 use App\Models\Utilisateur;
 use App\Models\UtilisateurEnAttente;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use App\Mail\OtpMail; // Assure-toi d'avoir créé ce Mailable
 use App\Models\Bus;
 use Illuminate\Support\Facades\Mail;
@@ -277,16 +280,12 @@ public function listeCompagnie(Request $request)
 
 public function listevoayge(Request $request , $id)
 {
-    // $compagnie = Compagnies::with([
-    //     'gares.itineraires.voyages' // on ajoute voyages ici
-    // ])->find($id);
-
     $compagnie = Compagnies::with([
     'gares.itineraires.voyages.chauffeur',
     'gares.itineraires.voyages.bus',
-     'gares.itineraires.arrets', // <- on ajoute les arrêts ici
-])->find($id);
-
+    'gares.itineraires.arrets', // <- on ajoute les arrêts ici
+    'gares.itineraires.voyages.arretVoyages.arret', // arrêts avec montant pour chaque voyage
+    ])->find($id);
 
     if (!$compagnie) {
         return response()->json([
@@ -297,23 +296,6 @@ public function listevoayge(Request $request , $id)
     return response()->json([
         'message' => 'Compagnie trouvée',
         'compagnie' => $compagnie,
-        // 'gares' => $compagnie->gares->map(function($gare) {
-        //     return [
-        //         'gare' => $gare,
-        //         'itineraires' => $gare->itineraires->map(function($itineraire) {
-        //             return [
-        //                 'itineraire' => $itineraire,
-        //                 'voyages' => $itineraire->voyages
-        //             ];
-        //         }),
-        //     ];
-        // }),
-        // 'itineraires_compagnie' => $compagnie->itineraires->map(function($itineraire) {
-        //     return [
-        //         'itineraire' => $itineraire,
-        //         'voyages' => $itineraire->voyages
-        //     ];
-        // }),
     ], 200);
 }
 
@@ -369,6 +351,37 @@ public function listevoayge(Request $request , $id)
 
 // }
 
+private function generateRandomString($length = 10) {
+$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+$randomString = '';
+
+for ($i = 0; $i < $length; $i++) {
+$randomString .= $characters[rand(0, strlen($characters) - 1)];
+}
+
+return $randomString;
+}
+
+
+// private function generateRandomString($length = 10)
+// {
+//     $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+//     do {
+//         $randomString = '';
+//         for ($i = 0; $i < $length; $i++) {
+//             $randomString .= $characters[rand(0, strlen($characters) - 1)];
+//         }
+
+//         // Vérifie si le code existe déjà via le modèle
+//         $exists = PaiementEnAttente::where('code', $randomString)->exists();
+
+//     } while ($exists);
+
+//     return $randomString;
+// }
+
+
 
 public function reservation(Request $request)
 {
@@ -412,21 +425,110 @@ $bus = Bus::with('configurationPlace')->find($voyage->bus_id);
         ], 409);
     }
 
-    // Enregistrer la réservation
-    $reservation = new Reservation();
-    $reservation->voyages_id = $voyage->id;
-    $reservation->utilisateurs_id = $utilisateur->id;
-    $reservation->numero_place = $request->numero_place;
-    $reservation->save();
+     $codePaiement = $this->generateRandomString();
 
-    return response()->json([
-        'message' => 'Réservation effectuée avec succès',
-        'voyage' => $voyage,
-        'bus' => $bus,
-        'utilisateur' => $utilisateur,
-        'reservation' => $reservation,
-    ], 201);
+        $verifier = PaiementEnAttente::where('code', $codePaiement)->first();
+        
+        if ($verifier) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cette demande de paiement existe déjà.'
+            ], 409); // 409 = conflit
+        }
+        $paiement = new PaiementEnAttente();
+        $paiement->utilisateur_id = $utilisateur->id;
+        $paiement->voyages_id = $voyage->id;
+        $paiement->numero_place = $request->numero_place;
+        $paiement->montant = $voyage->montant;
+        $paiement->code_paiement = $codePaiement;
+        $paiement->statut = 3;
+        // return response()->json([
+        //     'success'=> true,
+        //     'message'=> $paiement
+        //     ], 200);
+        $paiement->save();
+
+         $data = [
+            'code_paiement' => $codePaiement,
+            //  'credential_id' => "llnal6ched", // code unique donnee pour mes acces a la plateforme
+             'nom_usager' => $utilisateur->nom,
+             'prenom_usager' => $utilisateur->prenom,
+             'telephone' => $utilisateur->telephone,
+             'email' => $utilisateur->email,
+             'libelle_article' => "test fsfd zfdzdf efzee edfdezf",
+             'quantite' => 1,
+             'montant' => $voyage->montant,
+             'lib_order' => "test efzef edfzef efezf",
+            'Url_Logo' =>  asset('photo_personnel/1758024064_logo_bus.png'),
+            'pay_fees' => 1,
+            'Url_Retour' => 'https://127.0.0.1:8000/login_connexion',
+            'Url_Callback' => 'https://127.0.0.1:8000/api/retour_du_paiement',
+            // 'Url_Retour' => 'https://127.0.0.1:8000/',
+            // 'Url_Callback' => route('retour_du_paiement'),
+        ];
+    
+        // $reponse = Http::post('https://rest-airtime.paysecurehub.com/api/payhub-ws/build-away', $data);
+        $reponse = Http::withHeaders(['MerchantId' => 'llnal6ched', 'ApiKey' => 'shk_nDgSnvDpGa9ZEvtruZzxpO7gaSfP9qOJCfyh'])
+                ->post('http://rest-airtime.paysecurehub.com/api/payhub-ws/build-away', $data);
+
+        $ResJSON = $reponse->json();
+            //     return response()->json([
+            //    'success' => false,
+            //    'message' => 'teste',
+            //    'data'=> $ResJSON,
+            //    'response'=> $reponse,
+            //    'code'  =>$codePaiement,
+            //    'montant'=>$voyage->montant,
+            //    'body'=>$data
+            //      ], 200); // 409 = conflit
+
+        if ($reponse->status()===200) {
+            if ($ResJSON['code']===200){
+                // Redirection sur le hub de paiement
+                if (!empty($ResJSON['url'])){
+                     return response()->json([
+                        "success"=> true,
+                        "url"=> $ResJSON["url"],
+                        ],200);
+                    // return redirect()->away($ResJSON['url']);
+                }else{
+                    $mess = "Echec d'authentification pour acceder à la page demandée !";
+                    // toas($mess,'success');
+                    // return redirect()->back();
+                    return response()->json([
+                        "success"=> true,
+                        "message"=> $mess
+                        ],200);
+                }
+            }else{
+            return response()->json([
+            'success' => false,
+            'message' => $ResJSON['message']
+        ]);
+            }
+        }else{
+            $mess = 'Une erreur inattendue s\'est produite, verifier que vous ' .
+            'avez accès à internet, puis reéssayer. erreur ' . $reponse->status().', impossible de joindre l\'hôte !';
+            // toast($mess,'error');
+            return redirect()->back();
+        }
+
+    // // Enregistrer la réservation
+    // $reservation = new Reservation();
+    // $reservation->voyages_id = $voyage->id;
+    // $reservation->utilisateurs_id = $utilisateur->id;
+    // $reservation->numero_place = $request->numero_place;
+    // $reservation->save();
+
+    // return response()->json([
+    //     'message' => 'Réservation effectuée avec succès',
+    //     'voyage' => $voyage,
+    //     'bus' => $bus,
+    //     'utilisateur' => $utilisateur,
+    //     'reservation' => $reservation,
+    // ], 201);
 }
+
 
 public function recu_reservation(Request $request, $token)
 {

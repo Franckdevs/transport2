@@ -47,5 +47,10 @@ public function itineraires()
     return $this->hasMany(Itineraire::class, 'compagnie_id');
 }
 
+public function getLogoCompagniesAttribute($value)
+{
+    return $value ? asset('logo_compagnie/' . $value) : null;
+}
+
 
 }
