@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\OtpMail; // Assure-toi d'avoir créé ce Mailable
+use App\Models\ArretVoyage;
 use App\Models\Bus;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -389,6 +390,7 @@ public function reservation(Request $request)
         'voyage_id' => 'required|exists:voyages,id',
         'token' => 'required',
         'numero_place' => 'required|integer|min:1',
+        'id_arret_voayage' => 'required|integer|min:1',
     ]);
 
     $id = $request->input('voyage_id');
@@ -398,49 +400,69 @@ public function reservation(Request $request)
             'message' => 'Voyage non trouvé',
         ], 404);
     }
-
+    
+    $id_arret_voayage = $request->input('id_arret_voayage');
+    $arret_voyages = ArretVoyage::find($id_arret_voayage);
+    if (!$arret_voyages) {
+        return response()->json([
+            'message'=> 'Arret voyage non trouvé',
+        ], 404);
+    }
+    
     $utilisateur = Utilisateur::where('token', $request->token)->first();
     if (!$utilisateur) {
         return response()->json([
             'message' => 'Utilisateur non trouvé',
         ], 404);
     }
-
-$bus = Bus::with('configurationPlace')->find($voyage->bus_id);
+    
+    $bus = Bus::with('configurationPlace')->find($voyage->bus_id);
     // Vérifier si la place demandée existe dans le bus
     if ($request->numero_place > $bus->nombre_places) {
         return response()->json([
             'message' => "Le bus ne contient que {$bus->nombre_places} places",
         ], 400);
     }
-
+    
     // Vérifier si la place est déjà réservée pour ce voyage
     $placeDejaPrise = Reservation::where('voyages_id', $voyage->id)
         ->where('numero_place', $request->numero_place)
         ->exists();
-
-    if ($placeDejaPrise) {
+        
+        if ($placeDejaPrise) {
         return response()->json([
             'message' => "La place numéro {$request->numero_place} est déjà réservée.",
         ], 409);
     }
+    
+    $codePaiement = $this->generateRandomString();
+    
+    $verifier = PaiementEnAttente::where('code', $codePaiement)->first();
+    
+    if ($verifier) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Cette demande de paiement existe déjà.'
+        ], 400); // 409 = conflit
+    }
+    // return response()->json([
+    //           'message' => 'Voyage non trouvé',
+    //       ], 404);
+    // $verifier = PaiementEnAttente::where('voyage_id', $request->voyage_id)->where('numero_place', $request->numero_place)->first();
+    // if ($verifier) {
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'Erreure cette place pour ce voyage'
+    //     ], 400); // 409 = conflit
+    // }
 
-     $codePaiement = $this->generateRandomString();
-
-        $verifier = PaiementEnAttente::where('code', $codePaiement)->first();
-        
-        if ($verifier) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cette demande de paiement existe déjà.'
-            ], 409); // 409 = conflit
-        }
         $paiement = new PaiementEnAttente();
         $paiement->utilisateur_id = $utilisateur->id;
         $paiement->voyages_id = $voyage->id;
         $paiement->numero_place = $request->numero_place;
-        $paiement->montant = $voyage->montant;
+        $paiement->montant =$arret_voyages->montant;
         $paiement->code_paiement = $codePaiement;
+        $paiement->id_arret_voayage = $id_arret_voayage;
         $paiement->statut = 3;
         // return response()->json([
         //     'success'=> true,
@@ -457,7 +479,7 @@ $bus = Bus::with('configurationPlace')->find($voyage->bus_id);
              'email' => $utilisateur->email,
              'libelle_article' => "test fsfd zfdzdf efzee edfdezf",
              'quantite' => 1,
-             'montant' => $voyage->montant,
+             'montant' => $arret_voyages->montant,
              'lib_order' => "test efzef edfzef efezf",
             'Url_Logo' =>  asset('photo_personnel/1758024064_logo_bus.png'),
             'pay_fees' => 1,
@@ -530,6 +552,38 @@ $bus = Bus::with('configurationPlace')->find($voyage->bus_id);
 }
 
 
+// public function recu_reservation(Request $request, $token)
+// {
+//     // Récupérer l'utilisateur via son token
+//     $utilisateur = Utilisateur::where('token', $token)->first();
+
+//     if (!$utilisateur) {
+//         return response()->json([
+//             'status' => false,
+//             'message' => 'Utilisateur non trouvé',
+//         ], 404);
+//     }
+//     $reservations = Reservation::with([
+//     'voyage.compagnie',
+//     // 'voyage.itineraire',
+//     // 'voyage.info_user',
+//     // 'voyage.bus',
+//     // 'voyage.chauffeur',
+//     // 'voyage.gare',
+//     'voyage.arretvoyages',
+//     'voyage.arretvoyages.arret'
+// ])
+// ->where('utilisateurs_id', $utilisateur->id)
+// ->get();
+
+//     return response()->json([
+//         'status' => true,
+//         'reservations' => $reservations,
+//         'utilisateur' => $utilisateur,
+//     ], 200);
+// }
+
+
 public function recu_reservation(Request $request, $token)
 {
     // Récupérer l'utilisateur via son token
@@ -542,20 +596,25 @@ public function recu_reservation(Request $request, $token)
         ], 404);
     }
 
-    // Récupérer toutes les réservations liées à cet utilisateur avec la relation voyage
-    // $reservations = Reservation::with('voyage')
-    //     ->where('utilisateurs_id', $utilisateur->id)
-    //     ->get();
+    // Charger les réservations avec les relations utiles
     $reservations = Reservation::with([
-    'voyage.itineraire',
-    'voyage.info_user',
-    'voyage.bus',
-    'voyage.chauffeur',
-    'voyage.compagnie',
-    'voyage.gare',
-])
-->where('utilisateurs_id', $utilisateur->id)
-->get();
+        'voyage.compagnie',
+        'voyage.arretvoyages',
+        'voyage.arretvoyages.arret'
+    ])
+    ->where('utilisateurs_id', $utilisateur->id)
+    ->get();
+
+    // Ajouter un "titre/objet" personnalisé à chaque réservation
+    $reservations = $reservations->map(function ($reservation) {
+        $compagnie = $reservation->voyage->compagnie->nom_complet_compagnies  ?? 'Compagnie inconnue';
+        $depart = $reservation->voyage->arretvoyages->first()->arret->nom ?? 'Départ inconnu';
+        $arrivee = $reservation->voyage->arretvoyages->last()->arret->nom ?? 'Arrivée inconnue';
+
+        $reservation->objet = "Réservation #{$reservation->id} – {$compagnie} ({$depart} → {$arrivee})";
+
+        return $reservation;
+    });
 
     return response()->json([
         'status' => true,
@@ -563,8 +622,6 @@ public function recu_reservation(Request $request, $token)
         'utilisateur' => $utilisateur,
     ], 200);
 }
-
-
 
 public function placesRestantes(Request $request)
 {

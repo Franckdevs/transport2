@@ -13,6 +13,7 @@ class Reservation extends Model
         'numero_place',
         'autre_informations',
         'statut', // tu avais "status" dans $fillable mais dans le Blade tu utilises "statut"
+        'id_arret_voayage'
     ];
 
     public function voyage()
@@ -24,4 +25,13 @@ class Reservation extends Model
     {
         return $this->belongsTo(Utilisateur::class, 'utilisateurs_id');
     }
+
+   public function arretvoyage()
+{
+    return $this->belongsTo(ArretVoyage::class, 'id_arret_voayage');
+}
+
+
+
+
 }

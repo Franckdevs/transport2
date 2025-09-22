@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ArretVoyage;
 use App\Models\Paiement;
 use App\Models\PaiementEnAttente;
 use App\Models\Utilisateur;
@@ -89,6 +90,7 @@ return $randomString;
     $request->validate([
     'token' => 'required|string', // correction de 'requried' -> 'required' et on précise le type
     'voyage_id' => 'nullable|integer', // on précise que c'est facultatif et que c'est un entier
+    'id_arret_voayage' => 'required|integer|min:1',
     ]);
 
    $utilisateur = Utilisateur ::where('token', $request->token)->first();
@@ -110,6 +112,13 @@ return $randomString;
             ], 404);
         }
 
+    $id_arret_voayage = $request->input('id_arret_voayage');
+    $arret_voyages = ArretVoyage::find($id_arret_voayage);
+    if (!$arret_voyages) {
+        return response()->json([
+            'message'=> 'Arret voyage non trouvé',
+            ], 404);
+    }
         // Récupérer l'installation associée à la taxe
         // $installation = Installation::where('user_id', $taxe->id_installation)->first();
 
@@ -133,7 +142,7 @@ return $randomString;
              'email' => $utilisateur->email,
              'libelle_article' => "test fsfd zfdzdf efzee edfdezf",
              'quantite' => 1,
-             'montant' => $voyage->montant,
+             'montant' => $arret_voyages->montant,
              'lib_order' => "test efzef edfzef efezf",
             'Url_Logo' =>  asset('photo_personnel/1758024064_logo_bus.png'),
             'pay_fees' => 1,

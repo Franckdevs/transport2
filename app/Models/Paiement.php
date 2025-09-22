@@ -38,6 +38,7 @@ class Paiement extends Model
         'no_transation',
         'numTel',
         'status',
+        'id_arret_voayage'
     ];
 }
 

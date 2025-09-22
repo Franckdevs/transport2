@@ -36,5 +36,8 @@ class PaiementEnAttente extends Model
         'no_transation',
         'numTel',
         'status',
+        'id_arret_voayage'
     ];
+
+    
 }

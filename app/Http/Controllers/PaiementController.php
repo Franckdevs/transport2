@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Paiement;
 use App\Models\PaiementEnAttente;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 
 class PaiementController extends Controller
@@ -67,27 +68,25 @@ class PaiementController extends Controller
 
     public function callback(Request $request)
     {
-
         (string) $RetourPaiementEnJSON = json_encode($request->input());
         (string) $Chaine = "Debut callback paiement, recu: " . $RetourPaiementEnJSON;
         try {
             (int) $Code = $request->code;
             (int) $Montant = $request->montant;
             (string) $codePaiement = $request->codePaiement;
-
             // Recupère le paiement en attente avec le statut '2'
             $paiementinit = PaiementEnAttente::where('code_paiement', $codePaiement)
-                ->first();
+            ->first();
             if (!empty($paiementinit->id)) {
                 if ($Code == 200) {
                     $paiement = new Paiement();
                     $paiement->code_paiement = $codePaiement;
-                    $paiement->utilisateur_id = $paiementinit->id;
-                    $paiement->voyages_id = $paiementinit->id;
+                    $paiement->utilisateur_id = $paiementinit->utilisateur_id;
+                    $paiement->voyages_id = $paiementinit->voyages_id;
                     $paiement->numero_place = $paiementinit->numero_place;
                     $paiement->montant = $paiementinit->montant;
-                    $paiement->code_paiement = $codePaiement;
                     $paiement->status = 1;
+                    $paiement->id_arret_voayage = $paiementinit->id_arret_voayage;
                     $paiement->datePaiement =  $request->datePaiement;
                     $paiement->HeurePaiement =  $request->HeurePaiement;
                     $paiement->code =  $request->code;
@@ -95,16 +94,31 @@ class PaiementController extends Controller
                     $paiement->telephone =  $request->numTel;
                     $paiement->moyenPaiement =  $request->moyenPaiement;
                     $paiement->save();
-                }else {
+
+                    $creation_reservations = new Reservation();
+                    $creation_reservations->voyages_id = $paiementinit->voyages_id;
+                    $creation_reservations->utilisateurs_id = $paiementinit->utilisateur_id;
+                    $creation_reservations->numero_place = $paiementinit->numero_place;
+                    $creation_reservations->id_arret_voayage = $paiementinit->id_arret_voayage; 
+                    $creation_reservations->save();	
+
+                    return response()->json([
+                     "data"=> $RetourPaiementEnJSON,
+                     "code"=> $Code,
+                     "montant"=> $Montant,
+                     "paiement"=>$paiementinit,
+                     "creation" => $creation_reservations
+                     ]);
+                } else {
                     if ($Code != 200) {
                     $paiement = new Paiement();
-                    $paiement->code_paiement = $codePaiement;
-                    $paiement->utilisateur_id = $paiementinit->id;
-                    $paiement->voyages_id = $paiementinit->id;
+                   $paiement->code_paiement = $codePaiement;
+                    $paiement->utilisateur_id = $paiementinit->utilisateur_id;
+                    $paiement->voyages_id = $paiementinit->voyages_id;
                     $paiement->numero_place = $paiementinit->numero_place;
                     $paiement->montant = $paiementinit->montant;
-                    $paiement->code_paiement = $codePaiement;
-                    $paiement->status = 3;
+                    $paiement->status = 1;
+                    $paiement->id_arret_voayage = $paiementinit->id_arret_voayage;
                     $paiement->datePaiement =  $request->datePaiement;
                     $paiement->HeurePaiement =  $request->HeurePaiement;
                     $paiement->code =  $request->code;
@@ -112,6 +126,12 @@ class PaiementController extends Controller
                     $paiement->telephone =  $request->numTel;
                     $paiement->moyenPaiement =  $request->moyenPaiement;
                     $paiement->save();
+                    // return response()->json([
+                    //  "data"=> $RetourPaiementEnJSON,
+                    //  "code"=> $Code,
+                    //  "montant"=> $Montant,
+                    //  "paiement"=>$paiementinit
+                    //  ]);
                      }
                 }
             } 

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('voyage_id')->nullable()->constrained('voyages');
             $table->foreignId('arret_id')->nullable()->constrained('arrets');
+            // $table->foreignId('id_arret_voayage')->nullable()->constrained('arret_voyages', 'id');
             $table->string('montant')->nullable();
             $table->timestamps();
         });
