@@ -262,8 +262,8 @@ public function listeCompagnie(Request $request)
         $listeCompagnie = $listeCompagnie->map(function ($compagnie) {
             if ($compagnie->logo_compagnies) {
                 // Tes fichiers sont dans /public/logo_compagnie/
-                $compagnie->logo_url  = asset('logo_compagnie/' . $compagnie->logo_compagnies);
-                $compagnie->logo_path = 'logo_compagnie/' . $compagnie->logo_compagnies;
+                $compagnie->logo_url  = asset( $compagnie->logo_compagnies);
+                $compagnie->logo_path =  $compagnie->logo_compagnies;
             } else {
                 $compagnie->logo_url  = asset('assets/img/default-user.png');
                 $compagnie->logo_path = null;
