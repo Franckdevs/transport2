@@ -157,16 +157,16 @@ public function destroy($id)
     $chauffeur = Chauffeur::findOrFail($id);
     $chauffeur->status = 3; // Supprimé ou inactif
     $chauffeur->save();
-
     return redirect()->back()->with('success', 'Chauffeur supprimé avec succès.');
 }
 
 public function destroy_reactivation($id)
 {
+    // dd('debut');
     $chauffeur = Chauffeur::findOrFail($id);
     $chauffeur->status = 1; // Réactivation
     $chauffeur->save();
-
+// dd($chauffeur ,"activation");
     return redirect()->back()->with('success', 'Chauffeur réactivé avec succès.');
 }
 

@@ -247,11 +247,11 @@
                     </div>
 
                     <!-- Informations Compagnie -->
-                    <div class="col-12">
+                    {{-- <div class="col-12">
                         <div class="card border-0 shadow-sm">
                             <div class=
                             "card-header 
-                            {{-- bg-success  --}}
+                              bg-success 
                             text-white py-3"
                             >
                                 
@@ -307,7 +307,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

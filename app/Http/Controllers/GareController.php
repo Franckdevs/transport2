@@ -299,7 +299,13 @@ $user->info_user->update([
 public function edit(gare $gare ,$id)
 {
     $gare = Gare::find($id);
+// $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
+//     ->where('name', 'NOT LIKE', '%ajouter%')
+//         ->where('name', 'NOT LIKE', '%tout-les-permissions%')
+
+//     ->get();
     $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
+
     $compagnie_id = Auth::user()->info_user->compagnie->id;
 
     // Récupérer l'utilisateur lié à la gare
@@ -359,7 +365,11 @@ public function index2()
 public function create2()
 {
     // Récupérer toutes les permissions sauf celles qui contiennent "Betro"
-    $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
+    // $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
+    $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
+    ->where('name', 'NOT LIKE', '%ajouter%')
+        ->where('name', 'NOT LIKE', '%tout-les-permissions%')
+    ->get();
     $compagnie_id = Auth::user()->info_user->compagnie->id;
 
     return view('compagnie.gares.create', [
