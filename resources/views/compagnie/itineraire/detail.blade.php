@@ -58,10 +58,12 @@
                             <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Statut</label>
                                 <div>
+                                    
                                     <span
-                                        class="badge statut-badge {{ $voyage->statut == 1 ? 'active' : 'inactive' }} fs-6 px-3 py-2 rounded-pill">
-                                        {{ $voyage->statut == 1 ? 'Actif' : 'Inactif' }}
+                                        class="badge statut-badge {{ $voyage->status == 1 ? 'active' : 'inactive' }} fs-6 px-3 py-2 rounded-pill">
+                                        {{ $voyage->status == 1 ? 'Actif' : 'Inactif' }}
                                     </span>
+
                                 </div>
                             </div>
                         </div>
@@ -70,23 +72,17 @@
 
                         <h5 class="fw-semibold mb-3 text-secondary">Arrêts du voyage</h5>
 
-                    @if ($voyage->arrets && $voyage->arrets->count() > 0)
+@if ($voyage->arrets && $voyage->arrets->count() > 0)
     <ul class="list-group list-group-flush">
-        @foreach ($voyage->arrets as $index => $arret)
+        @foreach ($voyage->arrets as $arret)
             @php
-                $total = $voyage->arrets->count();
-                if ($index == 0) {
-                    $label = 'Ville de départ';
-                } elseif ($index == $total - 1) {
-                    $label = 'Ville d\'arrivée';
-                } else {
-                    $label = 'Arrêt';
-                }
+                $gare = $arret->gare->nom_gare ?? 'Gare non définie';
+                $ville = $arret->gare->ville->nom_ville ?? 'Ville non définie';
             @endphp
-            <li class="list-group-item d-flex align-items-center border-0 px-0 py-2 animate-slideInLeft">
-                <i class="fas fa-map-marker-alt text-primary fs-5 me-3"></i>
+            <li class="list-group-item d-flex align-items-center border-0 px-0 py-2 animate-slideInLeft hover-item">
                 <span class="fs-6 text-dark">
-                    <strong>{{ $label }} :</strong> {{ $arret->nom ?? 'Nom non défini' }}
+                    <strong>Gare:</strong> <span class="badge bg-secondary text-white px-2 py-1 rounded">{{ $gare }}</span>
+                    <strong>Ville:</strong> <span class="badge bg-light text-primary px-2 py-1 rounded">{{ $ville }}</span>
                 </span>
             </li>
         @endforeach
@@ -96,9 +92,13 @@
 @endif
 
 
-                        {{-- <a href="{{ route('itineraire.index') }}" class="btn btn-primary mt-4 shadow-sm btn-hover-scale">
-                            <i class="fas fa-arrow-left me-2"></i> Retour à la liste
-                        </a> --}}
+
+
+{{-- @endif --}}
+{{-- @else
+    <p class="text-muted fst-italic">Aucun arrêt défini pour ce voyage.</p>
+@endif --}}
+
 
                     </div>
                 </div>

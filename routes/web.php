@@ -20,10 +20,14 @@ use App\Http\Controllers\ReservationTicketController;
 
 // Route::get('/', [ConnexionController::class, 'premierePage'])->name('login');
 Route::get('/login', [ConnexionController::class, 'logins'])->name('login');
-Route::post('/', [ConnexionController::class, 'logout'])->name('logout');
+Route::post('/', [ConnexionController::class, 'logout'])->name('page_connexion');
+
+// Route::get('/', function () {
+//     return redirect()->route('login');
+// });
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('acceuil.acceuil');
 });
 
 // Route::middleware('auth')->group(function () {
@@ -105,11 +109,8 @@ Route::controller(ReservationTicketController::class)->group(function () {
     Route::get('/gares-show/{gares}', 'show')->name('gares.show');
     Route::post('/destroy_desactiver/{gares}', 'destroy_desactiver')->name('gares.destroy_desactiver');
     Route::post('/destroy_reactivation/{gares}', 'destroy_reactivation')->name('gares.destroy_reactivation');
-
     Route::get('/gares-modifier/{id}', 'edit')->name('gares.edit');
-        Route::put( '/update2-gare/{id}', 'update2')->name('gares.update2');
-
-
+    Route::put( '/update2-gare/{id}', 'update2')->name('gares.update2');
 });
 
 

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Compagnies;
 use App\Models\Paiement;
 use App\Models\PaiementEnAttente;
 use App\Models\Reservation;
+use App\Models\Voyage;
 use Illuminate\Http\Request;
 
 class PaiementController extends Controller
@@ -77,6 +79,18 @@ class PaiementController extends Controller
             // Recupère le paiement en attente avec le statut '2'
             $paiementinit = PaiementEnAttente::where('code_paiement', $codePaiement)
             ->first();
+
+            $trouvervoyage = Voyage::where('id', $paiementinit->voyages_id)->first();
+            $compagnie = Compagnies::where('id', $trouvervoyage->compagnie_id)->first();
+            // return response()->json([
+            //          "data"=> $RetourPaiementEnJSON,
+            //          "code"=> $Code,
+            //          "montant"=> $Montant,
+            //          "paiement"=>$paiementinit,
+            //         //  "creation" => $creation_reservations,
+            //          "trouvervoyage"=>$trouvervoyage,
+            //         "compagnie"=>$compagnie
+            //          ]);
             if (!empty($paiementinit->id)) {
                 if ($Code == 200) {
                     $paiement = new Paiement();
@@ -93,6 +107,8 @@ class PaiementController extends Controller
                     $paiement->referencePaiement =  $request->referencePaiement;
                     $paiement->telephone =  $request->numTel;
                     $paiement->moyenPaiement =  $request->moyenPaiement;
+                    $paiement->compagnie_id = $compagnie->id;
+                    // compagnie
                     $paiement->save();
 
                     $creation_reservations = new Reservation();
@@ -100,15 +116,19 @@ class PaiementController extends Controller
                     $creation_reservations->utilisateurs_id = $paiementinit->utilisateur_id;
                     $creation_reservations->numero_place = $paiementinit->numero_place;
                     $creation_reservations->id_arret_voayage = $paiementinit->id_arret_voayage; 
+                    $creation_reservations->paiements_id = $paiement->id;
                     $creation_reservations->save();	
 
                     return response()->json([
                      "data"=> $RetourPaiementEnJSON,
                      "code"=> $Code,
                      "montant"=> $Montant,
-                     "paiement"=>$paiementinit,
-                     "creation" => $creation_reservations
-                     ]);
+                     "paiementinit"=>$paiementinit,
+                     "creation" => $creation_reservations,
+                     "paiement"=>$paiement,
+                     "compagnie"=>$compagnie,
+                     ]);    
+
                 } else {
                     if ($Code != 200) {
                     $paiement = new Paiement();
@@ -125,6 +145,7 @@ class PaiementController extends Controller
                     $paiement->referencePaiement =  $request->referencePaiement;
                     $paiement->telephone =  $request->numTel;
                     $paiement->moyenPaiement =  $request->moyenPaiement;
+                    $paiement->compagnie_id = $compagnie->compagnie_id;
                     $paiement->save();
                     // return response()->json([
                     //  "data"=> $RetourPaiementEnJSON,

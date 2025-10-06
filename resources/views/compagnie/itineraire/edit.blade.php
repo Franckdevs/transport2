@@ -127,56 +127,82 @@
                                 <button type="button" class="btn btn-secondary" id="add-arret">+ Ajouter un arrêt</button>
                             </div> --}}
 
-                            <div class="mb-4">
-    <label class="form-label">Arrêts</label>
-    <small class="form-text text-muted">
-        ⚠️ Le dernier arrêt indiqué sera considéré comme <strong>l’arrêt final</strong> du trajet.
-    </small>
-
-    <div id="arrets-container">
-        @forelse ($itineraire->arrets as $i => $arret)
-            <div class="row arret mb-3">
-                <div class="col-md-6">
-                    <input type="text" name="arrets[{{ $i }}][nom]" 
-                           class="form-control"
-                           value="{{ $arret->nom }}"
-                           list="liste-villes"
-                           placeholder="Lieu d'arrêt" required>
-                </div>
-                <div class="col-md-2 d-flex align-items-center">
-                    <button type="button" class="btn btn-danger btn-remove-arret">Supprimer</button>
-                </div>
+<div id="gares-container">
+    @forelse ($itineraire->arrets as $i => $arret)
+        <div class="row gare-item mb-3">
+            <div class="col-md-6">
+                <select name="gares[{{ $i }}][id]" class="form-control" required>
+                    <option value="">-- Choisir une gare --</option>
+                    @foreach($gares as $gare)
+                        <option value="{{ $gare->id }}" 
+                            {{ $arret->gares_id == $gare->id ? 'selected' : '' }}>
+                            {{ $gare->nom_gare }} → {{ $gare->ville?->nom_ville }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
-        @empty
-            <div class="row arret mb-3">
-                <div class="col-md-6">
-                    <input type="text" name="arrets[0][nom]" 
-                           class="form-control"
-                           list="liste-villes" 
-                           placeholder="Lieu d'arrêt" required>
-                </div>
-                <div class="col-md-2 d-flex align-items-center">
-                    <button type="button" class="btn btn-danger btn-remove-arret">Supprimer</button>
-                </div>
+            <div class="col-md-2 d-flex align-items-center">
+                <button type="button" class="btn btn-danger btn-remove-gare">Supprimer</button>
             </div>
-        @endforelse
-    </div>
-
-    <button type="button" class="btn btn-secondary" id="add-arret">+ Ajouter un arrêt</button>
+        </div>
+    @empty
+        <div class="row gare-item mb-3">
+            <div class="col-md-6">
+                <select name="gares[0][id]" class="form-control" required>
+                    <option value="">-- Choisir une gare --</option>
+                    @foreach($gares as $gare)
+                        <option value="{{ $gare->id }}">{{ $gare->nom_gare }} → {{ $gare->ville?->nom_ville }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-center">
+                <button type="button" class="btn btn-danger btn-remove-gare">Supprimer</button>
+            </div>
+        </div>
+    @endforelse
 </div>
+<button type="button" class="btn btn-primary" id="add-gare">Ajouter une gare</button>
 
 
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-primary">Enregistrer le voyage</button>
-                            </div>
-                        </form>
+        <script>
+        let index = {{ $itineraire->arrets->count() ?? 1 }};
 
-                        <!-- Liste auto-complétion -->
-                        <datalist id="liste-villes">
-                            @foreach ($villes as $ville)
-                                <option value="{{ $ville->nom_ville }}">
+        document.getElementById('add-gare').addEventListener('click', function() {
+            const container = document.getElementById('gares-container');
+            const html = `
+                <div class="row gare-item mb-3">
+                    <div class="col-md-6">
+                        <select name="gares[${index}][id]" class="form-control" required>
+                            <option value="">-- Choisir une gare --</option>
+                            @foreach($gares as $gare)
+                                <option value="{{ $gare->id }}">{{ $gare->nom_gare }} → {{ $gare->ville?->nom_ville }}</option>
                             @endforeach
-                        </datalist>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <button type="button" class="btn btn-danger btn-remove-gare">Supprimer</button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            index++;
+        });
+
+        // Supprimer une gare
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-remove-gare')) {
+                e.target.closest('.row.gare-item').remove();
+            }
+        });
+        </script>
+
+         <div class="text-end">
+         <button type="submit" class="btn btn-primary">Enregistrer le voyage</button>
+         </div>
+         </form>
+
+         <!-- Liste auto-complétion -->
+                        
                     </div>
                 </div>
             </div>
@@ -190,35 +216,6 @@
 <script src="../assets/js/theme.js"></script>
 <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
-<script>
-  //  let index = 1;
-let index = {{ $itineraire->arrets->count() ?? 1 }};
-
-    // Ajouter un arrêt
-    document.getElementById('add-arret').addEventListener('click', function () {
-        const container = document.getElementById('arrets-container');
-        const html = `
-            <div class="row arret mb-3">
-                <div class="col-md-6">
-                    <input type="text" name="arrets[${index}][nom]" class="form-control"
-                           list="liste-villes" placeholder="Lieu d'arrêt" required>
-                </div>
-                <div class="col-md-2 d-flex align-items-center">
-                    <button type="button" class="btn btn-danger btn-remove-arret">Supprimer</button>
-                </div>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', html);
-        index++;
-    });
-
-    // Supprimer un arrêt
-    document.addEventListener('click', function (e) {
-        if (e.target && e.target.classList.contains('btn-remove-arret')) {
-            e.target.closest('.arret').remove();
-        }
-    });
-</script>
 
 </body>
 </html>

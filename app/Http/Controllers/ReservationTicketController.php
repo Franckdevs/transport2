@@ -84,4 +84,16 @@ public function index(Request $request)
     {
         //
     }
+
+    // public function generateTicket($reservationId)
+    // {
+    //     $reservation = Reservation::with(['voyage.itineraire.arrets', 'voyage.gare', 'utilisateur'])->findOrFail($reservationId);
+    //     // Générer le PDF du ticket
+    //     $pdf = \PDF::loadView('betro.reservation_ticket.ticket', compact('reservation'));
+    //     // Télécharger le PDF
+    //     return $pdf->download('ticket_reservation_' . $reservation->id . '.pdf');
+    // }
+
+    
+
 }

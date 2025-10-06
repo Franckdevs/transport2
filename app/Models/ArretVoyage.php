@@ -26,4 +26,12 @@ class ArretVoyage extends Model
     {
         return $this->belongsTo(Arret::class);
     }
+
+    public function paiements()
+    {
+        return $this->hasMany(Paiement::class, 'id_arret_voyage');
+    }
+
+
+
 }

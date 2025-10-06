@@ -335,9 +335,13 @@ public function edit(gare $gare ,$id)
 
 public function index2()
 {
-    $listegares = Gare::orderBy('id', 'desc')->paginate(10); // 10 par page
+    $user = Auth::user();
+    $listegares = Gare::where('info_user_id', '!=', $user->id)
+    ->orderBy('id', 'desc')
+    ->paginate(10); // 10 par page
     return view('compagnie.gares.index', compact('listegares'));
 }
+
 
 // public function create2()
 // {

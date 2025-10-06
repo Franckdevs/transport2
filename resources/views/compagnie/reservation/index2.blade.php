@@ -71,7 +71,7 @@
                     <th>Estimation du trajet</th>
                     <th>Date de départ</th>
                     <th>Titre du trajet</th>
-                    <th>Date de création</th>
+                    {{-- <th>Date de création</th> --}}
                     <th>Statut</th>
                     <th>Actions</th>
                 </tr>
@@ -81,15 +81,15 @@
                     <tr>
                         <td>{{ $reservation->voyage->itineraire->ville->nom_ville ?? 'Non défini' }}</td>
                         <td>{{ $reservation->voyage->itineraire->arrets->last()->nom ?? 'Non défini' }}</td>
-                        <td>{{ number_format($reservation->voyage->montant ?? 0, 0, ',', ' ') }} FCFA</td>
+                        <td>{{ number_format($reservation->paiement->montant ?? 0, 0, ',', ' ') }} FCFA</td>
                         <td>{{ $reservation->voyage->itineraire->estimation ?? 'Non défini' }}</td>
                         {{-- <td>{{ $reservation->voyage->date_depart ?? 'Non défini' }}</td> --}}
                         <td>{{ GlobalHelper::formatCreatedAt($reservation->voyage->date_depart) }}</td>
 <td>{{ \Illuminate\Support\Str::limit($reservation->voyage->itineraire->titre ?? 'Non défini', 10) }}</td>
-                        <td>{{ GlobalHelper::formatCreatedAt($reservation->created_at) }}</td>
+                        {{-- <td>{{ GlobalHelper::formatCreatedAt($reservation->created_at) }}</td> --}}
                         <td>
-                            <span class="badge bg-{{ $reservation->statut == 1 ? 'success' : 'secondary' }}">
-                                {{ $reservation->statut == 1 ? 'Actif' : 'Inactif' }}
+                            <span class="badge bg-{{ $reservation->paiement->status == 1 ? 'success' : 'secondary' }}">
+                                {{ $reservation->paiement->status == 1 ? 'Payé' : 'Non payé' }}
                             </span>
                         </td>
                         <td>

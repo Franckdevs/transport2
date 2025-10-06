@@ -10,10 +10,11 @@ class CreateArretsTable extends Migration
     {
         Schema::create('arrets', function (Blueprint $table) {
             $table->id(); // Clé primaire auto-incrémentée
+            $table->foreignId('gares_id')->nullable()->constrained('gares', 'id');
             $table->foreignId('itineraire_id')->nullable()->constrained('itineraires')->nullOnDelete();
             $table->foreignId('info_user_id')->nullable()->constrained('info_users')->nullOnDelete();
             // Colonne info_user_id
-            $table->string('nom');
+            $table->string('nom')->nullable();
             $table->timestamps();
 
 

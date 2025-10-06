@@ -90,20 +90,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
 
-                // Création du HTML pour les arrêts avec champ montant
-                let arretsHtml = '';
-                if (data.arrets && data.arrets.length > 0) {
-                    arretsHtml = `<ul class="list-group list-group-flush mb-0">
-                        ${data.arrets.map(arret => `
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>${arret.nom}</span>
-                                <input type="number" class="form-control form-control-sm w-25" placeholder="Montant" name="montant[${arret.id}]" min="0" step="0.01">
-                            </li>
-                        `).join('')}
-                    </ul>`;
-                } else {
-                    arretsHtml = '<p>Aucun arrêt pour cet itinéraire.</p>';
-                }
+let arretsHtml = '';
+if (data.arrets && data.arrets.length > 0) {
+    arretsHtml = `<ul class="list-group list-group-flush mb-0">
+        ${data.arrets.map(arret => `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                     <span class="fw-bold">
+                        ${data.gare.status === 1 ? '✔ ' : ''}${arret.gare ? arret.gare.nom : 'N/A'}
+                    </span><br>
+<small class="text-muted" style="font-weight: bold;">
+                            Ville: ${arret.gare && arret.gare.ville ? arret.gare.ville : 'N/A'} 
+                    </small>
+                </div>
+                <input type="number" class="form-control form-control-sm w-25" 
+                    placeholder="Montant" name="montant[${arret.id}]" min="0" step="0.01">
+            </li>
+        `).join('')}
+    </ul>`;
+} else {
+    arretsHtml = '<p>Aucun arrêt pour cet itinéraire.</p>';
+}
+
 
                 // Affichage des informations dans une carte
                 infoDiv.innerHTML = `
@@ -112,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h4 class="card-title mb-3">${data.titre}</h4>
                             <div class="row mb-2">
                                 <div class="col-md-4"><strong>Estimation:</strong> ${data.estimation}</div>
-                                <div class="col-md-4"><strong>Ville:</strong> <span class="badge bg-primary">${data.ville ? data.ville.nom : 'N/A'}</span></div>
+                                <div class="col-md-4"><strong>Ville de départ :</strong> ${data.ville_depart_gare} (${data.nom_gare})</div>
                             </div>
                            
                             <h5 class="mt-3">Arrêts et montants:</h5>
@@ -128,9 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-
-
 
 
                                     <!-- Montant -->

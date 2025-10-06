@@ -42,7 +42,7 @@
                                             <th>#</th>
                                             <th>Itinéraire</th>
                                             <th>Compagnie</th>
-                                            <th>Montant</th>
+                                            {{-- <th>Montant</th> --}}
                                             <th>Heure de départ</th>
                                             <th>Date de départ</th>
                                             <th>Bus</th>
@@ -58,7 +58,7 @@
 <td>{{ \Illuminate\Support\Str::limit($voyage->itineraire->titre ?? 'N/A', 10, '....') }}</td>
 <td>{{ \Illuminate\Support\Str::limit($voyage->info_user->nom ?? 'N/A', 10, '...') }}</td>
 
-                                                <td>{{ number_format($voyage->montant, 0, ',', ' ') }} FCFA</td>
+                                                {{-- <td>{{ number_format($voyage->montant, 0, ',', ' ') }} FCFA</td> --}}
                                                 <td>{{ $voyage->heure_depart ? \Carbon\Carbon::parse($voyage->heure_depart)->format('H:i') : 'N/A' }}</td>
                                                 <td>{{ $voyage->date_depart ? \Carbon\Carbon::parse($voyage->date_depart)->format('d/m/Y') : 'N/A' }}</td>
 <td>{{ \Illuminate\Support\Str::limit($voyage->bus->nom_bus ?? 'N/A', 10) }}</td>

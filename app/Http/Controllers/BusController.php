@@ -141,11 +141,14 @@ public function store(Request $request)
      *
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
-    {
-        $bus = Bus::find($id);
-        return view("compagnie.bus.edit",compact("bus"));
-    }
+public function edit($id)
+{
+    $bus = Bus::find($id);
+    $configuration = ConfigurationPlaceBus::all(); // ✅ toutes les configurations disponibles
+// dd($configuration , $bus);
+    return view("compagnie.bus.edit", compact("bus", "configuration"));
+}
+
 
     /**
      * Update the specified resource in storage.

@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateConnexionRequest;
 use App\Models\Bus;
 use App\Models\gare;
 use App\Models\Itineraire;
+use App\Models\Paiement;
 use App\Models\Reservation;
 use App\Models\Utilisateur;
 use App\Models\Voyage;
@@ -97,7 +98,7 @@ public function login(Request $request)
         $request->session()->regenerate(); // Protection contre la fixation de session
 
         $user = Auth::user();
-// dd($user->getRoleNames()); // Affiche une collection avec les rôles de l'utilisateur  // <-- Affiche la valeur du rôle et stoppe l'exécution
+        // dd($user->getRoleNames()); // Affiche une collection avec les rôles de l'utilisateur  // <-- Affiche la valeur du rôle et stoppe l'exécution
         // Redirection selon le rôle de l'utilisateur
         if ($user->hasRole('super-admin-betro')) {
             return redirect()->route('dashboard')
@@ -139,7 +140,19 @@ public function login(Request $request)
 
     public function dashboardcompagnie()
     {
-    $user = auth()->user();
+      $user = auth()->user();
+        $compagnie = Compagnies::where('info_user_id', $user->id)->first();
+        $gars = gare::where('info_user_id', $user->id)->first();
+        if($gars){
+            $listepaiements = Paiement::where('compagnie_id', $gars->compagnie_id)->get();
+            $somme = $listepaiements->sum('montant');
+            $message ="Gares";
+        } else {
+            $listepaiements = Paiement::where('compagnie_id', $compagnie->id)->get();
+            $somme = $listepaiements->sum('montant');
+            $message ="Compagnie";
+        }
+    // dd($compagnie ?? '-' , $listepaiements ?? '-', $somme ?? '-' , $message);
     $role = $user->getRoleNames()->first(); // Récupère le premier rôle (ou adapte si multi-rôles)
     // dd($user->getAllPermissions()->pluck('name') , $role);
     $liste_gare = gare::all();
@@ -150,7 +163,6 @@ public function login(Request $request)
     $itinierai = Itineraire::all();
     $voyages = Voyage::all();
     // $cars = Bus::all();
-    //nombre
     $nombregars = $liste_gare->count();
     // $nombres_utilisateur = $utilisateurs->count();
     $nombres_bus = $liste_bus_cars->count();
@@ -158,18 +170,17 @@ public function login(Request $request)
     $nombres_itineraire = $itinierai->count();
     $nombres_voyage = $voyages->count();
     $nombres_chauffeur = $chauffeurs->count();
-        return view('compagnie.index' , compact('nombregars','nombres_bus','nombres_chauffeur','nombres_itineraire','nombres_voyage'));
+    return view('compagnie.index' , compact('nombregars','nombres_bus','nombres_chauffeur','nombres_itineraire','nombres_voyage','listepaiements','somme'));
     }
 
-
-        public function premierePage()
+    public function premierePage()
     {
-        return view('login');
+    return view('login');
     }
 
     public function logins()
     {
-        return view('login');
+    return view('login');
     }
 
 public function logout(Request $request)

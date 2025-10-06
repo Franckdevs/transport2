@@ -13,6 +13,7 @@ class Arret extends Model
         'itineraire_id',
         'info_user_id',
         'nom',
+        'gares_id'
     ];
 
     // 🔁 Relation : un arrêt appartient à un voyage (Itineraire)
@@ -30,5 +31,24 @@ class Arret extends Model
 {
     return $this->belongsTo(Voyage::class);
 }
+
+// App\Models\Arret.php
+public function arretVoyages()
+{
+    return $this->hasMany(ArretVoyage::class, 'arret_id');
+}
+
+// App\Models\Arret.php
+public function gare()
+{
+    return $this->belongsTo(Gare::class, 'gares_id');
+}
+
+public function ville()
+{
+    return $this->belongsTo(Ville::class, 'ville_id');
+}
+
+
 
 }

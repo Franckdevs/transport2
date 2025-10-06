@@ -27,7 +27,7 @@ use App\Helpers\GlobalHelper;
             <div class="container-fluid">
                 <div class="row g-3 row-deck">
                     <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                        <h5 class="mb-0">Liste des bus</h5>
+                        {{-- <h5 class="mb-0">Liste des bus</h5> --}}
                         <a href="{{ route('bus.create') }}" class="btn btn-success">
                             <i class="fa fa-plus"></i> Ajouter un bus
                         </a>
@@ -50,6 +50,7 @@ use App\Helpers\GlobalHelper;
                                             <th>Marque</th>
                                             <th>Immatriculation</th>
                                             <th>Date de création</th>
+                                            <th>Statut</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -61,6 +62,13 @@ use App\Helpers\GlobalHelper;
                                             <td>{{ $bu->marque_bus ?? 'Non défini' }}</td>
                                             <td>{{ $bu->immatriculation_bus ?? 'Non défini' }}</td>
                                             <td>{{ GlobalHelper::formatCreatedAt($bu->created_at) }}</td>
+                                            <td>
+                                                @if($bu->status == 1)
+                                                    <span class="badge bg-success">Actif</span>
+                                                @else
+                                                    <span class="badge bg-danger">Inactif</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <a href="{{ route('bus.edit', $bu->id) }}" class="btn btn-warning btn-sm">
                                                     <i class="fa fa-edit"></i>

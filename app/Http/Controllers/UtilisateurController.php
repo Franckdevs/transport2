@@ -143,6 +143,7 @@ class UtilisateurController extends Controller
 
         // ✅ Réponse JSON
         return response()->json([
+            'status'=> true,
             'message' => 'Inscription réussie, code OTP envoyé par email',
             'utilisateur' => $utilisateur,
             'otp' => $otpCode,
@@ -226,10 +227,11 @@ class UtilisateurController extends Controller
     $utilisateur->delete();
 
     return response()->json([
+        'status' => true,
         'message' => 'OTP vérifié avec succès',
         'utilisateur' => $utilisateur ?? null,
         'token' => $apiToken ?? null,
-        'status'=> true
+        // 'status'=> true
     ], 200);
 }
 

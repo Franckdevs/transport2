@@ -69,7 +69,7 @@
                       <a class="list-group-item list-group-item-action border-0" href="page-profile.html"><i class="w30 fa fa-user"></i>Profile</a>
 
                     </div>
-                    <a href="{{ route('logout') }}" class="btn bg-secondary text-light text-uppercase rounded-0">Déconnexion</a>
+                    <a href="{{ route('page_connexion') }}" class="btn bg-secondary text-light text-uppercase rounded-0">Déconnexion</a>
                   </div>
                 </div>
               </div>

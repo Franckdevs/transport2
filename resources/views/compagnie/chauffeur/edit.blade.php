@@ -17,7 +17,7 @@
       </div>
     </header>
     <!-- start: page toolbar -->
-  @include('compagnie.all_element.cadre')
+  {{-- @include('compagnie.all_element.cadre') --}}
 
     <!-- start: page body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">

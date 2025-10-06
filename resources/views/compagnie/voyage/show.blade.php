@@ -61,6 +61,8 @@
                                 <p class="fs-5 mb-0">{{ $voyage->created_at->format('d/m/Y H:i') }}</p>
                             </div>
 
+                            
+
                             <!-- Statut -->
                             {{-- <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Statut</label>
@@ -87,89 +89,106 @@
 
                         <!-- Bus Information -->
                         <hr class="my-4">
-                        <h5 class="fw-semibold mb-3 text-secondary">Informations sur le Bus</h5>
+                        {{-- <h5 class="fw-semibold mb-3 text-secondary">Informations sur le Bus</h5> --}}
                         
-                       <div class="row g-4">
-                        <!-- Nom du bus -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Nom du Bus</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->nom_bus ?? 'Non défini' }}</p>
-                        </div>
+                   <div class="row g-4">
 
-                        <!-- Chauffeur -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Chauffeur</label>
-                            <p class="fs-5 mb-0">{{ $voyage->chauffeur->nom ?? 'Non défini' }} {{ $voyage->chauffeur->prenom ?? 'Non défini' }}</p>
-                        </div>
+    <!-- SECTION BUS -->
+    <div class="col-12 mb-3">
+        <h5 class="text-primary fw-bold">Informations sur le Bus</h5>
+        <hr>
+    </div>
 
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Numero de telephone du chauffeur</label>
-                            <p class="fs-5 mb-0">{{ $voyage->chauffeur->telephone ?? 'Non défini' }}</p>
-                        </div>
+    <!-- Nom du bus -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Nom du Bus</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->nom_bus ?? 'Non défini' }}</p>
+    </div>
 
-                            <!-- Photo du bus -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Photo du chauffeur</label>
-                            <p class="fs-5 mb-0">
-                        <img src="{{ asset($voyage->chauffeur->photo) }}" alt="Photo du chauffeur" class="img-fluid rounded" style="max-height:120px;">
-                            </p>
-                        </div>
+    <!-- Nombre de places -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Nombre de places</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->nombre_places ?? 'Non défini' }} Places disponibles (Dans le bus)</p>
+    </div>
 
-                        <!-- Nombre de places -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Nombre de places</label>
-                            <p class="fs-5 mb-0">
-                                {{ $voyage->bus->nombre_places ?? 'Non défini' }} Places disponibles (Dans le bus)
-                            </p>
-                        </div>
+    <!-- Marque -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Marque du Bus</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->marque_bus ?? 'Non défini' }}</p>
+    </div>
 
-                        <!-- Photo du bus -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Photo du Bus</label>
-                            <p class="fs-5 mb-0">
-                                <img src="{{ url($voyage->bus->photo_bus) }}" alt="Photo du bus" class="img-fluid rounded" style="max-height:120px;">
-                            </p>
-                        </div>
+    <!-- Modèle -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Modèle du Bus</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->modele_bus ?? 'Non défini' }}</p>
+    </div>
 
-                        <!-- Marque -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Marque du Bus</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->marque_bus ?? 'Non défini' }}</p>
-                        </div>
+    <!-- Immatriculation -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Immatriculation du Bus</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->immatriculation_bus ?? 'Non défini' }}</p>
+    </div>
 
-                        <!-- Modèle -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Modèle du Bus</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->modele_bus ?? 'Non défini' }}</p>
-                        </div>
+    <!-- Description -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Description du Bus</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->description_bus ?? 'Non défini' }}</p>
+    </div>
 
-                        <!-- Immatriculation -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Immatriculation du Bus</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->immatriculation_bus ?? 'Non défini' }}</p>
-                        </div>
+    <!-- Disposition -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Disposition du Bus</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->configurationPlace->disposition ?? 'Non défini' }}</p>
+    </div>
 
-                        <!-- Description -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Description du Bus</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->description_bus ?? 'Non défini' }}</p>
-                        </div>
+    <!-- Nom complet -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Nom complet</label>
+        <p class="fs-5 mb-0">{{ $voyage->bus->configurationPlace->nom_complet ?? 'Non défini' }}</p>
+    </div>
 
-                        <!-- Disposition -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Disposition du Bus</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->configurationPlace->disposition ?? 'Non défini' }}</p>
-                        </div>
+    <!-- Photo du bus -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Photo du Bus</label>
+        <p class="fs-5 mb-0">
+            <img src="{{ url($voyage->bus->photo_bus) }}" alt="Photo du bus" class="img-fluid rounded" style="max-height:120px;">
+        </p>
+    </div>
 
-                        <!-- Nom complet -->
-                        <div class="col-md-4">
-                            <label class="form-label text-muted fw-semibold">Nom complet</label>
-                            <p class="fs-5 mb-0">{{ $voyage->bus->configurationPlace->nom_complet ?? 'Non défini' }}</p>
-                        </div>
-                    </div>
+    <!-- SECTION CHAUFFEUR -->
+                            <hr class="my-4">
+
+    <div class="col-12 mt-4 mb-3">
+        <h5 class="text-primary fw-bold">Informations sur le Chauffeur</h5>
+        <hr>
+    </div>
+
+    <!-- Nom complet -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Nom et Prénom</label>
+        <p class="fs-5 mb-0">{{ $voyage->chauffeur->nom ?? 'Non défini' }} {{ $voyage->chauffeur->prenom ?? 'Non défini' }}</p>
+    </div>
+
+    <!-- Numéro de téléphone -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Numéro de téléphone</label>
+        <p class="fs-5 mb-0">{{ $voyage->chauffeur->telephone ?? 'Non défini' }}</p>
+    </div>
+
+    <!-- Photo du chauffeur -->
+    <div class="col-md-4">
+        <label class="form-label text-muted fw-semibold">Photo du Chauffeur</label>
+        <p class="fs-5 mb-0">
+            <img src="{{ asset($voyage->chauffeur->photo) }}" alt="Photo du chauffeur" class="img-fluid rounded" style="max-height:120px;">
+        </p>
+    </div>
+
+</div>
+
 
                         <!-- Itinéraire -->
                         <hr class="my-4">
+                        
                         <h5 class="fw-semibold mb-3 text-secondary">Itinéraire du Voyage</h5>
                         <div class="row g-4">
                             <!-- Départ -->
@@ -179,12 +198,12 @@
                             </div>
 
                             <!-- Arrivée -->
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Point d'arrivée</label>
                                 <p class="fs-5 mb-0">
                                     {{ $voyage->itineraire->arrets->last()->nom ?? 'Non défini' }}
                                 </p>
-                            </div>
+                            </div> --}}
 
                               <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Estimation</label>
@@ -192,10 +211,10 @@
                             </div>
 
                             
-                             <div class="col-md-6">
+                             {{-- <div class="col-md-6">
                                 <label class="form-label text-muted fw-semibold">Titre</label>
                                 <p class="fs-5 mb-0">{{ $voyage->itineraire->titre ?? 'Non défini' }}</p>
-                            </div>
+                            </div> --}}
 
 
 
@@ -213,21 +232,31 @@
                         </div>
 
                         <!-- Arrêts du voyage -->
-                        <hr class="my-4">
-                        <h5 class="fw-semibold mb-3 text-secondary">Arrêts du voyage</h5>
-                        @if ($voyage->itineraire && $voyage->itineraire->arrets && $voyage->itineraire->arrets->count() > 0)
-                            <ul class="list-group list-group-flush">
-                                @foreach ($voyage->itineraire->arrets as $arret)
-                                    <li
-                                        class="list-group-item d-flex align-items-center border-0 px-0 py-2 animate-slideInLeft">
-                                        <i class="fas fa-map-marker-alt text-primary fs-5 me-3"></i>
-                                        <span class="fs-6 text-dark">{{ $arret->nom ?? 'Nom non défini' }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @else
-                            <p class="text-muted fst-italic">Aucun arrêt défini pour ce voyage.</p>
+                      <hr class="my-4">
+<h5 class="fw-semibold mb-3 text-secondary">Arrêts du voyage </h5>
+
+@if ($voyage->itineraire && $voyage->itineraire->arrets && $voyage->itineraire->arrets->count() > 0)
+    <ul class="list-group list-group-flush">
+        @foreach ($voyage->itineraire->arrets as $arret)
+            <li class="list-group-item d-flex align-items-center border-0 px-0 py-2 animate-slideInLeft">
+                <i class="fas fa-map-marker-alt text-primary fs-5 me-3"></i>
+                <span class="fs-6 text-dark">
+                    @if($arret->gare)
+                        <strong>Gare:</strong> {{ $arret->gare->nom_gare }}
+                        @if($arret->gare->ville)
+                            (<strong>Ville:</strong> {{ $arret->gare->ville->nom_ville }})
                         @endif
+                    @else
+                        <em>Gare non définie</em>
+                    @endif
+                </span>
+            </li>
+        @endforeach
+    </ul>
+@else
+    <p class="text-muted fst-italic">Aucun arrêt défini pour ce voyage.</p>
+@endif
+
 
                         <!-- Liens et Boutons -->
                         {{-- <a href="{{ route('voyage.index') }}"

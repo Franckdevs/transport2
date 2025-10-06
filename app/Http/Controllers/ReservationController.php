@@ -40,7 +40,7 @@ class ReservationController extends Controller
 
 public function liste_reservation(Request $request)
 {
-    $query = Reservation::with(['voyage', 'utilisateur']);
+    $query = Reservation::with(['voyage', 'utilisateur' ,'arretvoyage','paiement']);
     // Filtre par date départ du voyage
     if ($request->date_debut) {
         $query->whereHas('voyage', function($q) use ($request) {
@@ -54,8 +54,11 @@ public function liste_reservation(Request $request)
     }
     $liste_reservation = $query->get();
     // Calcul du coût total (somme des montants des voyages réservés)
-    $total_montant = $liste_reservation->sum(function($reservation) {
-        return $reservation->voyage->montant ?? 0;
+    // $total_montant = $liste_reservation->sum(function($reservation) {
+    //     return $reservation->voyage->montant ?? 0;
+    // });
+     $total_montant = $liste_reservation->sum(function($reservation) {
+        return $reservation->paiement->montant ?? 0;
     });
     return view('compagnie.reservation.index2', compact('liste_reservation' ,'total_montant'));
 }
@@ -63,7 +66,7 @@ public function liste_reservation(Request $request)
 public function voir_detail_reservation(Request $request , $id){
 
     // $detail_reservatiion = Reservation::findOrFail($id);
-    $detail_reservation = Reservation::with(['voyage', 'utilisateur'])->findOrFail($id);
+    $detail_reservation = Reservation::with(['voyage', 'utilisateur','arretvoyage' ,'paiement'])->findOrFail($id);
     return view('compagnie.reservation.show', compact('detail_reservation'));
 }
 

@@ -71,13 +71,111 @@
     </select>
                                     </div>
 
+    
+<div id="itineraire-loading" class="text-center my-3" style="display:none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p>Chargement des arrêts, veuillez patienter...</p>
+</div>
+
+<div id="itineraire-info" class="mt-3"></div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectItineraire = document.getElementById('itineraire_id');
+    const infoDiv = document.getElementById('itineraire-info');
+    const loadingDiv = document.getElementById('itineraire-loading');
+
+    if (!selectItineraire) return;
+
+    const renderArrets = (data, arretVoyages) => {
+        if (!data.arrets || data.arrets.length === 0) {
+            return '<p>Aucun arrêt pour cet itinéraire.</p>';
+        }
+
+        return `<ul class="list-group list-group-flush mb-0">
+            ${data.arrets.map(arret => `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="fw-bold">
+                            ${data.gare.status === 1 ? '✔ ' : ''}${arret.gare ? arret.gare.nom : 'N/A'}
+                        </span><br>
+                        <small class="text-muted fw-bold">
+                            Ville: ${arret.gare && arret.gare.ville ? arret.gare.ville : 'N/A'}
+                        </small>
+                    </div>
+                    <input type="number" class="form-control form-control-sm w-25" 
+                        placeholder="Montant" 
+                        name="montant[${arret.id}]" 
+                        min="0" step="0.01"
+                        value="${arretVoyages[arret.id] ?? ''}">
+                </li>
+            `).join('')}
+        </ul>`;
+    };
+
+    const loadItineraire = (itineraireId) => {
+        if (!itineraireId) {
+            infoDiv.innerHTML = "";
+            return;
+        }
+
+        // Afficher le loading
+        loadingDiv.style.display = 'block';
+        infoDiv.style.display = 'none';
+
+        fetch(`/itineraire/${itineraireId}`)
+            .then(res => res.ok ? res.json() : Promise.reject('Itinéraire non trouvé'))
+            .then(data => {
+                const arretsHtml = renderArrets(data, @json($arretVoyages->mapWithKeys(fn($item) => [$item->arret_id => $item->montant])));
+
+                infoDiv.innerHTML = `
+                    <div class="card shadow-sm p-3 mb-3">
+                        <div class="card-body">
+                            <h4 class="card-title mb-3">${data.titre}</h4>
+                            <div class="row mb-2">
+                                <div class="col-md-4"><strong>Estimation:</strong> ${data.estimation}</div>
+                                <div class="col-md-4"><strong>Ville de départ :</strong> ${data.ville_depart_gare} (${data.nom_gare})</div>
+                            </div>
+                            <h5 class="mt-3">Arrêts et montants:</h5>
+                            ${arretsHtml}
+                        </div>
+                    </div>
+                `;
+            })
+            .catch(err => {
+                infoDiv.innerHTML = `<p class="text-danger">Impossible de récupérer les informations de l'itinéraire.</p>`;
+                console.error(err);
+            })
+            .finally(() => {
+                // Masquer le loading et afficher le contenu
+                loadingDiv.style.display = 'none';
+                infoDiv.style.display = 'block';
+            });
+    };
+
+    selectItineraire.addEventListener('change', function() {
+        loadItineraire(this.value);
+    });
+
+    // Charger l'itinéraire sélectionné au chargement de la page
+    if (selectItineraire.value) {
+        loadItineraire(selectItineraire.value);
+    }
+});
+
+</script>
+
+
                                     <!-- Montant -->
-                                    <div class="col-md-6 mb-3">
+                                    {{-- <div class="col-md-6 mb-3">
                                         <label for="montant" class="form-label">Montant du voyage (F CFA)</label>
                                         <input type="text" name="montant" id="montant" class="form-control"
                                             value="{{ old('montant' ,$voyage) }}" required
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                    </div>
+                                    </div> --}}
                                <div class="col-md-6 mb-3">
     <label for="heure_depart" class="form-label">Heure de départ</label>
     <input type="time" name="heure_depart" id="heure_depart" class="form-control" value="{{ old('heure_depart',$voyage) }}" required>

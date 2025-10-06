@@ -39,8 +39,6 @@ class AdminGareSetupController extends Controller
      */
     public function setupPassword(Request $request, User $user)
     {
-        // Le middleware 'signed' gère déjà la validation de la signature
-
         // Validation
         $request->validate([
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -63,4 +61,6 @@ class AdminGareSetupController extends Controller
         return redirect()->route('dashboard')
             ->with('success', 'Bienvenue ! Votre compte a été configuré avec succès. 🎉');
     }
+
+    
 }
