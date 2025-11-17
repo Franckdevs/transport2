@@ -21,4 +21,20 @@
 </head>
 
 
+<style>
+.animated-btn {
+  transition: transform 0.3s ease;
+}
+
+.animated-btn:hover {
+  animation: bounce 0.5s infinite alternate;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+</style>
+
 

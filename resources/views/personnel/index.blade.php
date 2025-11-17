@@ -39,6 +39,7 @@ use App\Helpers\GlobalHelper;
 <table id="myTable" class="table display nowrap table-hover" style="width:100%">
   <thead>
     <tr>
+      <th>Photo</th>
       <th>Nom</th>
       <th>Prénoms</th>
       <th>Téléphone</th>
@@ -51,11 +52,21 @@ use App\Helpers\GlobalHelper;
   <tbody>
     @foreach ($personnels as $personnel)
       <tr>
-        <td>{{ $personnel->nom ?? 'Aucun nom' }}</td>
-        <td>{{ $personnel->prenom ?? 'Aucun prénom' }}</td>
-        <td>{{ $personnel->telephone ?? 'Aucun téléphone' }}</td>
-        <td>{{ $personnel->email ?? 'Aucun email' }}</td>
-        <td>{{ $personnel->RolePersonnel->nom_role ?? 'Aucune fonction' }}</td>
+        <td>
+           {{-- <img src="{{ $personnel->photo ? asset($personnel->photo) : asset('assets/img/default-user.png') }}" 
+                                             alt="Photo de {{ $personnel->prenom ?? '' }} {{ $personnel->nom ?? '' }}" 
+                                             class="profile-image rounded-3 shadow"> --}}
+          @if($personnel->photo)
+            <img src="{{ asset( $personnel->photo) }}" alt="Photo de {{ $personnel->nom }}" class="rounded-circle" width="40" height="40">
+          @else
+            <img src="{{ asset('images/default-avatar.png') }}" alt="Photo par défaut" class="rounded-circle" width="40" height="40">
+          @endif
+        </td>
+        <td title="{{ $personnel->nom ?? '' }}">{{ $personnel->nom ? (strlen($personnel->nom) > 10 ? substr($personnel->nom, 0, 10).'...' : $personnel->nom) : 'Aucun nom' }}</td>
+        <td title="{{ $personnel->prenom ?? '' }}">{{ $personnel->prenom ? (strlen($personnel->prenom) > 10 ? substr($personnel->prenom, 0, 10).'...' : $personnel->prenom) : 'Aucun prénom' }}</td>
+        <td title="{{ $personnel->telephone ?? '' }}">{{ $personnel->telephone ? (strlen($personnel->telephone) > 10 ? substr($personnel->telephone, 0, 10).'...' : $personnel->telephone) : 'Aucun téléphone' }}</td>
+        <td title="{{ $personnel->email ?? '' }}">{{ $personnel->email ? (strlen($personnel->email) > 10 ? substr($personnel->email, 0, 10).'...' : $personnel->email) : 'Aucun email' }}</td>
+        <td title="{{ $personnel->RolePersonnel->nom_role ?? '' }}">{{ $personnel->RolePersonnel ? (strlen($personnel->RolePersonnel->nom_role) > 10 ? substr($personnel->RolePersonnel->nom_role, 0, 10).'...' : $personnel->RolePersonnel->nom_role) : 'Aucune fonction' }}</td>
 
         <!-- Affichage du statut -->
         <td>
@@ -81,83 +92,24 @@ use App\Helpers\GlobalHelper;
           </a>
 
           <!-- Désactiver ou Réactiver -->
-          {{-- @if($personnel->status == 1)
-            <form action="{{ route('personnel.destroy', $personnel->id) }}" method="POST" style="display:inline-block;">
+          @if($personnel->status == 1)
+            <form action="{{ route('personnel.destroy', $personnel->id) }}" method="POST" id="deleteForm{{ $personnel->id }}" style="display:inline-block;">
               @csrf
               @method('DELETE')
-              <button type="submit" class="btn btn-sm btn-danger" title="Désactiver" onclick="return confirm('Voulez-vous vraiment désactiver ce personnel ?')">
+              <button type="button" class="btn btn-sm btn-danger" title="Désactiver" onclick="confirmDelete({{ $personnel->id }}, '{{ addslashes($personnel->prenom) }} {{ addslashes($personnel->nom) }}')">
                 <i class="fa fa-trash"></i>
               </button>
             </form>
           @elseif($personnel->status == 3)
-            <form action="{{ route('personnel.reactivation', $personnel->id) }}" method="POST" style="display:inline-block;">
+            <form action="{{ route('personnel.reactivation', $personnel->id) }}" method="POST" id="reactivateForm{{ $personnel->id }}" style="display:inline-block;">
               @csrf
               @method('PUT')
-              <button type="submit" class="btn btn-sm btn-success" title="Réactiver" onclick="return confirm('Voulez-vous réactiver ce personnel ?')">
+              <button type="button" class="btn btn-sm btn-success" title="Réactiver" onclick="confirmReactivate({{ $personnel->id }}, '{{ addslashes($personnel->prenom) }} {{ addslashes($personnel->nom) }}')">
                 <i class="fa fa-undo"></i>
               </button>
             </form>
-          @endif --}}
+          @endif
 
-          @if($personnel->status == 1)
-    <!-- Bouton Désactiver -->
-    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDesactivate{{ $personnel->id }}">
-        <i class="fa fa-trash"></i>
-    </button>
-
-    <!-- Modal Désactivation -->
-    <div class="modal fade" id="confirmDesactivate{{ $personnel->id }}" tabindex="-1" aria-labelledby="confirmDesactivateLabel{{ $personnel->id }}" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="confirmDesactivateLabel{{ $personnel->id }}">Confirmation de désactivation</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-          </div>
-          <div class="modal-body">
-            Voulez-vous vraiment <strong class="text-danger">désactiver</strong> le personnel <br>
-            <strong>{{ $personnel->nom }} {{ $personnel->prenom }}</strong> ?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-            <form action="{{ route('personnel.destroy', $personnel->id) }}" method="POST">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn btn-danger">Oui, désactiver</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-@elseif($personnel->status == 3)
-    <!-- Bouton Réactiver -->
-    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#confirmReactivate{{ $personnel->id }}">
-        <i class="fa fa-undo"></i>
-    </button>
-
-    <!-- Modal Réactivation -->
-    <div class="modal fade" id="confirmReactivate{{ $personnel->id }}" tabindex="-1" aria-labelledby="confirmReactivateLabel{{ $personnel->id }}" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-success text-white">
-            <h5 class="modal-title" id="confirmReactivateLabel{{ $personnel->id }}">Confirmation de réactivation</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-          </div>
-          <div class="modal-body">
-            Voulez-vous vraiment <strong class="text-success">réactiver</strong> le personnel <br> 
-            <strong>{{ $personnel->nom }} {{ $personnel->prenom }}</strong> ?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-            <form action="{{ route('personnel.reactivation', $personnel->id) }}" method="POST">
-              @csrf
-              @method('PUT')
-              <button type="submit" class="btn btn-success">Oui, réactiver</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-@endif
 
 
         </td>
@@ -178,24 +130,76 @@ use App\Helpers\GlobalHelper;
   </div>
 
   <!-- JS -->
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
-  <script src="../assets/js/theme.js"></script>
-  <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="{{ asset('assets/js/theme.js') }}"></script>
+  <script src="{{ asset('assets/js/bundle/apexcharts.bundle.js') }}"></script>
 
   <!-- DataTables 2.x initialization -->
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const table = new DataTable('#myTable');
-
-      // Recherche personnalisée
-      const searchInput = document.getElementById('customSearchUsers');
-      searchInput.addEventListener('input', function() {
-        table.search(this.value);
+    $(document).ready(function() {
+      $('#myTable').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.10.25/i18n/French.json'
+        }
       });
     });
+
+    // Fonction pour confirmer la désactivation
+    function confirmDelete(id, name) {
+        Swal.fire({
+            title: 'Confirmer la désactivation',
+            html: `
+                <div class="text-left">
+                    <p>Attention ! En désactivant <strong>${name}</strong> :</p>
+                    <ul style="padding-left: 20px; margin: 15px 0;">
+                        <li>L'utilisateur ne pourra plus se connecter</li>
+                        <li>Son compte sera marqué comme inactif</li>
+                        <li>Vous pourrez le réactiver à tout moment</li>
+                    </ul>
+                    <p class="mb-0">Êtes-vous sûr de vouloir continuer ?</p>
+                </div>
+            `,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, désactiver',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('deleteForm' + id).submit();
+            }
+        });
+    }
+
+    // Fonction pour confirmer la réactivation
+    function confirmReactivate(id, name) {
+        Swal.fire({
+            title: 'Confirmer la réactivation',
+            html: `
+                <div class="text-left">
+                    <p>Voulez-vous réactiver l'utilisateur <strong>${name}</strong> ?</p>
+                    <p class="text-muted">L'utilisateur pourra à nouveau se connecter à son compte.</p>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, réactiver',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('reactivateForm' + id).submit();
+            }
+        });
+    }
   </script>
 
 </body>
 </html>
- 

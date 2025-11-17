@@ -1,5 +1,33 @@
 <div class="sidebar p-2 py-md-3 @@cardClass">
     <div class="container-fluid">
+        <!-- Logo de la compagnie -->
+        <div class="text-center mb-4 mt-2">
+            @if(Auth::user()->info_user && Auth::user()->info_user->compagnie && Auth::user()->info_user->compagnie->logo_compagnies)
+                <img src="{{ asset(Auth::user()->info_user->compagnie->logo_compagnies) }}" 
+                     alt="Logo {{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}" 
+                     class="img-fluid rounded-circle" 
+                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <h6 class="text-dark mt-2 mb-0 fw-bold">{{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}</h6>
+                <small class="text-white-50">{{ Auth::user()->info_user->compagnie->type_compagnie }}</small>
+            @elseif(Auth::user()->info_user && Auth::user()->info_user->gare && Auth::user()->info_user->gare->compagnie && Auth::user()->info_user->gare->compagnie->logo_compagnies)
+                <img src="{{ asset(Auth::user()->info_user->gare->compagnie->logo_compagnies) }}" 
+                     alt="Logo {{ Auth::user()->info_user->gare->compagnie->nom_complet_compagnies }}" 
+                     class="img-fluid rounded-circle" 
+                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <h6 class="text-dark mt-2 mb-0 fw-bold">{{ Auth::user()->info_user->gare->compagnie->nom_complet_compagnies }}</h6>
+                <small class="text-white-50">{{ Auth::user()->info_user->gare->compagnie->type_compagnie }}</small>
+            @else
+                <div class="d-flex align-items-center justify-content-center mx-auto rounded-circle bg-white" 
+                     style="width: 80px; height: 80px; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                    <i class="fas fa-building text-primary" style="font-size: 2.5rem;"></i>
+                </div>
+                <h6 class="text-dark mt-2 mb-0 fw-bold">
+                    {{ Auth::user()->info_user->compagnie->nom_complet_compagnies ?? (Auth::user()->info_user->gare->compagnie->nom_complet_compagnies ?? 'Compagnie') }}
+                </h6>
+            @endif
+        </div>
+        <div class="divider-line mb-3"></div>
+        
         <!-- sidebar: title-->
         {{-- <div class="title-text d-flex align-items-center mb-4 mt-1">
             <h4 class="sidebar-title mb-0 flex-grow-1 text-center w-100 d-flex justify-content-center">
@@ -39,7 +67,7 @@
 
                 <!-- BUS / CARS -->
                 @if (Auth::user()->can('bus-cars') || Auth::user()->can('tout-les-permissions'))
-                    <li class="menu-item {{ request()->routeIs('liste.bus', 'bus.*', 'compagnie.bus', 'activation.bus') ? 'active' : '' }}">
+                    <li class="menu-item {{ request()->routeIs('compagnie.bus') || request()->routeIs('bus.*') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('compagnie.bus') }}">
                             <div class="menu-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
@@ -54,9 +82,26 @@
                     </li>
                 @endcan
 
+                <!-- BUS / CARS -->
+                @if (Auth::user()->can('bus-cars') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('listeconfig.index') || request()->routeIs('activation.bus') ? 'active' : '' }}">
+                        <a class="m-link" href="{{ route('listeconfig.index') }}">
+                            <div class="menu-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M3 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H3Zm4 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H7Zm4 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H11Z"/>
+                                    <path d="M2 6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6Zm1 0v6h10V6H3Z"/>
+                                    <path d="M4.5 12.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Zm7 0a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/>
+                                </svg>
+                            </div>
+                            <span class="menu-text">Configuration bus</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
+                @endcan
+                
                 <!-- CHAUFFEURS -->
                 @if (Auth::user()->can('chauffeurs') || Auth::user()->can('tout-les-permissions'))
-                    <li class="menu-item {{ request()->routeIs('chauffeur.*') || request()->routeIs('modifier.*') || request()->routeIs('voir.*') || request()->routeIs('activer.*') ? 'active' : '' }}">
+                    <li class="menu-item {{ request()->routeIs('chauffeur.*') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('chauffeur.index') }}">
                             <div class="menu-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
@@ -166,6 +211,21 @@
 </div>
 
 <style>
+/* Style pour le séparateur sous le logo */
+.divider-line {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 1rem 0;
+}
+
+/* Style pour le texte du nom de la compagnie */
+.sidebar h6 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
 .sidebar {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     min-height: 100vh;
@@ -198,7 +258,7 @@
     top: 0;
     height: 100%;
     width: 4px;
-    background: linear-gradient(135deg, #91E3AF, #4CAF50);
+    background: linear-gradient(135deg, #ffd000, #ffeb3b);
     transform: scaleY(0);
     transition: transform 0.3s ease;
 }
@@ -230,9 +290,9 @@
 }
 
 .menu-item.active .m-link {
-    background: linear-gradient(135deg, rgba(145, 227, 175, 0.2), rgba(76, 175, 80, 0.1));
-    color: #91E3AF;
-    box-shadow: 0 4px 15px rgba(145, 227, 175, 0.3);
+    background: linear-gradient(135deg, rgba(255, 208, 0, 0.2), rgba(255, 235, 59, 0.1));
+    color: #ffd000;
+    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.3);
 }
 
 .menu-icon {
@@ -253,9 +313,9 @@
 }
 
 .menu-item.active .menu-icon {
-    background: linear-gradient(135deg, #91E3AF, #4CAF50);
-    color: white;
-    box-shadow: 0 4px 10px rgba(145, 227, 175, 0.4);
+    background: linear-gradient(135deg, #ffd000, #ffeb3b);
+    color: #000000;
+    box-shadow: 0 4px 10px rgba(255, 208, 0, 0.4);
 }
 
 .menu-text {
@@ -268,7 +328,7 @@
 .menu-badge {
     width: 8px;
     height: 8px;
-    background: #91E3AF;
+    background: #ffd000;
     border-radius: 50%;
     opacity: 0;
     transition: opacity 0.3s ease;

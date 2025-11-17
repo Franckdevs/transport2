@@ -21,7 +21,7 @@ class CompagniesSeeder extends Seeder
             return;
         }
 
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             // 🔹 Générer des données fictives
             $nom = "Nom{$i}";
             $prenom = "Prenom{$i}";

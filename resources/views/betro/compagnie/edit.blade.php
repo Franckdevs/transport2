@@ -3,17 +3,14 @@
 <body class="layout-1" data-luno="theme-black">
     <!-- start: sidebar -->
     @include('betro.all_element.sidebar')
-
     <!-- start: body area -->
     <div class="wrapper">
         <!-- start: page header -->
         @include('betro.all_element.navbar')
-
         <!-- start: page toolbar -->
         <div class="page-toolbar px-xl-4 px-sm-2 px-0 py-3">
             @include('betro.all_element.cadre')
         </div>
-
         <!-- start: page body -->
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
@@ -21,83 +18,149 @@
 
                     <div class="col-12">
                         <div class="card">
-                           <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="card-title mb-0">
-                                <i class="fas fa-building-user me-2"></i> Modifier une compagnie et administrateur
-                            </h6>
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-building-user me-2"></i> Modification d'une compagnie et administrateur
+                                </h6>
 
-                            <a href="{{ route('compagnies') }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-arrow-left"></i> Retour
-                            </a>
-                        </div>
+                                <a href="{{ route('compagnies') }}" class="btn btn-light-primary animated-btn">
+                                    <i class="bi bi-arrow-left"></i> Retour
+                                </a>
+                            </div>
 
 
                             <div class="card-body">
                                 <form method="POST" action="{{ route('compagnies.update', $compagnies->id) }}"
                                     enctype="multipart/form-data">
                                     @csrf
-                                    {{-- @method('PUT') <!-- à utiliser si c’est une modification --> --}}
-
+                                
                                     <div class="row">
                                         <!-- Partie Administrateur -->
                                         <div class="col-md-5">
                                             <h5 class="mb-4">
-                                                <i class="fas fa-user-shield me-2 text-primary"></i> Informations
-                                                Administrateur
+                                                <i class="bi bi-arrow-right-short me-2"></i>
+                                                ADMINISTRATEUR
                                             </h5>
-
                                             <div class="mb-3">
-                                                <label for="nom" class="form-label">Nom Administrateur</label>
-                                                <input type="text" class="form-control" id="nom" name="nom"
-                                                    value="{{ old('nom', $users->nom) }}" required>
+                                                <label for="nom" class="form-label" aria-required="true">Nom <span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="nom" name="nom" 
+                                                    required 
+                                                    maxlength="150"
+                                                    title="Le nom ne doit pas dépasser 150 caractères"
+                                                    aria-describedby="nomHelp"
+                                                    value="{{ old('nom', $users->nom) }}">
+                                                <div id="nomHelp" class="form-text">Maximum 150 caractères</div>
                                                 @error('nom')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="prenom" class="form-label">Prénom Administrateur</label>
+                                                <label for="prenom" class="form-label" aria-required="true">Prénom <span
+                                                        class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="prenom" name="prenom"
-                                                    value="{{ old('prenom', $users->prenom) }}" required>
+                                                    required
+                                                    pattern="[A-Za-zÀ-ÿ\s-]+"
+                                                    title="Veuillez entrer un prénom valide (lettres, espaces et tirets)"
+                                                    aria-describedby="prenomHelp"
+                                                    value="{{ old('prenom', $users->prenom) }}">
+                                                <div id="prenomHelp" class="form-text">Uniquement des lettres, espaces et tirets</div>
                                                 @error('prenom')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="telephone" class="form-label">Téléphone</label>
-                                                <input type="text" class="form-control" id="telephone"
-                                                    name="telephone" value="{{ old('telephone', $users->telephone) }}"
-                                                    required>
+                                                <label for="telephone" class="form-label" aria-required="true">Téléphone <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtn">
+                                                        <span id="selectedFlag">🇨🇮</span>
+                                                        <span id="selectedCode">+225</span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" id="countryList">
+                                                        <li><a class="dropdown-item active" href="#" data-flag="🇨🇮" data-code="+225">🇨🇮 Côte d'Ivoire (+225)</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇧🇫" data-code="+226">🇧🇫 Burkina Faso (+226)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇲🇱" data-code="+223">🇲🇱 Mali (+223)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇳🇪" data-code="+227">🇳🇪 Niger (+227)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇧🇯" data-code="+229">🇧🇯 Bénin (+229)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇹🇬" data-code="+228">🇹🇬 Togo (+228)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇫🇷" data-code="+33">🇫🇷 France (+33)</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🌐" data-code="">Autre pays</a></li>
+                                                    </ul>
+                                                    <input type="hidden" id="countryCode" name="country_code" value="{{ old('country_code', $users->country_code ?? '+225') }}">
+                                                    <input type="tel" class="form-control" id="telephone" name="telephone"
+                                                        required
+                                                        pattern="^(0[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2})$|^(0[0-9]{1}[-. ]?[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2})$"
+                                                        title="Veuillez entrer un numéro de téléphone ivoirien valide (ex: 01 23 45 67 89 ou 012 34 56 78)"
+                                                        aria-describedby="telHelp"
+                                                        placeholder="01 23 45 67 89"
+                                                        value="{{ old('telephone', $users->telephone) }}">
+                                                </div>
+                                                <div id="telHelp" class="form-text">Format : 01 23 45 67 89 ou 01.23.45.67.89 ou 0123456789</div>
                                                 @error('telephone')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="email" class="form-label">Email</label>
+                                                <label for="email" class="form-label" aria-required="true">Email <span
+                                                        class="text-danger">*</span></label>
                                                 <input type="email" class="form-control" id="email" name="email"
-                                                    value="{{ old('email', $users->email) }}" required>
+                                                    required
+                                                    pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                                                    title="Veuillez entrer une adresse email valide"
+                                                    aria-describedby="emailHelp"
+                                                    value="{{ old('email', $users->email) }}">
+                                                <div id="emailHelp" class="form-text">Format : exemple@domaine.com</div>
                                                 @error('email')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
-                                            {{-- <div class="mb-3">
-                                                <label for="password" class="form-label">Mot de passe</label>
-                                                <input type="password" class="form-control" id="password"
-                                                    name="password">
-                                                @error('password')
-                                                    <small class="text-danger">{{ $message }}</small>
-                                                @enderror
-                                            </div>
+                                            <div class="mt-2">
+                                                <h5 class="mb-4">
+                                                    <i class="bi bi-arrow-right-short me-2"></i>
+                                                    LOCALISATION DE LA COMPAGNIE <span class="text-danger">*</span>
+                                                </h5>
 
-                                            <div class="mb-3">
-                                                <label for="password_confirmation" class="form-label">Confirmer le mot
-                                                    de passe</label>
-                                                <input type="password" class="form-control" id="password_confirmation"
-                                                    name="password_confirmation">
-                                            </div> --}}
+                                                <div class="mb-2">
+                                                    <input type="text" name="adresse" id="searchInput"
+                                                        class="form-control"
+                                                        placeholder="Rechercher une adresse..."
+                                                        autocomplete="off"
+                                                        aria-label="Rechercher une adresse"
+                                                        value="{{ old('adresse', $compagnies->adresse) }}">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <button type="button" id="locateBtn"
+                                                        class="btn btn-outline-primary"
+                                                        aria-label="Utiliser ma position actuelle">
+                                                        <i class="fas fa-location-arrow me-1" aria-hidden="true"></i> Me localiser
+                                                    </button>
+                                                </div>
+                                                <div id="statusMessage" class="status-message" role="alert" aria-live="polite"></div>
+                                                <div id="map"
+                                                    style="height: 300px; border-radius: 8px; margin-bottom: 10px;"
+                                                    aria-label="Carte de localisation"
+                                                    tabindex="0">
+                                                </div>
+                                                <div id="addressDetails" class="mt-2" style="display:none;" role="region" aria-live="polite"></div>
+                                                <div class="row mt-2">
+                                                    <div class="col-md-6" style="display:none;">
+                                                        <label>Latitude :</label>
+                                                        <span id="latValue">{{ old('latitude', $compagnies->latitude) }}</span>
+                                                        <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', $compagnies->latitude) }}">
+                                                    </div>
+                                                    <div class="col-md-6" style="display:none;">
+                                                        <label>Longitude :</label>
+                                                        <span id="lngValue">{{ old('longitude', $compagnies->longitude) }}</span>
+                                                        <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', $compagnies->longitude) }}">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <!-- Séparateur -->
@@ -108,91 +171,136 @@
                                         <!-- Partie Compagnie -->
                                         <div class="col-md-5">
                                             <h5 class="mb-4">
-                                                <i class="fas fa-building me-2 text-success"></i> Informations Compagnie
+                                                <i class="bi bi-arrow-right-short me-2"></i>
+                                                COMPAGNIE
                                             </h5>
 
                                             <div class="mb-3">
-                                                <label for="nom_complet_compagnies" class="form-label">Nom de la
-                                                    compagnie</label>
+                                                <label for="nom_complet_compagnies" class="form-label" aria-required="true">
+                                                    Nom de la compagnie <span class="text-danger">*</span>
+                                                </label>
                                                 <input type="text" class="form-control" id="nom_complet_compagnies"
                                                     name="nom_complet_compagnies"
                                                     value="{{ old('nom_complet_compagnies', $compagnies->nom_complet_compagnies) }}"
-                                                    required>
+                                                    required
+                                                    title="Veuillez entrer un nom de compagnie valide"
+                                                    aria-describedby="nomCompagnieHelp">
+                                                <div id="nomCompagnieHelp" class="form-text">Nom complet de votre compagnie</div>
                                                 @error('nom_complet_compagnies')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="email_compagnies" class="form-label">Email</label>
+                                                <label for="email_compagnies" class="form-label" aria-required="true">Email <span class="text-danger">*</span></label>
                                                 <input type="email" class="form-control" id="email_compagnies"
                                                     name="email_compagnies"
-                                                    value="{{ old('email_compagnies', $compagnies->email_compagnies) }}"
-                                                    required>
+                                                    required
+                                                    pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                                                    title="Veuillez entrer une adresse email valide"
+                                                    aria-describedby="emailCompagnieHelp"
+                                                    value="{{ old('email_compagnies', $compagnies->email_compagnies) }}">
+                                                <div id="emailCompagnieHelp" class="form-text">Format : contact@votrecompagnie.com</div>
                                                 @error('email_compagnies')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="telephone_compagnies" class="form-label">Téléphone</label>
-                                                <input type="text" class="form-control" id="telephone_compagnies"
-                                                    name="telephone_compagnies"
-                                                    value="{{ old('telephone_compagnies', $compagnies->telephone_compagnies) }}"
-                                                    required>
+                                                <label for="telephone_compagnies" class="form-label" aria-required="true">Téléphone <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtnCompagnie">
+                                                        <span id="selectedFlagCompagnie">🇨🇮</span>
+                                                        <span id="selectedCodeCompagnie">+225</span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" id="countryListCompagnie">
+                                                        <li><a class="dropdown-item active" href="#" data-flag="🇨🇮" data-code="+225">🇨🇮 Côte d'Ivoire (+225)</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇧🇫" data-code="+226">🇧🇫 Burkina Faso (+226)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇲🇱" data-code="+223">🇲🇱 Mali (+223)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇳🇪" data-code="+227">🇳🇪 Niger (+227)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇧🇯" data-code="+229">🇧🇯 Bénin (+229)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇹🇬" data-code="+228">🇹🇬 Togo (+228)</a></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🇫🇷" data-code="+33">🇫🇷 France (+33)</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item" href="#" data-flag="🌐" data-code="">Autre pays</a></li>
+                                                    </ul>
+                                                    <input type="hidden" id="countryCodeCompagnie" name="country_code_compagnie" value="{{ old('country_code_compagnie', $compagnies->country_code ?? '+225') }}">
+                                                    <input type="tel" class="form-control" id="telephone_compagnies"
+                                                        name="telephone_compagnies"
+                                                        required
+                                                        pattern="^(0[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2})$|^(0[0-9]{1}[-. ]?[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2})$"
+                                                        title="Veuillez entrer un numéro de téléphone valide"
+                                                        aria-describedby="telCompagnieHelp"
+                                                        placeholder="01 23 45 67 89"
+                                                        value="{{ old('telephone_compagnies', $compagnies->telephone_compagnies) }}">
+                                                </div>
+                                                <div id="telCompagnieHelp" class="form-text">Format : 01 23 45 67 89 ou 01.23.45.67.89 ou 0123456789</div>
                                                 @error('telephone_compagnies')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="adresse_compagnies" class="form-label">Adresse</label>
+                                                <label for="adresse_compagnies" class="form-label" aria-required="true">Adresse complète <span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control" id="adresse_compagnies"
                                                     name="adresse_compagnies"
                                                     value="{{ old('adresse_compagnies', $compagnies->adresse_compagnies) }}"
-                                                    required>
+                                                    required
+                                                    aria-describedby="adresseHelp">
+                                                <div id="adresseHelp" class="form-text">Commencez à taper pour rechercher une adresse</div>
                                                 @error('adresse_compagnies')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="description_compagnies"
-                                                    class="form-label">Description</label>
-                                                <textarea class="form-control" id="description_compagnies" name="description_compagnies" rows="3">{{ old('description_compagnies', $compagnies->description_compagnies) }}</textarea>
+                                                <label for="description_compagnies" class="form-label">Description</label>
+                                                <textarea class="form-control" id="description_compagnies" name="description_compagnies" rows="3"
+                                                    aria-describedby="descriptionHelp">{{ old('description_compagnies', $compagnies->description_compagnies) }}</textarea>
+                                                <div id="descriptionHelp" class="form-text">Décrivez brièvement votre compagnie (optionnel)</div>
                                                 @error('description_compagnies')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
 
-                                           <div class="mb-3">
-                                        <label for="villes_id" class="form-label">Ville</label>
-                                        <select class="form-control" id="villes_id" name="villes_id" required>
-                                            <option value="">Sélectionner une ville</option>
-                                            @foreach($villes as $ville)
-                                                <option value="{{ $ville->id }}" 
-                                                    {{ old('villes_id', $compagnies->villes_id) == $ville->id ? 'selected' : '' }}>
-                                                    {{ $ville->nom_ville }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('villes_id')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
-                                        </div>
+                                            <div class="mb-3">
+                                                <label for="villes_id" class="form-label" aria-required="true">Ville <span class="text-danger">*</span></label>
+                                                <select class="form-select" id="villes_id" name="villes_id" required
+                                                    aria-describedby="villeHelp">
+                                                    <option value="">Sélectionner une ville</option>
+                                                    @foreach($villes as $ville)
+                                                        <option value="{{ $ville->id }}" 
+                                                            {{ old('villes_id', $compagnies->villes_id) == $ville->id ? 'selected' : '' }}>
+                                                            {{ $ville->nom_ville }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <div id="villeHelp" class="form-text">Sélectionnez la ville principale de votre compagnie</div>
+                                                @error('villes_id')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
 
                                             <div class="mb-3">
-                                                <label for="logo_compagnies" class="form-label">Logo</label>
-                                                <input type="file" class="form-control" id="logo_compagnies"
-                                                    name="logo_compagnies" accept="image/*">
+                                                <label for="logo_compagnies" class="form-label">Logo de la compagnie</label>
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control" id="logo_compagnies"
+                                                        name="logo_compagnies" accept="image/*"
+                                                        aria-describedby="logoHelp">
+                                                </div>
+                                                <div id="logoHelp" class="form-text">Taille maximale : 10MB. Formats acceptés : JPG, PNG, GIF</div>
                                                 @if ($compagnies->logo_compagnies)
-                                                    <img src="{{ asset('logo_compagnie/' . $compagnies->logo_compagnies) }}"
-                                                        alt="Logo"
-                                                        style="max-height: 100px; max-width: 100%; object-fit: contain; border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+                                                    <div class="mt-2">
+                                                        <p class="mb-1">Logo actuel :</p>
+                                                        <img src="{{ asset($compagnies->logo_compagnies) }}"
+                                                            alt="Logo actuel"
+                                                            style="max-height: 100px; max-width: 100%; object-fit: contain; border-radius: 5px; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+                                                    </div>
                                                 @endif
                                                 @error('logo_compagnies')
-                                                    <small class="text-danger">{{ $message }}</small>
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
                                             </div>
 
@@ -201,44 +309,54 @@
                                             
                                         </div>
                                         <div class="mb-4">
-   <h5>
-       <i class="fas fa-map-marker-alt me-2 text-danger"></i>
-       Localisation de la compagnie
-   </h5>
-   <div class="mb-2">
-<input type="text" name="adresse" id="searchInput" class="form-control" placeholder="Rechercher une adresse ou un lieu..." autocomplete="off">
-   </div>
-   <div class="mb-2">
-       <button type="button" id="locateBtn" class="btn btn-outline-primary">
-           <i class="fas fa-location-arrow me-1"></i> Me localiser
-       </button>
-   </div>
-   <div id="statusMessage" class="status-message"></div>
-   <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 10px;"></div>
-   <div id="addressDetails" class="mt-2" style="display:none;"></div>
-   <div class="row mt-2">
-       <div class="col-md-6" style="display:none;">
-           <label>Latitude :</label>
-           <span id="latValue">-</span>
-           <input type="hidden" id="latitude" name="latitude">
-       </div>
-       <div class="col-md-6" style="display:none;">
-           <label>Longitude :</label>
-           <span id="lngValue">-</span>
-           <input type="hidden" id="longitude" name="longitude">
-       </div>
-   </div>
-</div>
                                     </div>
 
                                     <div class="mt-4 text-center">
-                                        <button type="submit" class="btn btn-success px-4">
-                                            <i class="fas fa-check-circle me-2"></i> Modifier
+                                        <button type="submit" class="btn btn-success px-4" id="submitButton">
+                                            <i class="bi bi-check2-circle me-1"></i> Mettre à jour
                                         </button>
+                                        <p class="text-muted small mt-2">Veuillez patienter, la mise à jour peut prendre quelques instants...</p>
                                     </div>
-
+                                    
+                                    <style>
+                                        .spinner-border {
+                                            width: 1rem;
+                                            height: 1rem;
+                                            vertical-align: middle;
+                                            margin-right: 0.5rem;
+                                        }
+                                        #submitButton:disabled {
+                                            cursor: not-allowed;
+                                            opacity: 0.7;
+                                        }
+                                    </style>
+                                    
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const form = document.querySelector('form');
+                                            const submitButton = document.getElementById('submitButton');
+                                            
+                                            form.addEventListener('submit', function(e) {
+                                                // Empêcher la soumission multiple
+                                                if (submitButton.disabled) {
+                                                    e.preventDefault();
+                                                    return false;
+                                                }
+                                                
+                                                // Désactiver le bouton et afficher le spinner
+                                                submitButton.disabled = true;
+                                                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mise à jour en cours...';
+                                                
+                                                // Soumettre le formulaire après un court délai pour permettre l'affichage du spinner
+                                                setTimeout(function() {
+                                                    form.submit();
+                                                }, 100);
+                                                
+                                                return true;
+                                            });
+                                        });
+                                    </script>
                                 </form>
-
                             </div>
                         </div>
                     </div>

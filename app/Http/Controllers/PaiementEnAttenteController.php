@@ -69,16 +69,16 @@ class PaiementEnAttenteController extends Controller
         //
     }
 
-private function generateRandomString($length = 10) {
-$characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-$randomString = '';
+    private function generateRandomString($length = 10) {
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    $randomString = '';
 
-for ($i = 0; $i < $length; $i++) {
-$randomString .= $characters[rand(0, strlen($characters) - 1)];
-}
+    for ($i = 0; $i < $length; $i++) {
+    $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
 
-return $randomString;
-}
+    return $randomString;
+    }
 
 
     public function InitiationPaiement(Request $request)
@@ -96,7 +96,10 @@ return $randomString;
    $utilisateur = Utilisateur ::where('token', $request->token)->first();
 
     $voyage = Voyage::where('id', $request->voyage_id)->first();
-
+// return response()->json([
+//                 'success' => false,
+//                 'voyage' => $voyage
+//             ], 404);
             if (!$utilisateur) {
             return response()->json([
                 'success' => false,
@@ -121,16 +124,24 @@ return $randomString;
     }
         // Récupérer l'installation associée à la taxe
         // $installation = Installation::where('user_id', $taxe->id_installation)->first();
-
         $codePaiement = $this->generateRandomString();
 
         $verifier = PaiementEnAttente::where('code', $codePaiement)->first();
-        
         if ($verifier) {
             return response()->json([
                 'success' => false,
                 'message' => 'Cette demande de paiement existe déjà.'
             ], 409); // 409 = conflit
+        }else {
+            $verifier = new PaiementEnAttente();
+            $verifier->code = $codePaiement;
+            $verifier->codePaiement = $codePaiement;
+            $verifier->utilisateur_id = $utilisateur->id;
+            $verifier->voyages_id = $voyage->id;
+            $verifier->id_arret_voayage = $arret_voyages->id;
+            $verifier->montant = $arret_voyages->montant;
+            $verifier->status = '1'; // Statut initial, par exemple '1' pour 'en attente'
+            $verifier->save();
         }
 
          $data = [

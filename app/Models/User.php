@@ -24,6 +24,7 @@ class User extends Authenticatable
         'telephone',
         'email',
         'password',
+        'id_admin_creation',
     ];
 
 
@@ -31,9 +32,6 @@ class User extends Authenticatable
 {
     return $this->hasOne(InfoUser::class);
 }
-
-
-
 
 
     /**

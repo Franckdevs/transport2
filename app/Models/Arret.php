@@ -13,13 +13,14 @@ class Arret extends Model
         'itineraire_id',
         'info_user_id',
         'nom',
-        'gares_id'
+        'gares_id',
+        'ville_id'
     ];
 
     // 🔁 Relation : un arrêt appartient à un voyage (Itineraire)
     public function itineraire()
     {
-        return $this->belongsTo(Itineraire::class, 'itineraire_id');  // Spécification explicite de la clé étrangère
+        return $this->belongsTo(Itineraire::class, 'itineraire_id');
     }
 
     // 🔁 Relation : un arrêt appartient à un info_user
@@ -27,28 +28,28 @@ class Arret extends Model
     {
         return $this->belongsTo(InfoUser::class, 'info_user_id');
     }
+    
+    // Relation : un arrêt appartient à une gare avec sa ville
+    public function gare()
+    {
+        return $this->belongsTo(Gare::class, 'gares_id')->with('ville');
+    }
+    
+    // Relation : un arrêt appartient à un voyage
     public function voyage()
-{
-    return $this->belongsTo(Voyage::class);
-}
+    {
+        return $this->belongsTo(Voyage::class);
+    }
 
-// App\Models\Arret.php
-public function arretVoyages()
-{
-    return $this->hasMany(ArretVoyage::class, 'arret_id');
-}
-
-// App\Models\Arret.php
-public function gare()
-{
-    return $this->belongsTo(Gare::class, 'gares_id');
-}
-
-public function ville()
-{
-    return $this->belongsTo(Ville::class, 'ville_id');
-}
-
-
-
+    // Relation : un arrêt a plusieurs arrêts de voyage
+    public function arretVoyages()
+    {
+        return $this->hasMany(ArretVoyage::class, 'arret_id');
+    }
+    
+    // Relation : un arrêt appartient à une ville
+    public function ville()
+    {
+        return $this->belongsTo(Ville::class, 'ville_id');
+    }
 }

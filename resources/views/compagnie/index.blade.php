@@ -255,7 +255,7 @@
                 <div class="stats-icon">
                   <i class="fas fa-money-bill-wave"></i>
                 </div>
-                <div class="stats-number">{{ number_format($somme ?? 0, 0, ',', ' ') }}</div>
+                <div class="stats-number">{{ number_format($somme ?? 0, 0, ',', ' ') }} FCFA</div>
                 <div class="stats-label">Revenus</div>
                 <div class="stats-subtext">FCFA ce mois</div>
               </div>

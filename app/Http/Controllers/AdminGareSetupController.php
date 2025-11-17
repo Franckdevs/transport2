@@ -30,7 +30,8 @@ class AdminGareSetupController extends Controller
         if ($user->info_user && $user->info_user->gares) {
             $gare = $user->info_user->gares->first();
         }
-
+        // le nom de la gare
+        // dd($gare , $user , $user->info_user->gare->nom_gare);
         return view('auth.admin-gare-setup', compact('user', 'gare'));
     }
 

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\UpdatebusRequest;
+use App\Models\ConfigurationBus;
 
 class BusController extends Controller
 {
@@ -25,7 +26,8 @@ class BusController extends Controller
      */
     public function create()
     {
-     return view("compagnie.bus.create");
+     $configurationPlaces = ConfigurationBus::all();
+     return view("compagnie.bus.create", compact("configurationPlaces"));
     }
 
     /**
@@ -69,7 +71,6 @@ class BusController extends Controller
 public function store(Request $request)
 {
     $user = Auth::user();
-
     // 1. Validation des données
     $validated = $request->validate([
         'nom_bus'              => 'required|string|max:255',
@@ -78,23 +79,33 @@ public function store(Request $request)
         'immatriculation_bus'  => 'required|string|max:50|unique:buses,immatriculation_bus',
         'photo_bus'            => 'nullable|image|mimes:jpg,jpeg,png,gif|max:102400',
         'description_bus'      => 'nullable|string',
-        'localisation_bus'     => 'nullable|string|max:255',
+        // 'localisation_bus'     => 'nullable|string|max:255',
         'nombre_places'        => 'required|integer|min:1',
-        'configuration_place_id' => 'required|integer|exists:configuration_place_buses,id',
+        'configuration_place_buses_id' => 'required|integer|exists:configuration_buses,id',
+    ], [
+        'nom_bus.required' => 'Le nom du bus est obligatoire.',
+        'marque_bus.required' => 'La marque du bus est obligatoire.',
+        'modele_bus.required' => 'Le modèle du bus est obligatoire.',
+        'immatriculation_bus.required' => 'L\'immatriculation du bus est obligatoire.',
+        'immatriculation_bus.unique' => 'L\'immatriculation du bus doit être unique.',
+        'photo_bus.image' => 'Le fichier doit être une image.',
+        'photo_bus.mimes' => 'Le fichier doit être une image (jpg, jpeg, png, gif).',
+        'photo_bus.max' => 'Le fichier doit peser moins de 100 Mo.',
+        'description_bus.string' => 'La description doit être une chaîne de caractères.',
+        'nombre_places.required' => 'Le nombre de places est obligatoire.',
+        'nombre_places.integer' => 'Le nombre de places doit être un entier.',
+        'nombre_places.min' => 'Le nombre de places doit être au moins 1.',
+        'configuration_place_buses_id.required' => 'Une configuration est obligatoire.',
+        'configuration_place_buses_id.exists' => 'La configuration sélectionnée n\'existe pas.',
     ]);
 
     // Ajout de l'ID de l'utilisateur relié
     $validated['info_user_id'] = $user->info_user->id;
-
+    $validated['compagnies_id'] = $user->info_user->compagnie->id;
     // Ajout de l'ID de la configuration
-    $validated['configuration_place_buses_id'] = $validated['configuration_place_id'];
-    unset($validated['configuration_place_id']); // on n'envoie pas cette clé à la création
+    $validated['configuration_place_buses_id'] = $validated['configuration_place_buses_id'];
+    // unset($validated['configuration_place_buses_id']); // on n'envoie pas cette clé à la création
 
-    // 2. Gestion de la photo
-    // if ($request->hasFile('photo_bus')) {
-    //     $photoPath = $request->file('photo_bus')->store('buses', 'public');
-    //     $validated['photo_bus'] = $photoPath;
-    // }
     if ($request->hasFile('photo_bus')) {
     // Chemin du dossier public/buses
     $folder = public_path('buses');
@@ -117,6 +128,7 @@ public function store(Request $request)
     $validated['photo_bus'] = $filename;
 }
     // dd($validated);
+    
     // 3. Sauvegarde en base de données
     $bus = Bus::create($validated);
 
@@ -133,7 +145,7 @@ public function store(Request $request)
     {
         //
         $bus = Bus::find($bus->id);
-        $configuration = ConfigurationPlaceBus::where('id', $bus->configuration_place_buses_id)->first();
+        $configuration = ConfigurationBus::where('id', $bus->configuration_place_buses_id)->first();
         return view("compagnie.bus.show",compact("bus","configuration"));
     }
 
@@ -144,9 +156,9 @@ public function store(Request $request)
 public function edit($id)
 {
     $bus = Bus::find($id);
-    $configuration = ConfigurationPlaceBus::all(); // ✅ toutes les configurations disponibles
+    $configurationPlaces = ConfigurationBus::all();
 // dd($configuration , $bus);
-    return view("compagnie.bus.edit", compact("bus", "configuration"));
+    return view("compagnie.bus.edit", compact("bus", "configurationPlaces"));
 }
 
 
@@ -225,15 +237,27 @@ public function edit($id)
         $bus = Bus::find($id);
         $bus->status = 3;
         $bus->save();
-        return redirect()->back()->with('success', 'Bus supprimé avec succès.');
+        return redirect()->back()->with('success', 'Le bus a été bloqué avec succès.');
     }
 
         public function destroy_reactivation($id)
     {
-        // dd($id);
         $bus = Bus::find($id);
         $bus->status = 1;
         $bus->save();
-        return redirect()->back()->with('success', 'Bus supprimé avec succès.');
+        return redirect()->back()->with('success', 'Le bus a été débloqué avec succès.');
     }
+
+    // function pour recupere un configure bus et c'est place configuration
+    public function getConfigurationPlaces($id)
+    {
+       $configurationPlaces = ConfigurationBus::with('placeconfigbussave')->where('id', $id)->first();
+
+       //recupere les place de configuration maintenant
+       $places = $configurationPlaces->placeconfigbussave;
+       return response()->json($places);
+    }
+
+    // liste des configuration bus
+   
 }

@@ -44,24 +44,10 @@
 
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <!-- Badge pour le rôle -->
-            <span class="badge bg-primary rounded-pill px-3 py-2"
-                  data-bs-toggle="tooltip"
-                  data-bs-placement="top"
-                  title="{{ $permissionsText }}">
+            <span class="badge bg-primary rounded-pill px-3 py-2">
                 <i class="fas fa-user-tag me-1"></i>
                 <strong>{{ $roleText }}</strong>
             </span>
-
-            <!-- Badge pour la compagnie -->
-            @if(Auth::user()->info_user && Auth::user()->info_user->compagnie)
-                <span class="badge bg-success rounded-pill px-3 py-2"
-                      data-bs-toggle="tooltip"
-                      data-bs-placement="top"
-                      title="Compagnie associée">
-                    <i class="fas fa-building me-1"></i>
-                    <strong>{{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}</strong>
-                </span>
-            @endif
 
             <!-- Badge pour la gare -->
             @if(Auth::user()->info_user && Auth::user()->info_user->gare)

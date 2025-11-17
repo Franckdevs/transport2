@@ -50,11 +50,66 @@ public function store(Request $request)
     $validated['info_user_id'] = $user->info_user->id;
 
     // Création du personnel
+    $validated['status'] = 1; // Actif par défaut
     personnel::create($validated);
 
     return redirect()->route('personnel.index')->with('success', 'Enregistrement effectué avec succès.');
 }
 
+
+
+// public function update(Request $request, $id)
+// {
+//     $user = Auth::user();
+//     $personnel = Personnel::findOrFail($id);
+
+//     // 1. Validation
+//     $validated = $request->validate([
+//         'nom'       => 'required|string|max:255',
+//         'prenom'    => 'required|string|max:255',
+//         'telephone' => 'required|string|max:20',
+//         'email'     => 'required|email',
+//         'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:10240', // 10 Mo max
+//         'role_utilisateurs_id' => 'required',
+//     ]);
+
+//     // 2. Création du dossier si inexistant
+//     $folder = public_path('photo_personnel');
+//     if (!file_exists($folder)) {
+//         mkdir($folder, 0755, true);
+//     }
+
+//     // 3. Gestion de la photo
+//     if ($request->hasFile('photo')) {
+//         $file = $request->file('photo');
+//         $filename = time() . '_' . $file->getClientOriginalName();
+
+//         // Déplacer la nouvelle photo
+//         $file->move($folder, $filename);
+
+//         // Supprimer l’ancienne photo si elle existe
+//         if (!empty($personnel->photo) && file_exists(public_path($personnel->photo))) {
+//             unlink(public_path($personnel->photo));
+//         }
+
+//         // Mettre à jour le chemin dans la DB
+//         $validated['photo'] = 'photo_personnel/' . $filename;
+//     } else {
+//         // Conserver l'ancienne photo si aucune nouvelle n'est envoyée
+//         $validated['photo'] = $personnel->photo;
+//     }
+
+//     // 4. Lier au bon user
+//     $validated['info_user_id'] = $user->info_user->id;
+
+    
+//     // 5. Mise à jour
+//     $validated['status'] = 1; // Actif par défaut
+//     $personnel->update($validated);
+
+//     // 6. Redirection
+//     return redirect()->route('personnel.index')->with('success', 'Modification effectuée avec succès.');
+// }
 
 
 public function update(Request $request, $id)
@@ -72,7 +127,7 @@ public function update(Request $request, $id)
         'role_utilisateurs_id' => 'required',
     ]);
 
-    // 2. Création du dossier si inexistant
+    // 2. Création du dossier photo si inexistant
     $folder = public_path('photo_personnel');
     if (!file_exists($folder)) {
         mkdir($folder, 0755, true);
@@ -98,16 +153,28 @@ public function update(Request $request, $id)
         $validated['photo'] = $personnel->photo;
     }
 
-    // 4. Lier au bon user
+    // 4. Empêcher la modification du téléphone ou de l’e-mail s’ils sont identiques
+    if ($request->telephone === $personnel->telephone) {
+        unset($validated['telephone']);
+    }
+
+    if ($request->email === $personnel->email) {
+        unset($validated['email']);
+    }
+
+    // 5. Lier au bon user
     $validated['info_user_id'] = $user->info_user->id;
 
-    // 5. Mise à jour
+    // 6. Mettre le statut par défaut
+    $validated['status'] = 1;
+
+    // 7. Mise à jour
     $personnel->update($validated);
 
-    // 6. Redirection
-    return redirect()->route('personnel.index')->with('success', 'Modification effectuée avec succès.');
+    // 8. Redirection
+    return redirect()->route('personnel.index')
+                     ->with('success', 'Modification effectuée avec succès.');
 }
-
 
     public function create()
     {

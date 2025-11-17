@@ -59,11 +59,11 @@
                                 <tr>
                                     <td>{{ $voyage->ville->nom_ville }}</td>
                                     <td>{{ $voyage->estimation ?? 'Non défini' }}</td>
-<td>{{ \Illuminate\Support\Str::limit($voyage->titre ?? 'Non défini', 15) }}</td>
+                                    <td>{{ \Illuminate\Support\Str::limit($voyage->titre ?? 'Non défini', 15) }}</td>
                                     <td>{{ GlobalHelper::formatCreatedAt($voyage->created_at) }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $voyage->statut == 1 ? 'success' : 'secondary' }}">
-                                            {{ $voyage->statut == 1 ? 'Actif' : 'Inactif' }}
+                                        <span class="badge bg-{{ $voyage->status  == 1 ? 'success' : 'danger' }}">
+                                            {{ $voyage->status  == 1 ? 'Actif' : 'Iactif' }}
                                         </span>
                                     </td>
                                     

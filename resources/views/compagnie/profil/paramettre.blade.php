@@ -8,113 +8,107 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-   
+        /* Styles de base */
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+        }
 
         .page-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e9ecef;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 0;
         }
 
         .page-body {
-            background: #ffffff;
+            background: #fff;
+            padding: 2rem 0;
         }
 
         .container-fluid {
             max-width: 1200px;
+            padding: 0 15px;
         }
 
         /* Titre principal */
         .page-body h3 {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 2rem;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #3498db;
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         /* Cartes */
         .card {
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            background: #ffffff;
-        }
-
-        .card:hover {
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            background: #fff;
         }
 
         .card-header {
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            padding: 20px 25px;
-            border-radius: 12px 12px 0 0 !important;
+            background: #f5f5f5;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 1.25rem;
         }
 
         .card-header h5 {
-            font-weight: 600;
-            color: #2c3e50;
+            font-weight: 500;
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-header h5 i {
-            color: #3498db;
+            font-size: 1.1rem;
         }
 
         .card-body {
-            padding: 25px;
+            padding: 1.5rem;
         }
 
         /* Formulaires */
         .form-label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 8px;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #555;
         }
 
         .form-control {
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            padding: 12px 15px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.95rem;
         }
 
         .form-control:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
         }
 
         /* Boutons */
         .btn {
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 600;
+            border-radius: 4px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
 
-        .btn-success {
-            background: #27ae60;
+        .btn-primary {
+            background-color: #007bff;
             color: white;
+            border: none;
         }
 
-        .btn-success:hover {
-            background: #219a52;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
 
-        .btn-warning {
-            background: #f39c12;
-            color: white;
+        .btn-outline-secondary {
+            border: 1px solid #ddd;
+            color: #555;
+            background: white;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #f8f9fa;
+            border-color: #ccc;
         }
 
         .btn-warning:hover {

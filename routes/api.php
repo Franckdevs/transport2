@@ -20,6 +20,10 @@ Route::get('/listeCompagnie', [UtilisateurController::class, 'listeCompagnie']);
 
 Route::get('/listevoayge/{id}', [UtilisateurController::class, 'listevoayge']);
 
+Route::get('/listeGare/{id}', [UtilisateurController::class, 'listeGare']);
+
+Route::get('/listeVoyage/{id}', [UtilisateurController::class, 'listeVoyage_avec_itineraire']);
+
 Route::post('/reservation', [UtilisateurController::class, 'reservation']);
 
 Route::post('/places-restantes', [UtilisateurController::class, 'placesRestantes']);
@@ -29,6 +33,9 @@ Route::get('recu_reservation/{token}', [UtilisateurController::class,'recu_reser
 Route::post('InitiationPaiement', [PaiementEnAttenteController::class,'InitiationPaiement']);
 
 Route::post('callback', [PaiementController::class,'callback']);
+
+Route::get('/listeVoyage_avec_itineraire_avec_ville/{id}', [UtilisateurController::class, 'listeVoyage_avec_itineraire_avec_ville']);
+
 
 
 

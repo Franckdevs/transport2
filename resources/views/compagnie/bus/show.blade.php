@@ -42,134 +42,334 @@
     
 
         <!-- Section informations détaillées -->
-        <div class="col-md-7">
-            <div class="info-section">
-                <h5 class="section-title mb-4">
-                    <i class="fas fa-info-circle me-2"></i>Informations Générales
-                </h5>
-                
-                <div class="row">
-                    <!-- Identité du bus -->
-                    <div class="col-md-6 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-tag"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Nom du bus</label>
-                                <p class="info-value">{{ $bus->nom_bus ?? 'Non spécifié' }}</p>
+    <style>
+.info-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.section-title {
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #4facfe;
+    padding-bottom: 0.5rem;
+}
+
+.info-card {
+    display: flex;
+    align-items: flex-start;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid #4facfe;
+    transition: all 0.3s ease;
+    height: 100%;
+    min-height: 80px;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.info-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+    min-width: 0; /* Important pour le text-overflow */
+}
+
+.info-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+.info-value {
+    font-size: 0.9rem;
+    color: #2c3e50;
+    font-weight: 500;
+    margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    /* Gestion du texte long */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limite à 3 lignes maximum */
+    -webkit-box-orient: vertical;
+    line-height: 1.4;
+    max-height: 4.2em; /* 3 lignes * 1.4 line-height */
+}
+
+/* Style spécifique pour la description qui peut être plus longue */
+.info-card:has(.info-label:contains("Description")) .info-value,
+.info-card:last-child .info-value {
+    -webkit-line-clamp: 5; /* 5 lignes pour la description */
+    max-height: 7em; /* 5 lignes * 1.4 line-height */
+}
+
+/* Pour les URLs et textes très longs */
+.info-value:contains("http") {
+    word-break: break-all;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+}
+
+.metadata-section {
+    background: #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.metadata-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.metadata-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.metadata-value {
+    font-size: 0.9rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .info-card {
+        flex-direction: column;
+        text-align: center;
+        height: auto;
+        min-height: 100px;
+    }
+    
+    .info-icon {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .metadata-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.3rem;
+    }
+    
+    .info-value {
+        -webkit-line-clamp: 2; /* Moins de lignes sur mobile */
+        max-height: 2.8em;
+    }
+}
+
+/* Alternative avec scroll pour les textes très longs */
+.info-card.scrollable .info-value {
+    overflow-y: auto;
+    max-height: 100px;
+    -webkit-line-clamp: unset;
+    padding-right: 5px;
+}
+
+/* Style pour la scrollbar */
+.info-card.scrollable .info-value::-webkit-scrollbar {
+    width: 4px;
+}
+
+.info-card.scrollable .info-value::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.info-card.scrollable .info-value::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.info-card.scrollable .info-value::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+
+  <div class="page-header-custom">
+          <h1 class="page-title">
+            {{-- Ajouter un nouveau bus --}}
+          </h1>
+          <a href="{{ route('liste.bus') }}" class="btn">
+            ← Retour à la liste
+          </a>
+        </div>
+
+<div class="col-md-7">
+    <div class="info-section">
+        <h5 class="section-title mb-4">
+            <i class="fas fa-info-circle me-2"></i>Informations Générales
+        </h5>
+        
+        <div class="row">
+            <!-- Identité du bus -->
+            <div class="col-md-6 mb-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Nom du bus</label>
+                        <p class="info-value">{{ $bus->nom_bus ?? 'Non spécifié' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-copyright"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Marque</label>
+                        <p class="info-value">{{ $bus->marque_bus ?? 'Non spécifié' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caractéristiques techniques -->
+            <div class="col-md-6 mb-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Modèle</label>
+                        <p class="info-value">{{ $bus->modele_bus ?? 'Non spécifié' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Immatriculation</label>
+                        <p class="info-value">{{ $bus->immatriculation_bus ?? 'Non spécifié' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Localisation et statut -->
+            <div class="col-md-6 mb-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-chair"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Nombre de sièges</label>
+                        <p class="info-value">{{ $bus->nombre_places ?? 'Non spécifié' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Configuration</label>
+                        <p class="info-value">
+                            {{ $configuration->nom ?? 'Non spécifié' }} 
+                            <small class="text-muted d-block">{{ $configuration->disposition ?? '' }}</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description - Version avec scroll -->
+            <div class="col-12 mb-3">
+                <div class="info-card scrollable">
+                    <div class="info-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <label class="info-label">Description</label>
+                        <p class="info-value">{{ $bus->description_bus ?? 'Aucune description' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statut et métadonnées -->
+            <div class="col-12">
+                <div class="metadata-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="metadata-item">
+                                <span class="metadata-label">Statut</span>
+                                <span class="status-badge {{ $bus->status ? 'status-active' : 'status-inactive' }}">
+                                    {{ $bus->status ? 'Actif' : 'Inactif' }}
+                                </span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-copyright"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Marque</label>
-                                <p class="info-value">{{ $bus->marque_bus ?? 'Non spécifié' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Caractéristiques techniques -->
-                    <div class="col-md-6 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-cog"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Modèle</label>
-                                <p class="info-value">{{ $bus->modele_bus ?? 'Non spécifié' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-id-card"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Immatriculation</label>
-                                <p class="info-value">{{ $bus->immatriculation_bus ?? 'Non spécifié' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Localisation et statut -->
-                    <div class="col-md-6 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Localisation</label>
-                                <p class="info-value">{{ $bus->localisation_bus ?? 'Non spécifié' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-chair"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Configuration</label>
-                                <p class="info-value">
-                                    {{ $configuration->nom_complet ?? 'Non spécifié' }} 
-                                    <small class="text-muted d-block">{{ $configuration->disposition ?? '' }}</small>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="col-12 mb-3">
-                        <div class="info-card">
-                            <div class="info-icon">
-                                <i class="fas fa-file-alt"></i>
-                            </div>
-                            <div class="info-content">
-                                <label class="info-label">Description</label>
-                                <p class="info-value">{{ $bus->description_bus ?? 'Aucune description' }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Statut et métadonnées -->
-                    <div class="col-12">
-                        <div class="metadata-section">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="metadata-item">
-                                        <span class="metadata-label">Statut</span>
-                                        <span class="status-badge {{ $bus->statut_bus ? 'status-active' : 'status-inactive' }}">
-                                            {{ $bus->statut_bus ? 'Actif' : 'Inactif' }}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="metadata-item">
-                                        <span class="metadata-label">Créé le</span>
-                                        <span class="metadata-value">{{ $bus->created_at->format('d/m/Y') }}</span>
-                                    </div>
-                                </div>
-                                {{-- <div class="col-md-4">
-                                    <div class="metadata-item">
-                                        <span class="metadata-label">Modifié le</span>
-                                        <span class="metadata-value">{{ $bus->updated_at->format('d/m/Y') }}</span>
-                                    </div>
-                                </div> --}}
+                        <div class="col-md-6">
+                            <div class="metadata-item">
+                                <span class="metadata-label">Créé le</span>
+                                <span class="metadata-value">{{ $bus->created_at->format('d/m/Y') }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<script>
+// Optionnel : Ajouter une classe scrollable automatiquement pour les textes très longs
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.info-value').forEach(function(element) {
+        if (element.scrollHeight > element.clientHeight) {
+            element.closest('.info-card').classList.add('scrollable');
+        }
+    });
+});
+</script>
 
         <!-- Section photo -->
         <div class="col-md-5">
@@ -199,14 +399,14 @@
 
                 <!-- Actions rapides -->
                 <div class="quick-actions mt-4">
-                    <div class="d-grid gap-2">
+                    {{-- <div class="d-grid gap-2">
                         <a href="{{ route('bus.edit', $bus->id) }}" class="btn btn-primary">
                             <i class="fas fa-edit me-2"></i>Modifier les informations
                         </a>
                         <a href="{{ route('liste.bus') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-list me-2"></i>Retour à la liste des bus
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

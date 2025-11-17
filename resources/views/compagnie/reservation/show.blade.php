@@ -246,68 +246,7 @@
                         </div>
                     </div>
 
-                    <!-- Informations Compagnie -->
-                    {{-- <div class="col-12">
-                        <div class="card border-0 shadow-sm">
-                            <div class=
-                            "card-header 
-                              bg-success 
-                            text-white py-3"
-                            >
-                                
-                              <h5 class="card-title mb-0">
-                                    <i class="fa fa-building me-2"></i>Informations de la compagnie
-                                </h5>
-
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-4">
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="text-center p-3 bg-light rounded-3">
-                                            <i class="fa fa-building fa-2x text-success mb-2"></i>
-                                            <h6 class="fw-bold mb-1">Nom compagnie</h6>
-                                            <p class="text-muted mb-0 small">{{ $detail_reservation->voyage->compagnie->nom_complet_compagnies ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="text-center p-3 bg-light rounded-3">
-                                            <i class="fa fa-map-marker-alt fa-2x text-primary mb-2"></i>
-                                            <h6 class="fw-bold mb-1">Ville</h6>
-                                            <p class="text-muted mb-0 small">{{ $detail_reservation->voyage->compagnie->ville->nom_ville ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="text-center p-3 bg-light rounded-3">
-                                            <i class="fa fa-envelope fa-2x text-warning mb-2"></i>
-                                            <h6 class="fw-bold mb-1">Email</h6>
-                                            <p class="text-muted mb-0 small">{{ $detail_reservation->voyage->compagnie->email_compagnies ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 col-sm-6">
-                                        <div class="text-center p-3 bg-light rounded-3">
-                                            <i class="fa fa-phone fa-2x text-info mb-2"></i>
-                                            <h6 class="fw-bold mb-1">Téléphone</h6>
-                                            <p class="text-muted mb-0 small">{{ $detail_reservation->voyage->compagnie->telephone_compagnies ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="text-center p-3 bg-light rounded-3">
-                                            <i class="fa fa-location-dot fa-2x text-danger mb-2"></i>
-                                            <h6 class="fw-bold mb-1">Adresse</h6>
-                                            <p class="text-muted mb-0 small">{{ $detail_reservation->voyage->compagnie->adresse_compagnies ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="text-center p-3 bg-light rounded-3">
-                                            <i class="fa fa-file-lines fa-2x text-secondary mb-2"></i>
-                                            <h6 class="fw-bold mb-1">Description</h6>
-                                            <p class="text-muted mb-0 small">{{ $detail_reservation->voyage->compagnie->description_compagnies ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
+                  
                 </div>
             </div>
         </div>

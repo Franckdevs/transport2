@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BETRO - Plateforme de Gestion de Transport</title>
+        <link rel="icon" href="{{ asset('log.png') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #1976d2;
-            --secondary-color: #0d47a1;
-            --accent-color: #42a5f5;
-            --light-color: #e3f2fd;
-            --dark-color: #0a2c5e;
+            --primary-color: #ffd000;
+            --secondary-color: #000000;
+            --accent-color: #ffeb3b;
+            --light-color: #ffffff;
+            --dark-color: #000000;
             --success-color: #4caf50;
             --warning-color: #ff9800;
-            --info-color: #2196f3;
+            --info-color: #000000;
         }
         
         body {
@@ -23,7 +24,7 @@
             line-height: 1.6;
             color: #333;
             overflow-x: hidden;
-            background: linear-gradient(120deg, #f0f4ff 0%, #eaf6fb 100%);
+            background: linear-gradient(120deg, #ffffff 0%, #ffffff 100%);
         }
         
         .navbar {
@@ -198,7 +199,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(25,118,210,0.1) 0%, rgba(66,165,245,0.05) 100%);
+            background: linear-gradient(45deg, rgba(255,208,0,0.12) 0%, rgba(255,235,59,0.08) 100%);
         }
         
         .feature-badge {
@@ -393,7 +394,7 @@
         
         .card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 25px rgba(25,118,210,0.15);
+            box-shadow: 0 10px 25px rgba(255,208,0,0.25);
         }
         
         .card-body {
@@ -419,7 +420,7 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(25,118,210,0.2);
+            box-shadow: 0 4px 10px rgba(255,208,0,0.2);
         }
         
         .service-icon i {
@@ -504,7 +505,7 @@
         
         .contact-form input:focus, .contact-form textarea:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+            box-shadow: 0 0 0 3px rgba(255,208,0,0.15);
         }
         
         .contact-form button {
@@ -518,7 +519,7 @@
         
         .contact-form button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(25,118,210,0.3);
+            box-shadow: 0 5px 15px rgba(255,208,0,0.35);
         }
         
         /* Footer */
@@ -565,6 +566,24 @@
                 height: 48px;
             }
         }
+        /* Overrides to replace Bootstrap blue with white */
+        .text-primary, .text-info {
+            color: #ffffff !important;
+        }
+        .bg-primary, .bg-info {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .btn-primary {
+            background-color: #ffffff !important;
+            border-color: #ffffff !important;
+            color: #000000 !important;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: #f8f9fa !important;
+            border-color: #f8f9fa !important;
+            color: #000000 !important;
+        }
     </style>
 </head>
 <body>
@@ -585,25 +604,22 @@
                     <li class="nav-item">
                         <a href="{{ route('login') }}" class="btn btn-connexion text-white ms-lg-3">Connexion</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/#inscription') }}" class="btn btn-connexion text-white ms-lg-2">S'inscrire</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Header avec image de fond, avatars et animation -->
-    {{-- <header class="container-fluid header-bg">
-        <div class="header-overlay fade-in">
-            <h1 class="display-5 fw-bold text-primary mb-3">Bienvenue chez BETRO</h1>
-            <p class="lead mb-4">La solution moderne, intuitive et collaborative pour la gestion de votre compagnie de transport.</p>
-            <a href="{{ route('login') }}" class="btn btn-connexion text-white">Se connecter</a>
-        </div>
-    </header> --}}
-
 <header class="container-fluid header-bg">
     <div class="header-overlay fade-in" style="background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); animation: headerPulse 3s infinite alternate;">
-        <h1 class="display-5 fw-bold text-primary mb-3">Bienvenue chez BETRO</h1>
+        <h1 class="display-5 fw-bold text-primary mb-3 ">Bienvenue chez BETRO</h1>
         <p class="lead mb-4">La solution moderne, intuitive et collaborative pour la gestion de votre compagnie de transport.</p>
-        <a href="{{ route('login') }}" class="btn btn-connexion text-white">Se connecter</a>
+        <div class="d-flex gap-2 justify-content-center">
+            <a href="{{ route('login') }}" class="btn btn-connexion text-white">Se connecter</a>
+            <a href="{{ url('/register') }}" class="btn btn-connexion text-white">S'inscrire</a>
+        </div>
     </div>
 </header>
 <style>
@@ -940,12 +956,186 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer text-white text-center py-4 fade-in">
-        <div class="container">
-            <small>&copy; 2025 BETRO. Tous droits réservés.</small>
+    <!-- Section Inscription (Création d'entreprise et administrateur) -->
+    @php
+        use App\Models\Ville;
+        $villes = Ville::all();
+    @endphp
+    <section id="inscription" class="container py-5 fade-in">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2 class="section-title center">Créer une compagnie</h2>
+                <p class="lead">Inscrivez votre compagnie et son administrateur en quelques étapes</p>
+            </div>
         </div>
-    </footer>
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+                    <div class="card-body p-4">
+                        @if(session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
+                        @if ($errors->any())
+                            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                <strong>Veuillez corriger les erreurs ci-dessous.</strong>
+                                <ul class="mb-0 mt-2">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        @endif
+            <form method="POST" action="{{ route('register.store') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="row g-4">
+                                <!-- Partie Administrateur -->
+                                
+                                <div class="col-lg-6">
+                                    <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> ADMINISTRATEUR</h5>
+                                    <div class="mb-3">
+                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom" name="nom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('nom') }}">
+                                        @error('nom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prenom" name="prenom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('prenom') }}">
+                                        @error('prenom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtnHome">
+                                                <span>🇨🇮</span>
+                                                <span>+225</span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item active" href="#">🇨🇮 Côte d'Ivoire (+225)</a></li>
+                                            </ul>
+                                            <input type="hidden" name="country_code" value="+225">
+                                            <input type="tel" class="form-control" id="telephone_home" name="telephone" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" placeholder="0700000000" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" value="{{ old('telephone') }}">
+                                        </div>
+                                        @error('telephone')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        <div class="form-text">10 chiffres uniquement</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}">
+                                        @error('email')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+
+                                    <div class="mt-2">
+                                        <h6 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i> Localisation de la compagnie</h6>
+                                        <div class="mb-2">
+                                            <input type="text" name="adresse" id="searchInputHome" class="form-control" placeholder="Rechercher une adresse..." autocomplete="off">
+                                        </div>
+                                        <div class="mb-2">
+                                            <button type="button" id="locateBtnHome" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-location-arrow me-1"></i> Me localiser
+                                            </button>
+                                        </div>
+                                        <div id="statusMessageHome" class="status-message small mb-2"></div>
+                                        <div id="mapHome" style="height: 260px; border-radius: 8px;" aria-label="Carte de localisation"></div>
+                                        <input type="hidden" id="latitudeHome" name="latitude">
+                                        <input type="hidden" id="longitudeHome" name="longitude">
+                                    </div>
+                                </div>
+
+                                <!-- Séparateur (desktop) -->
+                                <div class="col-lg-1 d-none d-lg-flex align-items-stretch">
+                                    <div style="width:1px; background:#ddd; height:100%"></div>
+                                </div>
+
+                                <!-- Partie Compagnie -->
+                                <div class="col-lg-5">
+                                    <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> COMPAGNIE</h5>
+                                    <div class="mb-3">
+                                        <label for="nom_complet_compagnies" class="form-label">Nom de la compagnie <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom_complet_compagnies" name="nom_complet_compagnies" required minlength="2" maxlength="100" value="{{ old('nom_complet_compagnies') }}">
+                                        @error('nom_complet_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email_compagnies" class="form-label">Email compagnie <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email_compagnies" name="email_compagnies" required value="{{ old('email_compagnies') }}">
+                                        @error('email_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="telephone_compagnies" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><span aria-hidden="true">🇨🇮 +225</span><span class="visually-hidden">Indicatif téléphonique de la Côte d'Ivoire</span></span>
+                                            <input type="tel" class="form-control" id="telephone_compagnies_home" name="telephone_compagnies" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" placeholder="0700000000" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" value="{{ old('telephone_compagnies') }}">
+                                        </div>
+                                        @error('telephone_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="adresse_compagnies" class="form-label">Adresse (Facultatif)</label>
+                                        <input type="text" class="form-control" id="adresse_compagnies" name="adresse_compagnies" value="{{ old('adresse_compagnies') }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="description_compagnies" class="form-label">Description (Facultatif)</label>
+                                        <textarea class="form-control" id="description_compagnies" name="description_compagnies" rows="3">{{ old('description_compagnies') }}</textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="villes_id" class="form-label">Ville <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="villes_id" name="villes_id" required>
+                                            <option value="">Sélectionner une ville</option>
+                                            @foreach($villes as $ville)
+                                                <option value="{{ $ville->id }}" {{ old('villes_id') == $ville->id ? 'selected' : '' }}>{{ $ville->nom_ville }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('villes_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="logo_compagnies" class="form-label">Logo (max 10MB)</label>
+                                        <input type="file" class="form-control" id="logo_compagnies" name="logo_compagnies" accept="image/*" onchange="previewLogoHome(this)">
+                                        <div id="logoPreviewHome" class="mt-2 text-center" style="display: none;">
+                                            <img id="logoPreviewImgHome" src="#" alt="Aperçu du logo" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeLogoHome()">
+                                                <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-connexion text-white px-4 py-2">Créer la compagnie</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+<footer class="footer text-white text-center py-5 fade-in" style="min-height: 120px;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-4 mb-3 mb-md-0 d-flex align-items-center justify-content-center justify-content-md-start">
+                <span class="fw-bold fs-5">BETRO</span>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <small class="d-block fs-6">&copy; 2025 BETRO. Tous droits réservés.</small>
+                <a href="mailto:contact@betro.com" class="text-white-50 text-decoration-none fs-6">contact@betro.com</a>
+            </div>
+            <div class="col-md-4 text-md-end text-center">
+                <a href="#" class="text-white-50 me-3 fs-3"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="text-white-50 me-3 fs-3"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white-50 fs-3"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -969,5 +1159,102 @@
             fadeInOnScroll(); // Vérifier au chargement initial
         });
     </script>
+    <script>
+        // Logo preview handlers for home registration form
+        function previewLogoHome(input) {
+            const file = input.files && input.files[0];
+            const wrap = document.getElementById('logoPreviewHome');
+            const img = document.getElementById('logoPreviewImgHome');
+            if (!wrap || !img) return;
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e){
+                    img.src = e.target.result;
+                    wrap.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                wrap.style.display = 'none';
+                img.src = '#';
+            }
+        }
+        function removeLogoHome() {
+            const input = document.getElementById('logo_compagnies');
+            const wrap = document.getElementById('logoPreviewHome');
+            const img = document.getElementById('logoPreviewImgHome');
+            if (input) input.value = '';
+            if (wrap) wrap.style.display = 'none';
+            if (img) img.src = '#';
+        }
+    </script>
+    <script>
+        // Google Maps for home registration form
+        let mapHomeInst, markerHome, autocompleteHome;
+        let isMapsLoadedHome = false;
+        window.initMapHome = function () {
+            isMapsLoadedHome = true;
+            const mapEl = document.getElementById('mapHome');
+            if (!mapEl) return;
+            const defaultLoc = { lat: 5.345317, lng: -4.024429 };
+            mapHomeInst = new google.maps.Map(mapEl, {
+                center: defaultLoc,
+                zoom: 13,
+                streetViewControl: false
+            });
+            markerHome = new google.maps.Marker({
+                position: defaultLoc,
+                map: mapHomeInst,
+                draggable: true,
+                icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', scaledSize: new google.maps.Size(40, 40) }
+            });
+            markerHome.addListener('dragend', function(){
+                setHomeLocation(markerHome.getPosition());
+            });
+            const input = document.getElementById('searchInputHome');
+            if (input) {
+                autocompleteHome = new google.maps.places.Autocomplete(input, {
+                    types: ['geocode','establishment'],
+                    componentRestrictions: { country: 'ci' }
+                });
+                autocompleteHome.bindTo('bounds', mapHomeInst);
+                autocompleteHome.addListener('place_changed', function(){
+                    const place = autocompleteHome.getPlace();
+                    if (!place.geometry || !place.geometry.location) return;
+                    setHomeLocation(place.geometry.location);
+                });
+            }
+            const locateBtn = document.getElementById('locateBtnHome');
+            if (locateBtn) {
+                locateBtn.addEventListener('click', function(){
+                    if (!navigator.geolocation) return;
+                    locateBtn.disabled = true;
+                    locateBtn.innerHTML = "<i class='fas fa-spinner fa-spin me-1'></i> Localisation...";
+                    navigator.geolocation.getCurrentPosition(function(pos){
+                        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                        setHomeLocation(loc);
+                        locateBtn.disabled = false;
+                        locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
+                    }, function(){
+                        locateBtn.disabled = false;
+                        locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
+                    }, { timeout: 15000, enableHighAccuracy: true, maximumAge: 60000 });
+                });
+            }
+            // Initialize hidden fields
+            updateHomeCoords(defaultLoc.lat, defaultLoc.lng);
+        };
+        function setHomeLocation(latlng){
+            mapHomeInst.setCenter(latlng);
+            markerHome.setPosition(latlng);
+            updateHomeCoords(latlng.lat ? latlng.lat() : latlng.lat, latlng.lng ? latlng.lng() : latlng.lng);
+        }
+        function updateHomeCoords(lat,lng){
+            const latI = document.getElementById('latitudeHome');
+            const lngI = document.getElementById('longitudeHome');
+            if (latI) latI.value = lat;
+            if (lngI) lngI.value = lng;
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places&callback=initMapHome" async defer></script>
 </body>
 </html>

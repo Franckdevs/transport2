@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConfigurationBusController;
 use App\Http\Controllers\PersonelController;
 use App\Http\Controllers\UtilisateurController;
 use App\Http\Controllers\Voyage2Controller;
@@ -17,6 +18,7 @@ use App\Http\Controllers\PaiementTransactionController;
 use App\Http\Controllers\ParamettreController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ReservationTicketController;
+use App\Http\Controllers\CompanyRegisterController;
 
 // Route::get('/', [ConnexionController::class, 'premierePage'])->name('login');
 Route::get('/login', [ConnexionController::class, 'logins'])->name('login');
@@ -29,6 +31,11 @@ Route::post('/', [ConnexionController::class, 'logout'])->name('page_connexion')
 Route::get('/', function () {
     return view('acceuil.acceuil');
 });
+
+// Public registration routes
+Route::get('/register', [CompanyRegisterController::class, 'show'])->name('register');
+Route::post('/register', [CompanyRegisterController::class, 'store'])->name('register.store');
+Route::get('/register/pending/{id?}',[CompanyRegisterController::class, 'pending'])->name('register.pending');
 
 // Route::middleware('auth')->group(function () {
 // Route::get('/dashboard', [ConnexionController::class, 'dashboard'])->name('dashboard');
@@ -71,8 +78,11 @@ Route::controller(CompagniesController::class)->group(function () {
     Route::get('/compagnies-show/{compagnies}', 'show')->name('compagnies.show');
     Route::get('/compagnies-edit/{compagnies}', 'edit')->name('compagnies.edit');
     Route::post('compagnies-update/{compagnies}', 'update')->name('compagnies.update');
-Route::post('/destroy/{id}', 'destroy')->name('compagnies.destroy');
-Route::post('reactiver_supprimer/{id}', 'reactiver_supprimer')->name('compagnies.reactivate');
+    Route::delete('/compagnies/{id}', 'destroy')->name('compagnies.destroy');
+    Route::post('/compagnies/{id}/reactivate', 'reactiver_supprimer')->name('compagnies.reactivate');
+    // Validation/refus des demandes (status == 2)
+    Route::post('/compagnies/{id}/approve', 'approve')->name('compagnies.approve');
+    Route::post('/compagnies/{id}/refuse', 'refuse')->name('compagnies.refuse');
     // Route::get('/creer-acces/{id}', 'creerAcces')->name('creer.acces');
     // Route::put('/update-password/{id}', 'updatePassword')->name('acces.update.password');
 });
@@ -145,7 +155,6 @@ Route::delete('/personnel/{id}', [PersonelController::class, 'destroy'])->name('
 // Réactivation du personnel
 Route::put('/personnel/{id}/reactiver', [PersonelController::class, 'destroy_reactivation'])->name('personnel.reactivation');
 
-
 Route::controller(ChauffeurController::class)->group(function () {
     Route::get('/chauffeur', 'index2')->name('chauffeur.index');
     Route::get('/chauffeur/create', 'create')->name('chauffeur.create');
@@ -183,6 +192,8 @@ Route::controller(ItineraireController::class)->group(function () {
     Route::put('/itineraire-update/{id}', 'update')->name('itineraire.update');
 });
 
+Route::get('/gares/{id}', [App\Http\Controllers\ItineraireController::class, 'details']);
+
 
 Route::controller(VoyageController::class)->group(function () {
     Route::get('/voyage', 'index')->name('voyage.index');
@@ -206,6 +217,19 @@ Route::controller(ReservationController::class)->group(function () {
     Route::get('detail_reservatiion-detail/{id}', 'voir_detail_reservation')->name('voir_detail_reservation.show');
 });
 
+// Route::post('/seats/save', [ConfigurationBusController::class, 'store'])->name('seats.store');
+Route::controller(ConfigurationBusController::class)->group(function () {
+        Route::post('/seats/save', 'store')->name('seats.store');
+        Route::get('liste-config' , 'index')->name('listeconfig.index');
+        Route::get('creation-config' , 'create')->name('creationConfig.creation');
+        Route::get('/configurations/{id}','show_vrai')->name('config.show');
+        Route::get('/configurations-edit/{id}', 'edit')->name('config.edit');
+        Route::put('/configurations/{id}', 'update')->name('config.update');
+        //activation et desactivation
+        Route::post('/configurations/activation/{id}', 'activation')->name('config.activation');
+        Route::post('/configurations/desactivation/{id}', 'desactivation')->name('config.desactivation');
+});
+
 // Route::controller(ParamettreController::class)->group(function () {
 //     Route::get('/parametre', 'index')->name('parametre.index');
 // });
@@ -215,4 +239,5 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/paramettre/update-infos', [ParamettreController::class, 'updateInfos'])->name('paramettre.updateInfos');
     Route::put('/paramettre/update-password', [ParamettreController::class, 'updatePassword'])->name('paramettre.updatePassword');
 });
+
 

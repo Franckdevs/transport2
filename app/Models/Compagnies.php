@@ -21,6 +21,7 @@ class Compagnies extends Model
         'latitude',
         'longitude',
         'adresse',
+        'status',
     ];
 
 public function info_user()

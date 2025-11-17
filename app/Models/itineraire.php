@@ -34,6 +34,19 @@ class Itineraire extends Model
         return $this->hasMany(Arret::class);
     }
 
+    // Récupère les arrêts de voyage à travers la relation avec les voyages
+    public function arretVoyages()
+    {
+        return $this->hasManyThrough(
+            ArretVoyage::class,
+            Voyage::class,
+            'itineraire_id', // Clé étrangère dans la table voyages
+            'voyage_id',     // Clé étrangère dans la table arret_voyages
+            'id',            // Clé locale dans la table itineraires
+            'id'             // Clé locale dans la table voyages
+        );
+    }
+
     // Relation : un itinéraire a plusieurs voyages
     public function voyages()
     {
@@ -51,7 +64,7 @@ class Itineraire extends Model
 
     public function gare()
     {
-        return $this->belongsTo(gare::class, 'gare_id');
+        return $this->belongsTo(Gare::class, 'gare_id')->with('ville');
     }
 
 

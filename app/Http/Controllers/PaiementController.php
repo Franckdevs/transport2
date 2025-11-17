@@ -77,11 +77,35 @@ class PaiementController extends Controller
             (int) $Montant = $request->montant;
             (string) $codePaiement = $request->codePaiement;
             // Recupère le paiement en attente avec le statut '2'
-            $paiementinit = PaiementEnAttente::where('code_paiement', $codePaiement)
+            $paiementinit = PaiementEnAttente::where('codePaiement', $codePaiement)
             ->first();
+            // return response()->json([
+            // "data"=> "test",
+            // "montant"=> $RetourPaiementEnJSON,
+            // "paiement"=>$paiementinit
+            // ]);
 
+            if(!$paiementinit){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune demande de paiement en attente trouvée pour ce code.'
+                ], 404);
+            }
+            
             $trouvervoyage = Voyage::where('id', $paiementinit->voyages_id)->first();
+            if(!$trouvervoyage){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucun voyage trouvé pour ce paiement.'
+                ], 404);
+            }
             $compagnie = Compagnies::where('id', $trouvervoyage->compagnie_id)->first();
+            if(!$compagnie){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune compagnie trouvée pour ce paiement.'
+                ], 404);
+            }
             // return response()->json([
             //          "data"=> $RetourPaiementEnJSON,
             //          "code"=> $Code,
@@ -91,6 +115,7 @@ class PaiementController extends Controller
             //          "trouvervoyage"=>$trouvervoyage,
             //         "compagnie"=>$compagnie
             //          ]);
+
             if (!empty($paiementinit->id)) {
                 if ($Code == 200) {
                     $paiement = new Paiement();

@@ -13,6 +13,7 @@ use App\Models\Itineraire;
 use App\Models\Paiement;
 use App\Models\Reservation;
 use App\Models\Utilisateur;
+use App\Models\User;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -93,6 +94,14 @@ public function login(Request $request)
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
+
+    $user = User::where('email', $credentials['email'])->first();
+    if ($user && empty($user->password)) {
+        return back()
+            ->with('password_pending', "Votre compte n'est pas encore activé. Veuillez finaliser la création via le lien reçu par email.")
+            ->withErrors(['email' => 'Compte à finaliser avant connexion.'])
+            ->onlyInput('email');
+    }
     // Tentative d'authentification avec les credentials
     if (Auth::attempt($credentials)) {
         $request->session()->regenerate(); // Protection contre la fixation de session
@@ -140,7 +149,7 @@ public function login(Request $request)
 
     public function dashboardcompagnie()
     {
-      $user = auth()->user();
+      $user = Auth::user();
         $compagnie = Compagnies::where('info_user_id', $user->id)->first();
         $gars = gare::where('info_user_id', $user->id)->first();
         if($gars){

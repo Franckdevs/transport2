@@ -20,6 +20,7 @@ class Bus extends Model
         'configuration_car',
         'configuration_place_buses_id',
         'status',
+        'compagnies_id',
     ];
 
     // Relation : un bus appartient à une compagnie
@@ -36,8 +37,9 @@ class Bus extends Model
 
     public function configurationPlace()
     {
-        return $this->belongsTo(ConfigurationPlaceBus::class, 'configuration_place_buses_id');
+        return $this->belongsTo(ConfigurationBus::class, 'configuration_place_buses_id');
     }
+
 
     public function getPhotoBusAttribute($value)
 {

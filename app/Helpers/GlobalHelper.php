@@ -16,7 +16,7 @@ class GlobalHelper
             $date = Carbon::parse($date);
         }
 
-        return $date->format('d/m/Y');
+        return $date->format('d/m/Y à H:i');
     }
 
      /**

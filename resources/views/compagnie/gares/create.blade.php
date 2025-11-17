@@ -56,71 +56,164 @@
                 </a>
             </div>
 
-<div class="col-md-12">
+<div class="col-12">
   <div class="card">
+    <div class="card-header">
+      <h4 class="card-title mb-0"><i class="fas fa-plus-circle me-2"></i>Création d'une nouvelle gare</h4>
+      <p class="text-muted mb-0">Remplissez les informations ci-dessous pour créer une nouvelle gare</p>
+    </div>
     <div class="card-body">
-      <h5 class="mb-3">Créer une nouvelle gare</h5>
 <form action="{{ route('gares.store') }}" method="POST">
 @csrf
     <style>
+        /* Styles de base */
         #map {
             height: 300px;
             width: 100%;
             border-radius: 8px;
             margin-top: 15px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
         }
+        
+        /* Boutons et formulaires */
         .btn-primary {
             background-color: #0d6efd;
             border: none;
             white-space: nowrap;
+            transition: all 0.2s ease-in-out;
         }
         .btn-primary:hover {
             background-color: #0b5ed7;
+            transform: translateY(-1px);
         }
+        
+        /* Messages d'état */
         .status-message {
             font-size: 14px;
             margin-top: 10px;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border-radius: 6px;
             display: none;
+            border-left: 4px solid transparent;
         }
         .success {
             background-color: #d4edda;
             color: #155724;
             display: block;
+            border-left-color: #28a745;
         }
         .error {
             background-color: #f8d7da;
             color: #721c24;
             display: block;
+            border-left-color: #dc3545;
         }
         .info {
-            background-color: #cce5ff;
-            color: #004085;
+            background-color: #e7f5ff;
+            color: #0c63e4;
             display: block;
+            border-left-color: #0d6efd;
         }
+        
+        /* Animation de chargement */
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(13, 110, 253, 0.2);
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            border-top-color: #0d6efd;
+            animation: spin 0.8s ease-in-out infinite;
+            vertical-align: middle;
+            margin-right: 5px;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        /* Détails d'adresse */
         .address-details {
             margin-top: 15px;
             padding: 15px;
             background-color: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 14px;
+            border: 1px solid #e9ecef;
+        }
+        
+        /* Cartes */
+        .card {
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            padding: 1rem 1.25rem;
+        }
+        .card-title {
+            margin-bottom: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        /* Champs de formulaire */
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+        }
+        .form-control, .form-select {
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+        }
+        .input-group-text {
+            background-color: #f8f9fa;
+        }
+        
+        /* Toggle switches */
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .form-switch .form-check-input {
+            width: 2.5em;
+            height: 1.5em;
+            margin-left: -2.5em;
+            margin-top: 0.2em;
+        }
+        .form-switch .form-check-input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        /* Icônes des équipements */
+        .equipment-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        /* Carte des équipements */
+        .equipment-card {
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        .equipment-card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
         }
     </style>
 <div class="container">
-        <h2 class="mb-4"><i class="fas fa-map-marker-alt me-2"></i>Système de Géolocalisation</h2>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Localisation de la gare</h5>
+          <small class="text-muted">Définissez l'emplacement exact de votre gare</small>
+        </div>
          <input type="hidden" name="compagnie_id" value="{{ $compagnie_id }}" class="form-control mb-3">
 
         <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
@@ -172,6 +265,30 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places" async defer></script>
 
     <script>
+        // Fonction de formatage des numéros de téléphone
+        function formatPhoneNumber(input) {
+            // Supprimer tous les caractères non numériques
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limiter à 10 chiffres (format ivoirien)
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+            
+            // Formater en paires de 2 chiffres
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 2 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            // Mettre à jour la valeur du champ
+            input.value = formattedValue;
+        }
+        
+        // Initialisation de la carte Google Maps
         let map, marker, autocomplete;
         let isGoogleMapsLoaded = false;
 
@@ -418,11 +535,25 @@
 
 
 
-<div class="row">
-  {{-- Nom gare (plein largeur) --}}
-  <div class="col-12 mb-3">
-    <label for="nom_gare" class="form-label">Nom de la gare</label>
-    <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare') }}">
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Informations générales</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="nom_gare" class="form-label">Nom de la gare <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-train"></i></span>
+              <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare') }}" required>
+            </div>
+            <small class="form-text text-muted">Ex: Gare de Yopougon</small>
   </div>
 </div>
 
@@ -436,8 +567,14 @@
   {{-- Téléphone gare --}}
   <div class="col-md-6 mb-3">
     <label for="telephone_gare" class="form-label">Téléphone</label>
-    <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" value="{{ old('telephone_gare') }}">
-  </div>
+    <div class="input-group">
+      <span class="input-group-text">
+        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+        +225
+      </span>
+      <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('telephone_gare') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)">
+    </div>
+    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
 </div>
 
 <div class="row">
@@ -481,12 +618,6 @@
       @endforeach
     </select>
   </div>
-
-  {{-- Nombre de quais --}}
-  <div class="col-md-6 mb-3">
-    <label for="nombre_quais" class="form-label">Nombre de quais</label>
-    <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais') }}" min="0">
-  </div>
 </div>
 
 <div class="row">
@@ -503,17 +634,56 @@
   </div>
 </div>
 
-<div class="row">
-  {{-- Parking disponible --}}
-  <div class="col-md-6 mb-3 form-check">
-    <input class="form-check-input" type="checkbox" value="1" id="parking_disponible" name="parking_disponible" {{ old('parking_disponible') ? 'checked' : '' }}>
-    <label class="form-check-label" for="parking_disponible">Parking disponible</label>
-  </div>
+<!-- Section Équipements -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Équipements disponibles</h6>
+        <p class="text-muted small mb-0">Sélectionnez les équipements disponibles dans cette gare</p>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Parking -->
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="parking_disponible" name="parking_disponible" value="1" {{ old('parking_disponible') ? 'checked' : '' }}>
+                <label class="form-check-label" for="parking_disponible"></label>
+              </div>
+              <div class="d-flex align-items-center">
+                {{-- <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                  <i class="fas fa-parking text-primary fs-4"></i>
+                </div> --}}
+                <div>
+                  <h6 class="mb-0">Parking</h6>
+                  <p class="text-muted small mb-0">Espace de stationnement disponible</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  {{-- Wifi disponible --}}
-  <div class="col-md-6 mb-3 form-check">
-    <input class="form-check-input" type="checkbox" value="1" id="wifi_disponible" name="wifi_disponible" {{ old('wifi_disponible') ? 'checked' : '' }}>
-    <label class="form-check-label" for="wifi_disponible">Wi-Fi disponible</label>
+          <!-- Wifi -->
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="wifi_disponible" name="wifi_disponible" value="1" {{ old('wifi_disponible') ? 'checked' : '' }}>
+                <label class="form-check-label" for="wifi_disponible"></label>
+              </div>
+              <div class="d-flex align-items-center">
+                {{-- <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                  <i class="fas fa-wifi text-primary fs-4"></i>
+                </div> --}}
+                <div>
+                  <h6 class="mb-0">Wi-Fi gratuit</h6>
+                  <p class="text-muted small mb-0">Accès Internet sans fil</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -521,7 +691,14 @@
   {{-- Téléphone --}}
   <div class="col-md-6 mb-3">
     <label for="telephone" class="form-label">Téléphone (contact général)</label>
-    <input type="text" name="telephone" id="telephone" class="form-control" value="{{ old('telephone') }}">
+    <div class="input-group">
+      <span class="input-group-text">
+        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+        +225
+      </span>
+      <input type="text" name="telephone" id="telephone" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('telephone') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)">
+    </div>
+    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
   </div>
 
   {{-- Email --}}
@@ -545,7 +722,11 @@
 
 
   {{-- Section Administrateur de la gare --}}
-  <div class="card mt-4 mb-4">
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5 class="card-title mb-0"><i class="fas fa-user-shield me-2"></i>Administrateur de la gare</h5>
+      <p class="text-muted mb-0">Informations du responsable de cette gare</p>
+    </div>
     <div class="card-header bg-primary text-white">
       <h6 class="mb-0"><i class="fas fa-user-tie"></i>Informations de l'Administrateur de la Gare</h6>
     </div>
@@ -571,10 +752,17 @@
           <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email') }}" placeholder="admin@exemple.com">
         </div>
 
-        {{-- Téléphone admin --}}
+        {{-- Admin téléphone --}}
         <div class="col-md-6 mb-3">
           <label for="admin_telephone" class="form-label">Téléphone de l'administrateur</label>
-          <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" value="{{ old('admin_telephone') }}" placeholder="+33 1 23 45 67 89">
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+              +225
+            </span>
+            <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('admin_telephone') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)">
+          </div>
+          <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
         </div>
       </div>
 

@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveau Bus - BETRO</title>
+
     @include('compagnie.all_element.header')
-    
     <style>
         body {
             background: #f8f9fa;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            /* font-family: 'Segoe UI', system-ui, sans-serif; */
         }
 
         .page-header {
@@ -184,8 +178,10 @@
       <div class="container-fluid">
         <!-- En-tête simple -->
         <div class="page-header-custom">
-          <h1 class="page-title">Ajouter un nouveau bus</h1>
-          <a href="{{ route('liste.bus') }}" class="btn btn-light">
+          <h1 class="page-title">
+            {{-- Ajouter un nouveau bus --}}
+          </h1>
+          <a href="{{ route('liste.bus') }}" class="btn">
             ← Retour à la liste
           </a>
         </div>
@@ -197,129 +193,146 @@
               <div class="card-header">
                 <h5>Informations du bus</h5>
               </div>
-              <div class="card-body">
-                <form action="{{ route('bus.store') }}" method="POST" enctype="multipart/form-data" id="busForm">
-                  @csrf
+        <div class="card-body">
+            <form action="{{ route('bus.store') }}" method="POST" enctype="multipart/form-data" id="busForm">
+              @csrf
 
-                  <div class="row">
-                    <!-- Libellé du bus -->
-                    <div class="col-md-6 mb-3">
-                      <label for="nom_bus" class="form-label">Libellé du bus *</label>
-                      <input type="text" name="nom_bus" id="nom_bus" class="form-control" 
-                             value="{{ old('nom_bus') }}" placeholder="Ex: Bus VIP 001" required>
-                      @error('nom_bus')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
-
-                    <!-- Marque du bus -->
-                    <div class="col-md-6 mb-3">
-                      <label for="marque_bus" class="form-label">Marque du bus *</label>
-                      <input type="text" name="marque_bus" id="marque_bus" class="form-control" 
-                             value="{{ old('marque_bus') }}" placeholder="Ex: Mercedes, Toyota..." required>
-                      @error('marque_bus')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
+              <div class="form-section">
+                <h6 class="section-title"><i class="fas fa-info-circle me-2"></i>Informations générales</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="nom_bus" class="form-label">Libellé du bus <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('nom_bus') is-invalid @enderror" 
+                           id="nom_bus" name="nom_bus" value="{{ old('nom_bus') }}" 
+                           placeholder="Ex: Bus VIP 001" required>
+                    @error('nom_bus')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                   </div>
 
-                  <div class="row">
-                    <!-- Modèle du bus -->
-                    <div class="col-md-6 mb-3">
-                      <label for="modele_bus" class="form-label">Modèle du bus *</label>
-                      <input type="text" name="modele_bus" id="modele_bus" class="form-control" 
-                             value="{{ old('modele_bus') }}" placeholder="Ex: Sprinter, Coaster..." required>
-                      @error('modele_bus')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="marque_bus" class="form-label">Marque <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('marque_bus') is-invalid @enderror" 
+                           id="marque_bus" name="marque_bus" value="{{ old('marque_bus') }}" 
+                           placeholder="Ex: Mercedes, Toyota..." required>
+                    @error('marque_bus')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+                </div>
 
-                    <!-- Immatriculation -->
-                    <div class="col-md-6 mb-3">
-                      <label for="immatriculation_bus" class="form-label">Immatriculation *</label>
-                      <input type="text" name="immatriculation_bus" id="immatriculation_bus" class="form-control" 
-                             value="{{ old('immatriculation_bus') }}" placeholder="Ex: AB-123-CD" required>
-                      @error('immatriculation_bus')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="modele_bus" class="form-label">Modèle <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('modele_bus') is-invalid @enderror" 
+                           id="modele_bus" name="modele_bus" value="{{ old('modele_bus') }}" 
+                           placeholder="Ex: Sprinter, Coaster..." required>
+                    @error('modele_bus')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                   </div>
 
-                  <div class="row">
-                    <!-- Photo du bus -->
-                    <div class="col-md-6 mb-3">
+                  <div class="col-md-6 mb-3">
+                    <label for="immatriculation_bus" class="form-label">Immatriculation <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('immatriculation_bus') is-invalid @enderror" 
+                           id="immatriculation_bus" name="immatriculation_bus" 
+                           value="{{ old('immatriculation_bus') }}" 
+                           placeholder="Ex: AB-123-CD" required>
+                    @error('immatriculation_bus')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h6 class="section-title"><i class="fas fa-cog me-2"></i>Configuration</h6>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="configuration_place_buses_id" class="form-label">Configuration des places <span class="text-danger">*</span></label>
+                    <select class="form-select @error('configuration_place_buses_id') is-invalid @enderror" 
+                            id="configuration_place_buses_id" name="configuration_place_buses_id" required>
+                      <option value="">Sélectionner une configuration</option>
+                      @foreach($configurationPlaces as $config)
+                        <option value="{{ $config->id }}" 
+                                {{ old('configuration_place_buses_id') == $config->id ? 'selected' : '' }}>
+                          {{ $config->nom }} ({{ $config->colonne }}x{{ $config->ranger }} - {{ $config->colonne * $config->ranger }} places)
+                        </option>
+                        <input type="hidden" name="nombre_places" value="{{ $config->colonne * $config->ranger }}">
+                      @endforeach
+                    </select>
+                    @error('configuration_place_buses_id')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+
+                  {{-- <div class="col-md-3 mb-3">
+                    <label for="nombre_places" class="form-label">Nombre de places <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control @error('nombre_places') is-invalid @enderror" 
+                           id="nombre_places" name="nombre_places" 
+                           value="{{ old('nombre_places') }}" 
+                           min="1" placeholder="Ex: 30" required>
+                    @error('nombre_places')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="form-text text-muted">Doit correspondre à la configuration sélectionnée</small>
+                  </div> --}}
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h6 class="section-title"><i class="fas fa-image me-2"></i>Photo du bus</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
                       <label for="photo_bus" class="form-label">Photo du bus</label>
-                      <input type="file" name="photo_bus" id="photo_bus" class="form-control" 
-                             accept="image/*" onchange="previewImage(this)">
-                      <div class="image-preview" id="imagePreview">
-                        <div class="image-preview-placeholder">
-                          Aperçu de l'image
-                        </div>
-                      </div>
+                      <input type="file" class="form-control @error('photo_bus') is-invalid @enderror" 
+                             id="photo_bus" name="photo_bus" 
+                             accept="image/jpeg,image/png,image/jpg,image/gif" 
+                             onchange="previewImage(this)">
                       @error('photo_bus')
                         <div class="invalid-feedback">{{ $message }}</div>
                       @enderror
+                        <div class="form-text text-muted small">Formats acceptés: JPG, PNG, GIF. Taille max: 2MB</div>
+                      
+                      <div class="mt-3">
+                        <div class="image-preview bg-light rounded border p-3 text-center" id="imagePreview" style="min-height: 150px;">
+                          <div class="image-preview-placeholder text-muted">
+                            <i class="fas fa-image fa-3x mb-2 d-block"></i>
+                            <div>Aperçu de l'image</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+                  </div>
 
-                    <!-- Description -->
-                    <div class="col-md-6 mb-3">
+                  <div class="col-md-6">
+                    <div class="mb-3 h-100 d-flex flex-column">
                       <label for="description_bus" class="form-label">Description</label>
-                      <textarea name="description_bus" id="description_bus" class="form-control" 
-                                rows="3" placeholder="Description optionnelle du bus...">{{ old('description_bus') }}</textarea>
+                      <textarea class="form-control flex-grow-1 @error('description_bus') is-invalid @enderror" 
+                                id="description_bus" name="description_bus" 
+                                rows="8" 
+                                style="resize: none;"
+                                placeholder="Description optionnelle du bus...">{{ old('description_bus') }}</textarea>
                       @error('description_bus')
                         <div class="invalid-feedback">{{ $message }}</div>
                       @enderror
                     </div>
                   </div>
+                </div>
+              </div>
 
-                  <div class="row">
-                    <!-- Localisation -->
-                    <div class="col-md-6 mb-3">
-                      <label for="localisation_bus" class="form-label">Localisation *</label>
-                      <input type="text" name="localisation_bus" id="localisation_bus" class="form-control" 
-                             value="{{ old('localisation_bus') }}" placeholder="Ex: Garage principal, Dépôt..." required>
-                      @error('localisation_bus')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
-
-                    <!-- Nombre de places -->
-                    <div class="col-md-3 mb-3">
-                      <label for="nombre_places" class="form-label">Nombre de places *</label>
-                      <input type="number" name="nombre_places" id="nombre_places" class="form-control" 
-                             min="1" value="{{ old('nombre_places') }}" placeholder="Ex: 30" required>
-                      @error('nombre_places')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
-
-                    <!-- Configuration -->
-                    <div class="col-md-3 mb-3">
-                      <label for="configuration_place_id" class="form-label">Configuration *</label>
-                      <select name="configuration_place_id" id="configuration_place_id" class="form-select" required>
-                        <option value="">Choisir une configuration</option>
-                        @foreach(App\Models\ConfigurationPlaceBus::all() as $config)
-                          <option value="{{ $config->id }}" {{ old('configuration_place_id') == $config->id ? 'selected' : '' }}>
-                            {{ $config->disposition }} ({{ $config->nom_complet }})
-                          </option>
-                        @endforeach
-                      </select>
-                      @error('configuration_place_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                      @enderror
-                    </div>
-                  </div>
-
-                  <!-- Bouton de soumission -->
-                  <div class="row mt-4">
-                    <div class="col-12 text-end">
-                      <button type="submit" class="btn btn-primary">
-                        Enregistrer le bus
-                      </button>
-                    </div>
-                  </div>
+              <div class="d-flex justify-content-between pt-3 border-top">
+                <a href="{{ route('liste.bus') }}" class="btn btn-light">
+                  <i class="fas fa-times me-2"></i>Annuler
+                </a>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                  <i class="fas fa-save me-2"></i>Enregistrer le bus
+                </button>
+              </div>
                 </form>
               </div>
+
             </div>
           </div>
         </div>
@@ -375,5 +388,4 @@
       });
     });
   </script>
-</body>
-</html>
+@include('compagnie.all_element.footer')

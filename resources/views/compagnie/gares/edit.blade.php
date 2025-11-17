@@ -13,7 +13,7 @@
         @include('compagnie.all_element.navbar')
           <!-- start: link -->
 
-           {{-- @if ($errors->any())
+           @if ($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
                     @foreach ($errors->all() as $error)
@@ -33,8 +33,7 @@
             <div class="alert alert-success">
                 {{ session('success') }}
             </div>
-        @endif --}}
-
+        @endif
 
         </nav>
       </div>
@@ -43,12 +42,9 @@
   @include('compagnie.all_element.cadre')
 
     <!-- start: page body -->
-    <div class="page-body
-    {{-- px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3 --}}
-    ">
+    <div class="page-body">
       <div class="container-fluid">
-
-           <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="mb-0">
                 </h5>
                 <a href="{{ route('gares.index.2') }}" class="btn btn-light" title="Retour">
@@ -56,53 +52,74 @@
                 </a>
             </div>
 
-<div class="col-md-12">
-  <div class="card">
-    <div class="card-body">
-<h5 class="mb-3">Modifier cette gare</h5>
-<form action="{{ route('gares.update2' , $gare) }}" method="POST">
+<div class="col-12">
+  <div class="card shadow-sm">
+    {{-- <div class="card-header bg-white border-bottom-0 py-3">
+      <h5 class="card-title mb-0 text-primary">
+        <i class="fas fa-edit me-2"></i>Modification de la gare
+      </h5>
+    </div> --}}
+    <div class="card-body pt-0">
+<form action="{{ route('gares.update2', $gare) }}" method="POST" id="gareForm">
 @csrf
 @method('PUT')
     <style>
+        /* Styles de base */
         #map {
             height: 300px;
             width: 100%;
             border-radius: 8px;
             margin-top: 15px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
         }
+        
+        /* Boutons et formulaires */
         .btn-primary {
             background-color: #0d6efd;
             border: none;
             white-space: nowrap;
+            transition: all 0.2s ease-in-out;
         }
         .btn-primary:hover {
             background-color: #0b5ed7;
+            transform: translateY(-1px);
         }
+        
+        /* Messages d'état */
         .status-message {
             font-size: 14px;
             margin-top: 10px;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border-radius: 6px;
             display: none;
+            border-left: 4px solid transparent;
         }
         .success {
             background-color: #d4edda;
             color: #155724;
             display: block;
+            border-left-color: #28a745;
         }
         .error {
             background-color: #f8d7da;
             color: #721c24;
             display: block;
+            border-left-color: #dc3545;
         }
         .info {
-            background-color: #cce5ff;
-            color: #004085;
+            background-color: #e7f5ff;
+            color: #0c63e4;
             display: block;
+            border-left-color: #0d6efd;
         }
+        
+        /* Animation de chargement */
         .loading {
             display: inline-block;
-            width: 20px;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(13, 110, 253, 0.2);
             height: 20px;
             border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
@@ -120,11 +137,18 @@
             font-size: 14px;
         }
     </style>
-<div class="container">
-        <h2 class="mb-4"><i class="fas fa-map-marker-alt me-2"></i>Système de Géolocalisation</h2>
-         <input type="hidden" name="compagnie_id" value="{{ $compagnie_id }}" class="form-control mb-3">
-
-        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude' ,$gare) }}">
+<div class="container px-0">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="mt-3 mb-2">
+            <h5 class="mb-0 text-primary"><i class="fas fa-map-marker-alt me-2"></i>Localisation de la gare</h5>
+            <p class="text-muted mb-0 small">Définissez l'emplacement exact de votre gare sur la carte</p>
+          </div>
+          {{-- <button type="button" onclick="locateUser()" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-location-arrow me-1"></i> Me localiser
+          </button> --}}
+        </div>
+        <input type="hidden" name="compagnie_id" value="{{ $compagnie_id }}">
+        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $gare->latitude) }}">
         <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude' ,$gare) }}">
 
         <div class="row">
@@ -170,7 +194,44 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places" async defer></script>
+    <script>
+        function formatPhoneNumber(input) {
+            // Récupérer la valeur actuelle et supprimer tout ce qui n'est pas un chiffre
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limiter à 10 chiffres
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+            
+            // Mettre à jour la valeur dans le champ
+            input.value = value;
+            
+            // Formater avec des espaces tous les 2 chiffres
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 2 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+            
+            // Mettre à jour la valeur formatée dans le champ
+            input.value = formattedValue;
+        }
+        
+        // Ajouter des écouteurs d'événements pour les champs de téléphone
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInputs = document.querySelectorAll('input[type="text"][pattern*="[0-9]"]');
+            phoneInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    formatPhoneNumber(this);
+                });
+            });
+        });
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places&callback=initMap" async defer></script>
 
     <script>
         let map, marker, autocomplete;
@@ -419,25 +480,54 @@
 
 
 
-<div class="row">
-  {{-- Nom gare (plein largeur) --}}
-  <div class="col-12 mb-3">
-    <label for="nom_gare" class="form-label">Nom de la gare</label>
-    <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare' ,$gare) }}">
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-3 border-bottom-0">
+        <h5 class="card-title mb-0 text-primary">
+          <i class="fas fa-info-circle me-2"></i>Informations générales
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label for="nom_gare" class="form-label">Nom de la gare</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-train"></i></span>
+              <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare', $gare->nom_gare) }}">
+            </div>
   </div>
 </div>
 
 <div class="row">
   {{-- Adresse gare --}}
-  <div class="col-md-6 mb-3">
-    <label for="adresse_gare" class="form-label">Adresse</label>
-    <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare',$gare) }}">
+  {{-- <div class="col-12 mb-3">
+  <label for="adresse_gare" class="form-label">Adresse</label>
+  <div class="input-group">
+    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+    <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare', $gare->adresse_gare) }}">
   </div>
+</div> --}}
 
   {{-- Téléphone gare --}}
   <div class="col-md-6 mb-3">
     <label for="telephone_gare" class="form-label">Téléphone</label>
-    <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" value="{{ old('telephone_gare',$gare) }}">
+    <div class="input-group">
+      <span class="input-group-text">
+        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+        +225
+      </span>
+      <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" 
+             placeholder="XX XX XX XX XX" 
+             value="{{ old('telephone_gare', $gare->telephone_gare) }}" 
+             pattern="[0-9]{2}( [0-9]{2}){4}" 
+             onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 32"
+             oninput="formatPhoneNumber(this)"
+             onpaste="return false;"
+             ondrop="return false;"
+             autocomplete="off">
+    </div>
+    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
   </div>
 </div>
 
@@ -483,11 +573,6 @@
     </select>
   </div>
 
-  {{-- Nombre de quais --}}
-  <div class="col-md-6 mb-3">
-    <label for="nombre_quais" class="form-label">Nombre de quais</label>
-    <input type="number" name="nombre_quais" id="nombre_quais" class="form-control" value="{{ old('nombre_quais',$gare) }}" min="0">
-  </div>
 </div>
 
 <div class="row">
@@ -504,17 +589,90 @@
   </div>
 </div>
 
-<div class="row">
-  {{-- Parking disponible --}}
-  <div class="col-md-6 mb-3 form-check">
-    <input class="form-check-input" type="checkbox" value="1" id="parking_disponible" name="parking_disponible" {{ old('parking_disponible',$gare) ? 'checked' : '' }}>
-    <label class="form-check-label" for="parking_disponible">Parking disponible</label>
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-3 border-bottom-0">
+        <h5 class="card-title mb-0 text-primary">
+          <i class="fas fa-cogs me-2"></i>Équipements disponibles
+        </h5>
+      </div>
+      <div class="card-body">
+     
+
+     
+        {{-- <div class="row">
+  <div class="col-md-6 mb-3">
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="parking_disponible" name="parking_disponible" value="1" {{ (old('parking_disponible', $gare->parking_disponible) == 1) ? 'checked' : '' }}>
+      <label class="form-check-label" for="parking_disponible">
+        <i class="fas fa-parking me-2"></i>Parking disponible
+      </label>
+    </div>
   </div>
 
-  {{-- Wifi disponible --}}
-  <div class="col-md-6 mb-3 form-check">
-    <input class="form-check-input" type="checkbox" value="1" id="wifi_disponible" name="wifi_disponible" {{ old('wifi_disponible',$gare) ? 'checked' : '' }}>
-    <label class="form-check-label" for="wifi_disponible">Wi-Fi disponible</label>
+  <div class="col-md-6 mb-3">
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="wifi_disponible" name="wifi_disponible" value="1" {{ (old('wifi_disponible', $gare->wifi_disponible) == 1) ? 'checked' : '' }}>
+      <label class="form-check-label" for="wifi_disponible">
+        <i class="fas fa-wifi me-2"></i>Wi-Fi disponible
+      </label>
+    </div>
+  </div>
+</div> --}}
+
+<!-- Section Équipements -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Équipements disponibles</h6>
+        <p class="text-muted small mb-0">Sélectionnez les équipements disponibles dans cette gare</p>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Parking -->
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input type="hidden" name="parking_disponible" value="0">
+                <input class="form-check-input" type="checkbox" role="switch" id="parking_disponible" name="parking_disponible" value="1" {{ (old('parking_disponible', $gare->parking_disponible) ? 'checked' : '') }}>
+                <label class="form-check-label" for="parking_disponible"></label>
+              </div>
+              <div class="d-flex align-items-center">
+                {{-- <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                  <i class="fas fa-parking text-primary fs-4"></i>
+                </div> --}}
+                <div>
+                  <h6 class="mb-0">Parking</h6>
+                  <p class="text-muted small mb-0">Espace de stationnement disponible</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wifi -->
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input type="hidden" name="wifi_disponible" value="0">
+                <input class="form-check-input" type="checkbox" role="switch" id="wifi_disponible" name="wifi_disponible" value="1" {{ (old('wifi_disponible', $gare->wifi_disponible) ? 'checked' : '') }}>
+                <label class="form-check-label" for="wifi_disponible"></label>
+              </div>
+              <div class="d-flex align-items-center">
+                {{-- <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                  <i class="fas fa-wifi text-primary fs-4"></i>
+                </div> --}}
+                <div>
+                  <h6 class="mb-0">Wi-Fi gratuit</h6>
+                  <p class="text-muted small mb-0">Accès Internet sans fil</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -522,7 +680,22 @@
   {{-- Téléphone --}}
   <div class="col-md-6 mb-3">
     <label for="telephone" class="form-label">Téléphone (contact général)</label>
-    <input type="text" name="telephone" id="telephone" class="form-control" value="{{ old('telephone',$gare) }}">
+    <div class="input-group">
+      <span class="input-group-text">
+        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+        +225
+      </span>
+      <input type="text" name="telephone" id="telephone" class="form-control" 
+             placeholder="XX XX XX XX XX" 
+             value="{{ old('telephone', $gare->telephone) }}" 
+             pattern="[0-9]{2}( [0-9]{2}){4}" 
+             onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 32"
+             oninput="formatPhoneNumber(this)"
+             onpaste="return false;"
+             ondrop="return false;"
+             autocomplete="off">
+    </div>
+    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
   </div>
 
   {{-- Email --}}
@@ -539,14 +712,22 @@
 </div>
 
 {{-- Description (plein largeur) --}}
-<div class="mb-3">
+<div class="col-12 mb-3">
   <label for="description" class="form-label">Description</label>
-  <textarea name="description" id="description" class="form-control" rows="3">{{ old('description',$gare) }}</textarea>
+  <div class="input-group">
+    <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+    <textarea name="description" id="description" class="form-control" rows="3">{{ old('description', $gare->description) }}</textarea>
+  </div>
 </div>
 
 
   {{-- Section Administrateur de la gare --}}
-  <div class="card mt-4 mb-4">
+  <div class="card shadow-sm mt-4 mb-4">
+    <div class="card-header bg-white py-3 border-bottom-0">
+      <h5 class="card-title mb-0 text-primary">
+        <i class="fas fa-user-shield me-2"></i>Administrateur de la gare
+      </h5>
+    </div>
     <div class="card-header bg-primary text-white">
       <h6 class="mb-0"><i class="fas fa-user-tie"></i>Informations de l'Administrateur de la Gare</h6>
     </div>
@@ -575,7 +756,22 @@
         {{-- Téléphone admin --}}
         <div class="col-md-6 mb-3">
           <label for="admin_telephone" class="form-label">Téléphone de l'administrateur</label>
-          <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" value="{{ old('admin_telephone',$gare->infoUser->telephone) }}" placeholder="+33 1 23 45 67 89">
+          <div class="input-group">
+            <span class="input-group-text">
+              <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+              +225
+            </span>
+            <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" 
+                   placeholder="XX XX XX XX XX" 
+                   value="{{ old('admin_telephone', $gare->infoUser->telephone ?? '') }}"
+                   pattern="[0-9]{2}( [0-9]{2}){4}"
+                   onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 32"
+                   oninput="formatPhoneNumber(this)"
+                   onpaste="return false;"
+                   ondrop="return false;"
+                   autocomplete="off">
+          </div>
+          <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
         </div>
       </div>
 
@@ -635,8 +831,13 @@ function deselectAllPermissions() {
 
     </div>
   </div>
-    <div class="d-flex justify-content-center mt-4 mb-2">
-        <button type="submit" class="btn btn-primary w-50">Enregistrer la gare</button>
+    <div class="d-flex justify-content-between mt-4 mb-2">
+        <a href="{{ route('gares.index.2') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Retour
+        </a>
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i> Enregistrer les modifications
+        </button>
     </div>
       </form>
 

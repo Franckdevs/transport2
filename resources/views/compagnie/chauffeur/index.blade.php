@@ -21,7 +21,7 @@
       </div>
     </header>
     <!-- start: page toolbar -->
-  {{-- @include('compagnie.all_element.cadre') --}}
+  @include('compagnie.all_element.cadre')
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
@@ -89,42 +89,22 @@
     </a>
 
     @if($chauffeur->status == 3)
-        <!-- Bouton Réactiver -->
-        <form action="{{ route('activer.destroy_reactivation', $chauffeur->id) }}" method="POST" style="display:inline;">
+        <!-- Bouton Réactiver avec SweetAlert2 -->
+        <form id="reactivateForm{{ $chauffeur->id }}" action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
             @csrf
-            <button type="submit" class="btn btn-success btn-sm">
-                <i class="fa fa-undo"></i> <!-- icône réactivation -->
+            <button type="button" onclick="confirmReactivation(event, {{ $chauffeur->id }}, '{{ addslashes($chauffeur->nom) }} {{ addslashes($chauffeur->prenom) }}')" class="btn btn-success btn-sm">
+                <i class="fa fa-undo"></i>
             </button>
         </form>
+
     @else
-        <!-- Bouton Supprimer -->
-        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteChauffeurModal{{ $chauffeur->id }}">
-            <i class="fa fa-trash"></i>
-        </button>
-
-        <!-- Modal Suppression -->
-        <div class="modal fade" id="deleteChauffeurModal{{ $chauffeur->id }}" tabindex="-1" aria-labelledby="deleteChauffeurLabel{{ $chauffeur->id }}" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="deleteChauffeurLabel{{ $chauffeur->id }}">Confirmer la suppression</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-              </div>
-              <div class="modal-body">
-                Êtes-vous sûr de vouloir supprimer ce chauffeur : <br>
-                <strong>{{ $chauffeur->nom }} {{ $chauffeur->prenom }}</strong> ?
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-
-                <form action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
-                  @csrf
-                  <button type="submit" class="btn btn-danger">Supprimer</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Bouton Supprimer avec SweetAlert2 -->
+        <form id="deleteForm{{ $chauffeur->id }}" action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
+            @csrf
+            <button type="button" onclick="confirmDelete(event, {{ $chauffeur->id }}, '{{ addslashes($chauffeur->nom) }} {{ addslashes($chauffeur->prenom) }}')" class="btn btn-danger btn-sm">
+                <i class="fa fa-trash"></i>
+            </button>
+        </form>
     @endif
 </div>
 
@@ -147,9 +127,10 @@
         @include('compagnie.all_element.footer')
     </div>
 
-    <!-- Jquery + DataTables 2.x -->
+    <!-- Jquery + DataTables 2.x + SweetAlert2 -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
@@ -159,10 +140,85 @@
             const table = new DataTable('#myTable');
 
             const searchInput = document.getElementById('customSearchChauffeurs');
-            searchInput.addEventListener('input', function() {
-                table.search(this.value);
-            });
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    table.search(this.value);
+                });
+            }
         });
+
+        // Fonction de confirmation de suppression avec SweetAlert2
+        function confirmDelete(event, id, name) {
+            event.preventDefault(); // Empêche la soumission directe du formulaire
+            
+            Swal.fire({
+                title: 'Confirmer la désactivation',
+                text: `Êtes-vous sûr de vouloir désactiver le chauffeur : ${name} ?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger mx-2',
+                    cancelButton: 'btn btn-secondary mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Soumettre le formulaire de suppression
+                    document.getElementById(`deleteForm${id}`).submit();
+                }
+            });
+        }
+
+        // Fonction de confirmation de réactivation avec SweetAlert2
+        function confirmReactivation(event, id, name) {
+            event.preventDefault(); // Empêche la soumission directe du formulaire
+            
+            Swal.fire({
+                title: 'Confirmer la réactivation',
+                text: `Voulez-vous vraiment réactiver le chauffeur : ${name} ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, réactiver',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-success mx-2',
+                    cancelButton: 'btn btn-secondary mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Soumettre le formulaire de réactivation
+                    document.getElementById(`reactivateForm${id}`).submit();
+                }
+            });
+        }
+
+        // Gestion des messages de session (succès/erreur)
+        @if(session('success'))
+            Swal.fire({
+                title: 'Succès !',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                title: 'Erreur !',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        @endif
     </script>
 </body>
 </html>

@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -24,7 +24,7 @@
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            max-width: 500px;
+            max-width: 650px;
             width: 100%;
         }
         .setup-header {
@@ -152,13 +152,32 @@
     <div class="setup-container">
         <div class="setup-card">
             <div class="setup-header">
-                <h1><i class="fas fa-user-cog me-2"></i>Configuration de votre compte</h1>
-                <p>Administrateur de Gare - {{ $gare->nom_gare ?? 'Gare Non Définie' }}</p>
+                @php
+                    $compagnie = auth()->user()->info_user->compagnie ?? 
+                               (auth()->user()->info_user->gare->compagnie ?? null);
+                @endphp
+                
+                @if($compagnie && $compagnie->logo_compagnies)
+                <div class="text-center mb-3">
+                    <img src="{{ asset($compagnie->logo_compagnies) }}" 
+                         alt="Logo {{ $compagnie->nom_complet_compagnies }}" 
+                         style="max-height: 80px; max-width: 200px; object-fit: contain;">
+                </div>
+                @else
+                <div class="text-center mb-3">
+                    <i class="fas fa-building" style="font-size: 60px; opacity: 0.7;"></i>
+                </div>
+                @endif
+                <p>Administrateur de Gare - {{ $user->info_user->gare->nom_gare ?? 'Gare Non Définie' }}</p>
+                @if($compagnie)
+                <p class="mb-0">{{ $compagnie->nom_complet_compagnies }}</p>
+                @endif
+                
             </div>
-            
+
             <div class="setup-body">
                 <div class="welcome-message">
-                    <h3>Bienvenue {{ $user->name }} !</h3>
+                    <h3>Bienvenue {{ $user->nom }} !</h3>
                     <p>Configurez votre mot de passe pour accéder à votre tableau de bord</p>
                 </div>
 
@@ -180,18 +199,7 @@
                 <form method="POST" action="{{ route('admin.gare.setup-password.store', $user) }}" autocomplete="off">
                     @csrf
                     
-                    <div class="password-requirements">
-                        <strong><i class="fas fa-shield-alt me-2"></i>Exigences du mot de passe :</strong>
-                        <ul>
-                            <li>Au moins 8 caractères</li>
-                            <li>Au moins une lettre majuscule</li>
-                            <li>Au moins une lettre minuscule</li>
-                            <li>Au moins un chiffre</li>
-                            <li>Au moins un caractère spécial</li>
-                        </ul>
-                    </div>
-
-                    <div class="form-floating password-input-container">
+                    <div class="form-floating password-input-container mb-3">
                         <input type="password" 
                                class="form-control @error('password') is-invalid @enderror" 
                                id="password" 
@@ -209,15 +217,9 @@
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="password-strength">
-                            <div class="progress">
-                                <div class="progress-bar" id="strength-bar" role="progressbar" style="width: 0%"></div>
-                            </div>
-                            <div class="strength-text" id="strength-text">Saisissez votre mot de passe</div>
-                        </div>
                     </div>
 
-                    <div class="form-floating password-input-container">
+                    <div class="form-floating password-input-container mb-4">
                         <input type="password" 
                                class="form-control @error('password_confirmation') is-invalid @enderror" 
                                id="password_confirmation" 
@@ -236,9 +238,27 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    
+                    <div class="password-requirements mb-4">
+                        <strong><i class="fas fa-shield-alt me-2"></i>Exigences du mot de passe :</strong>
+                        <ul class="mt-2 mb-0">
+                            <li>Minimum 6 caractères</li>
+                            <li>Au moins une lettre minuscule</li>
+                            <li>Au moins une lettre majuscule</li>
+                        </ul>
+                        <div class="password-strength mt-3">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar" id="strength-bar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="strength-text small mt-2" id="strength-text">Saisissez votre mot de passe pour vérifier sa force</div>
+                        </div>
+                    </div>
 
-                    <button type="submit" class="btn btn-primary btn-setup">
-                        <i class="fas fa-rocket me-2"></i>Configurer mon compte et me connecter
+                    <button type="submit" class="btn btn-outline-secondary btn-setup" id="submitButton">
+                        <span class="d-flex align-items-center justify-content-center">
+                            <span id="buttonText">Enregistrer</span>
+                            <span id="spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                        </span>
                     </button>
                 </form>
 
@@ -254,6 +274,16 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Gestion du spinner au clic sur le bouton
+        document.querySelector('form').addEventListener('submit', function() {
+            const button = document.getElementById('submitButton');
+            const spinner = document.getElementById('spinner');
+            const buttonText = document.getElementById('buttonText');
+            
+            button.disabled = true;
+            spinner.classList.remove('d-none');
+            buttonText.textContent = 'Traitement...';
+        });
         function togglePassword(fieldId) {
             const field = document.getElementById(fieldId);
             const eye = document.getElementById(fieldId + '-eye');
@@ -274,11 +304,15 @@
             let feedback = [];
             
             // Length check
-            if (password.length >= 8) score += 20;
-            else feedback.push('Au moins 8 caractères');
+            if (password.length >= 6) score += 33;
+            else feedback.push('Minimum 6 caractères');
+            
+            // Lowercase check
+            if (/[a-z]/.test(password)) score += 33;
+            else feedback.push('Une lettre minuscule');
             
             // Uppercase check
-            if (/[A-Z]/.test(password)) score += 20;
+            if (/[A-Z]/.test(password)) score += 34;
             else feedback.push('Une lettre majuscule');
             
             // Lowercase check

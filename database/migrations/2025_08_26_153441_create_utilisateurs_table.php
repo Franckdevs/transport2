@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('prenom')->nullable();
             $table->string('email')->nullable()->unique();
             $table->string('password')->nullable();
-            $table->string('telephone')->unique()->nullable();
+            $table->string('telephone')->nullable();
             $table->enum('status', ['1', '2', '3'])->default('1');
             $table->string('token')->nullable(); // 🔑 Token pour authentification
             $table->timestamps();

@@ -38,7 +38,7 @@ public function show($id)
     $gare = gare::with('ville')->find($voyage->gare_id);    
     $bus = Bus::where('id',$voyage->bus_id)->first();
     $chaffeur = Chauffeur::where('id' ,$voyage->chauffeur_id)->first();
-
+// dd($voyage->arretVoyages() , );
     return view('compagnie.voyage.show', compact('voyage' ,'gare','bus','chaffeur'));
 }
 
@@ -83,6 +83,7 @@ public function show($id)
 
 public function store(Request $request)
 {
+    // dd($request->all());
     $user = Auth::user();
 
     // Validation principale
@@ -130,6 +131,7 @@ public function store(Request $request)
         // dd($arretsData);
 
         // Insertion des arrêts liés au voyage
+        // dd($arretsData , $voyage);
         foreach ($arretsData as $arret) {
             ArretVoyage::create($arret);
         }

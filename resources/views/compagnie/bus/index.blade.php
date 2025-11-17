@@ -78,43 +78,27 @@ use App\Helpers\GlobalHelper;
                                                     <i class="fa fa-eye"></i>
                                                 </a>
 
-                                                <!-- Bouton modal suppression -->
-@if($bu->status == 1)
-    <!-- Bouton Supprimer -->
-    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteBusModal{{ $bu->id }}">
-        <i class="fa fa-trash"></i>
-    </button>
+                                                @if($bu->status == 1)
+    <!-- Bouton Blocage avec SweetAlert2 -->
+    <form action="{{ route('bus.destroy', $bu->id) }}" method="POST" class="status-change-form" style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-warning btn-sm block-bus" 
+                data-bus-name="{{ $bu->nom_bus }}"
+                data-action="bloquer">
+            <i class="fas fa-ban"></i>
+        </button>
+    </form>
 @else
-    <!-- Bouton Réactiver -->
-<form action="{{ route('activation.bus', $bu->id) }}" method="POST" style="display:inline;">        @csrf
-        <button type="submit" class="btn btn-success btn-sm">
-            <i class="fa fa-check"></i> 
+    <!-- Bouton Débloquer avec SweetAlert2 -->
+    <form action="{{ route('activation.bus', $bu->id) }}" method="POST" class="status-change-form" style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-success btn-sm unblock-bus" 
+                data-bus-name="{{ $bu->nom_bus }}"
+                data-action="débloquer">
+            <i class="fas fa-check-circle"></i>
         </button>
     </form>
 @endif
-
-<!-- Modal suppression -->
-<div class="modal fade" id="deleteBusModal{{ $bu->id }}" tabindex="-1" aria-labelledby="deleteBusModalLabel{{ $bu->id }}" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteBusModalLabel{{ $bu->id }}">Confirmer la suppression</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                Êtes-vous sûr de vouloir supprimer le bus <strong>{{ $bu->nom_bus }} </strong> ?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <form action="{{ route('bus.destroy', $bu->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    {{-- @method('DELETE') --}}
-                    <button type="submit" class="btn btn-danger">Supprimer</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 
                                             </td>
@@ -133,20 +117,84 @@ use App\Helpers\GlobalHelper;
         @include('compagnie.all_element.footer')
     </div>
 
-    <!-- Jquery + DataTables 2.x -->
+    <!-- Jquery + DataTables 2.x + SweetAlert2 -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
-    <!-- DataTable + recherche personnalisée -->
+    <!-- DataTable + recherche personnalisée + SweetAlert2 Confirmation -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const table = new DataTable('#myTable');
             const searchInput = document.getElementById('customSearchBus');
-            searchInput.addEventListener('input', function() {
-                table.search(this.value);
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    table.search(this.value);
+                });
+            }
+
+            // Gestion du blocage/déblocage avec SweetAlert2
+            function handleStatusChange(button, action) {
+                const form = button.closest('form');
+                const busName = button.getAttribute('data-bus-name') || 'ce bus';
+                const actionText = action === 'bloquer' ? 'bloquer' : 'débloquer';
+                const actionTitle = action === 'bloquer' ? 'Bloquer le bus' : 'Débloquer le bus';
+                const actionTextConfirm = action === 'bloquer' ? 'bloquer' : 'débloquer';
+                const icon = action === 'bloquer' ? 'warning' : 'info';
+                
+                Swal.fire({
+                    title: `${actionTitle} ?`,
+                    html: `Voulez-vous vraiment <strong>${actionText}</strong> le bus <strong>${busName}</strong> ?`,
+                    icon: icon,
+                    showCancelButton: true,
+                    confirmButtonColor: action === 'bloquer' ? '#ffc107' : '#198754',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: `Oui, ${actionTextConfirm}`,
+                    cancelButtonText: 'Annuler',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            }
+
+            // Gestion du blocage
+            document.querySelectorAll('.block-bus').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleStatusChange(this, 'bloquer');
+                });
             });
+
+            // Gestion du déblocage
+            document.querySelectorAll('.unblock-bus').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleStatusChange(this, 'débloquer');
+                });
+            });
+
+            // Afficher les messages de session avec SweetAlert2
+            @if(session('success'))
+                Swal.fire({
+                    title: 'Succès !',
+                    text: '{{ session('success') }}',
+                    icon: 'success',
+                    confirmButtonColor: '#198754'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    title: 'Erreur !',
+                    text: '{{ session('error') }}',
+                    icon: 'error',
+                    confirmButtonColor: '#dc3545'
+                });
+            @endif
         });
     </script>
 

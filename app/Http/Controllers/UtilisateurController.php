@@ -10,12 +10,14 @@ use App\Models\reservation;
 use App\Models\Utilisateur;
 use App\Models\UtilisateurEnAttente;
 use App\Models\Voyage;
+use App\Models\gare;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\OtpMail; // Assure-toi d'avoir créé ce Mailable
 use App\Models\ArretVoyage;
 use App\Models\Bus;
+use App\Models\Itineraire;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -35,7 +37,7 @@ class UtilisateurController extends Controller
 
     }
 
-    public function inscription_finalisation_inscription(Request $request)
+    public function  inscription_finalisation_inscription(Request $request)
     {
         // ✅ Validation
         $request->validate([
@@ -89,7 +91,7 @@ class UtilisateurController extends Controller
 
         // ✅ Réponse JSON
         return response()->json([
-            'message' => 'Inscription réussie, code OTP envoyé par email',
+            'message' => 'Inscription réussie avec succès',
             'utilisateur' => $retrouverutilisateur,
         ], 200);
     }
@@ -147,7 +149,7 @@ class UtilisateurController extends Controller
             'message' => 'Inscription réussie, code OTP envoyé par email',
             'utilisateur' => $utilisateur,
             'otp' => $otpCode,
-            // 'token' => $token,
+            'token' => $token,
             // 'token' => $token, // à utiliser côté client pour authentification API
         ], 200);
     }
@@ -284,6 +286,10 @@ public function listeCompagnie(Request $request)
 public function listevoayge(Request $request , $id)
 {
     $compagnie = Compagnies::with([
+    'ville',
+    'gares.ville',    
+    'gares.jourOuvert',
+    'gares.jourFermeture',
     'gares.itineraires.voyages.chauffeur',
     'gares.itineraires.voyages.bus',
     'gares.itineraires.arrets', // <- on ajoute les arrêts ici
@@ -668,6 +674,142 @@ public function placesRestantes(Request $request)
 }
 
 
+//liste des gare d'une compagnie 
+public function listeGare(Request $request , $id)
+{
+    $compagnie = Compagnies::with([
+        // 'jourOuvert',
+        // 'jourFermeture',
+        'ville',
+    ])->where('id', $id)->first();
+
+    if (!$compagnie) {
+        return response()->json([
+            'message' => 'Compagnie non trouvée',
+        ], 404);
+    }
+    $liste_gares = gare::with([
+        'ville',
+        'jourOuvert',
+        'jourFermeture',
+    ])->where('compagnie_id', $id)->get();
+    return response()->json([
+        'message' => 'Liste des gares',
+        'compagnie' => $compagnie,
+        'liste_gares' => $liste_gares,
+    ], 200);
+}
+
+//liste des voyage
+public function listeVoyage_avec_itineraire(Request $request, $id)
+{
+    $itinerary = Itineraire::with([
+        'voyages' => function($query) {
+            $query->with([
+                'bus' => function($q) {
+                    $q->with(['configurationPlace.placeconfigbussave']);
+                },
+                'chauffeur',
+                'compagnie',
+                'gare',
+                'info_user'
+            ]);
+        },
+        'ville',
+        'compagnie',
+        'gare'
+    ])->findOrFail($id);
+
+    // Format the response to include bus configuration and place configurations
+    $formattedVoyages = $itinerary->voyages->map(function($voyage) {
+        $voyageData = $voyage->toArray();
+        
+        if ($voyage->bus && $voyage->bus->configurationPlace) {
+            $voyageData['bus']['configuration'] = $voyage->bus->configurationPlace;
+            $voyageData['bus']['configuration']['places'] = $voyage->bus->configurationPlace->placeconfigbussave;
+        }
+        
+        return $voyageData;
+    });
+
+    return response()->json([
+        'message' => 'Liste des voyages pour l\'itinéraire avec configurations',
+        'itinerary' => $itinerary,
+        'voyages' => $formattedVoyages
+    ], 200);
+}
+
+// Liste des itinéraires avec leurs voyages, arrêts et gares associées pour une gare donnée
+public function listeVoyage_avec_itineraire_avec_ville(Request $request, $id)
+{
+    $gares = gare::with([
+        'ville',
+        'jourOuvert',
+        'jourFermeture',
+    ])->where('id', $id)->first();
+    if (!$gares) {
+        return response()->json([
+            'message' => 'Gare non trouvée',
+        ], 404);
+    }
+    $itineraries = Itineraire::with([
+        'ville',
+        'gare.ville', // Charge la gare avec sa ville associée
+        'voyages' => function($query) {
+            $query->with([
+                'arretVoyages' => function($q) {
+                    $q->with(['arret' => function($a) {
+                        $a->with(['gare.ville']); // Charge la gare et sa ville pour chaque arrêt
+                    }]);
+                }
+            ]);
+        },
+        'arrets' => function($query) {
+            $query->with(['gare.ville']); // Charge les arrêts avec leur gare et ville
+        }
+    ])
+    ->where('gare_id', $id)
+    ->get();
+
+    // Formater la réponse pour inclure les informations nécessaires
+    $formattedItineraries = $itineraries->map(function($itinerary) {
+        return [
+            'id' => $itinerary->id,
+            'titre' => $itinerary->titre,
+            'estimation' => $itinerary->estimation,
+            'ville' => $itinerary->ville,
+            'gare' => $itinerary->gare,
+            'voyages' => $itinerary->voyages->map(function($voyage) {
+                return [
+                    'id' => $voyage->id,
+                    'heure_depart' => $voyage->heure_depart,
+                    'date_depart' => $voyage->date_depart,
+                    'arret_voyages' => $voyage->arretVoyages->map(function($arretVoyage) {
+                        return [
+                            'id' => $arretVoyage->id,
+                            'montant' => $arretVoyage->montant,
+                            'arret' => $arretVoyage->arret ? [
+                                'id' => $arretVoyage->arret->id,
+                                'nom' => $arretVoyage->arret->nom,
+                                'gare' => $arretVoyage->arret->gare ? [
+                                    'id' => $arretVoyage->arret->gare->id,
+                                    'nom_gare' => $arretVoyage->arret->gare->nom_gare,
+                                    'ville' => $arretVoyage->arret->gare->ville
+                                ] : null
+                            ] : null
+                        ];
+                    })
+                ];
+            })
+        ];
+    });
+
+    return response()->json([
+        'message' => 'Liste des itinéraires avec leurs voyages, arrêts et gares',
+        'gares' => $gares,
+        'itineraries' => $formattedItineraries,
+    ], 200);
+}
 
 
 }

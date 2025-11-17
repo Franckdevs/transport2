@@ -1,12 +1,243 @@
-@include('compagnie.all_element.header')
+    @include('compagnie.all_element.header')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-light: #ebf5fb;
+            --secondary: #6c757d;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --border: #e9ecef;
+        }
+        
+        body {
+            background: #f8f9fa;
+            /* font-family: 'Segoe UI', system-ui, sans-serif; */
+        }
+
+        /* Carte principale */
+        .profile-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            background: white;
+        }
+
+        .profile-sidebar {
+            background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.2);
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Contenu principal */
+        .profile-content {
+            padding: 2rem;
+        }
+
+        .section-title {
+            color: var(--dark);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Cartes d'information */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .info-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .icon-phone { background: rgba(52, 152, 219, 0.1); color: var(--primary); }
+        .icon-permis { background: rgba(243, 156, 18, 0.1); color: var(--warning); }
+        .icon-calendar { background: rgba(46, 204, 113, 0.1); color: var(--success); }
+        .icon-user { background: rgba(155, 89, 182, 0.1); color: #9b59b6; }
+        .icon-location { background: rgba(52, 73, 94, 0.1); color: #34495e; }
+
+        .info-label {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Actions */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            color: white;
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Métadonnées */
+        .metadata {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .metadata-text {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-sidebar {
+                padding: 1.5rem;
+            }
+            
+            .profile-content {
+                padding: 1.5rem;
+            }
+            
+            .profile-img {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .profile-sidebar,
+            .profile-content {
+                padding: 1rem;
+            }
+        }
+         .info-badge {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
 
 <body class="layout-1" data-luno="theme-blue">
-    <!-- start: sidebar -->
     @include('compagnie.all_element.sidebar')
     
-    <!-- start: body area -->
     <div class="wrapper">
-        <!-- start: page header -->
         <header class="page-header sticky-top px-xl-4 px-sm-2 px-0 py-lg-2 py-1">
             <div class="container-fluid">
                 <nav class="navbar">
@@ -15,247 +246,139 @@
             </div>
         </header>
 
-        <!-- start: page toolbar -->
         @include('compagnie.all_element.cadre')
 
-        <!-- start: page body -->
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
-                <!-- En-tête amélioré -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h4 class="mb-1 text-primary">
-                                    <i class="fa fa-user-circle me-2"></i>Détails du chauffeur
-                                </h4>
-                                <p class="text-muted mb-0">Informations complètes du chauffeur</p>
-                            </div>
-                            <a href="{{ route('chauffeur.index') }}" class="btn btn-outline-secondary" title="Retour à la liste">
-                                <i class="fa fa-arrow-left me-2"></i>Retour
-                            </a>
-                        </div>
+                <!-- En-tête -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        {{-- <h1 class="h3 mb-1 text-dark">Détails du chauffeur</h1> --}}
+                        {{-- <p class="text-muted mb-0">Informations complètes du profil</p> --}}
                     </div>
+                    <a href="{{ route('chauffeur.index') }}" class="btn">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Retour à la liste
+                    </a>
                 </div>
 
+                <!-- Carte de profil -->
                 <div class="row justify-content-center">
-                    <div class="col-xl-10 col-lg-12">
-                        <!-- Carte principale -->
-                        <div class="card border-0 shadow-lg">
-                            <div class="card-header bg-primary text-white py-3">
-                                <h5 class="card-title mb-0 text-center">
-                                    <i class="fa fa-id-card me-2"></i>Profil du Chauffeur
-                                </h5>
-                            </div>
-                            
-                            <div class="card-body p-0">
-                                <div class="row g-0 align-items-stretch">
-                                    <!-- Photo et statut -->
-                                    <div class="col-md-4 bg-light py-4">
-                                        <div class="text-center">
-                                            <!-- Photo -->
-                                            <div class="position-relative d-inline-block">
-                                                <img src="{{ $chauffeur->photo ? url($chauffeur->photo) : asset('assets/img/default-user.png') }}" 
-                                                     class="img-fluid rounded-circle shadow border-4 border-white" 
-                                                     alt="Photo du chauffeur" 
-                                                     style="width: 200px; height: 200px; object-fit: cover;">
-                                                <!-- Badge de statut -->
-                                                <span class="position-absolute bottom-0 end-0 badge 
-                                                    {{ $chauffeur->status == 1 ? 'bg-success' : 'bg-danger' }} 
-                                                    rounded-pill p-2 border border-3 border-white">
-                                                    <i class="fa {{ $chauffeur->status == 1 ? 'fa-check' : 'fa-times' }} me-1"></i>
-                                                    {{ $chauffeur->status == 1 ? 'Actif' : 'Inactif' }}
-                                                </span>
-                                            </div>
-                                            
-                                            <!-- Nom complet -->
-                                            <h4 class="mt-4 mb-1 text-dark fw-bold">{{ $chauffeur->nom }} {{ $chauffeur->prenom }}</h4>
-                                            <p class="text-muted mb-3">Chauffeur professionnel</p>
-                                            
-                                            <!-- Actions rapides -->
-                                            <div class="d-grid gap-2 px-4">
-                                                <a href="tel:{{ $chauffeur->telephone }}" class="btn btn-outline-primary btn-sm">
-                                                    <i class="fa fa-phone me-2"></i>Appeler
-                                                </a>
-                                                <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-warning btn-sm">
-                                                    <i class="fa fa-edit me-2"></i>Modifier le profil
-                                                </a>
-                                            </div>
+                    <div class="col-12">
+                        <div class="profile-card">
+                            <div class="row g-0">
+
+                                <div class="info-badge">
+                                    <i class="fas fa-info-circle"></i>
+                                    Vous modifiez les informations de 
+                                </div>
+                                <!-- Sidebar avec photo -->
+                                <div class="col-lg-4 profile-sidebar">
+                                    <div class="d-flex flex-column align-items-center h-100">
+                                        <img src="{{ $chauffeur->photo ? url($chauffeur->photo) : asset('assets/img/default-user.png') }}" 
+                                             class="profile-img" 
+                                             alt="Photo du chauffeur">
+                                        
+                                        <h3 class="h4 mb-2">{{ $chauffeur->nom }} {{ $chauffeur->prenom }}</h3>
+                                        
+                                        <div class="status-badge">
+                                            <i class="fas {{ $chauffeur->status == 1 ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
+                                            {{ $chauffeur->status == 1 ? 'Activé' : 'Désactivé' }}
                                         </div>
-                                    </div>
-                                    
-                                    <!-- Informations détaillées -->
-                                    <div class="col-md-8">
-                                        <div class="p-4">
-                                            <h5 class="text-primary mb-4 border-bottom pb-2">
-                                                <i class="fa fa-info-circle me-2"></i>Informations personnelles
-                                            </h5>
-                                            
-                                            <div class="row">
-                                                <!-- Colonne gauche -->
-                                                <div class="col-md-6">
-                                                    <!-- Téléphone -->
-                                                    <div class="mb-4">
-                                                        <div class="d-flex align-items-center mb-2">
-                                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
-                                                                <i class="fa fa-phone text-primary"></i>
-                                                            </div>
-                                                            <div>
-                                                                <label class="form-label fw-semibold text-muted mb-0 small">Téléphone</label>
-                                                                <p class="mb-0 fw-semibold text-dark">
-                                                                    <a href="tel:{{ $chauffeur->telephone }}" class="text-decoration-none text-dark">
-                                                                        {{ $chauffeur->telephone }}
-                                                                    </a>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
 
-                                                    <!-- Numéro de permis -->
-                                                    <div class="mb-4">
-                                                        <div class="d-flex align-items-center mb-2">
-                                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
-                                                                <i class="fa fa-id-card text-success"></i>
-                                                            </div>
-                                                            <div>
-                                                                <label class="form-label fw-semibold text-muted mb-0 small">Numéro de permis</label>
-                                                                <p class="mb-0 fw-semibold text-dark">
-                                                                    @if($chauffeur->numeros_permis)
-                                                                        <span class="badge bg-light text-dark border px-3 py-2">
-                                                                            {{ $chauffeur->numeros_permis }}
-                                                                        </span>
-                                                                    @else
-                                                                        <span class="text-muted">Non renseigné</span>
-                                                                    @endif
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Colonne droite -->
-                                                <div class="col-md-6">
-                                                    <!-- Date de naissance -->
-                                                    <div class="mb-4">
-                                                        <div class="d-flex align-items-center mb-2">
-                                                            <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
-                                                                <i class="fa fa-calendar text-info"></i>
-                                                            </div>
-                                                            <div>
-                                                                <label class="form-label fw-semibold text-muted mb-0 small">Date de naissance</label>
-                                                                <p class="mb-0 fw-semibold text-dark">
-                                                                    @if($chauffeur->date_naissance)
-                                                                        {{ \Carbon\Carbon::parse($chauffeur->date_naissance)->format('d/m/Y') }}
-                                                                        <small class="text-muted">
-                                                                            ({{ \Carbon\Carbon::parse($chauffeur->date_naissance)->age }} ans)
-                                                                        </small>
-                                                                    @else
-                                                                        <span class="text-muted">Non renseignée</span>
-                                                                    @endif
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Adresse -->
-                                                    <div class="mb-4">
-                                                        <div class="d-flex align-items-center mb-2">
-                                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
-                                                                <i class="fa fa-map-marker text-warning"></i>
-                                                            </div>
-                                                            <div>
-                                                                <label class="form-label fw-semibold text-muted mb-0 small">Adresse</label>
-                                                                <p class="mb-0 fw-semibold text-dark">
-                                                                    @if($chauffeur->adresse)
-                                                                        {{ $chauffeur->adresse }}
-                                                                    @else
-                                                                        <span class="text-muted">Non renseignée</span>
-                                                                    @endif
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Statistiques supplémentaires -->
-                                            <div class="row mt-4">
-                                                <div class="col-12">
-                                                    <h6 class="text-primary mb-3 border-bottom pb-2">
-                                                        <i class="fa fa-chart-bar me-2"></i>Informations complémentaires
-                                                    </h6>
-                                                    
-                                                    <div class="row text-center">
-                                                        <div class="col-md-3 mb-3">
-                                                            <div class="border rounded p-3 bg-light">
-                                                                <i class="fa fa-calendar-check fa-2x text-primary mb-2"></i>
-                                                                <h6 class="mb-1">Date d'ajout</h6>
-                                                                <p class="mb-0 text-muted small">
-                                                                    {{ $chauffeur->created_at ? \Carbon\Carbon::parse($chauffeur->created_at)->format('d/m/Y') : 'N/A' }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3 mb-3">
-                                                            <div class="border rounded p-3 bg-light">
-                                                                <i class="fa fa-clock fa-2x text-success mb-2"></i>
-                                                                <h6 class="mb-1">Dernière modif.</h6>
-                                                                <p class="mb-0 text-muted small">
-                                                                    {{ $chauffeur->updated_at ? \Carbon\Carbon::parse($chauffeur->updated_at)->format('d/m/Y') : 'N/A' }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3 mb-3">
-                                                            <div class="border rounded p-3 bg-light">
-                                                                <i class="fa fa-bus fa-2x text-info mb-2"></i>
-                                                                <h6 class="mb-1">Bus assigné</h6>
-                                                                <p class="mb-0 text-muted small">
-                                                                    {{ $chauffeur->bus_id ? 'Bus #' . $chauffeur->bus_id : 'Aucun' }}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3 mb-3">
-                                                            <div class="border rounded p-3 bg-light">
-                                                                <i class="fa fa-star fa-2x text-warning mb-2"></i>
-                                                                <h6 class="mb-1">Statut</h6>
-                                                                <p class="mb-0">
-                                                                    <span class="badge {{ $chauffeur->status == 1 ? 'bg-success' : 'bg-danger' }}">
-                                                                        {{ $chauffeur->status == 1 ? 'Actif' : 'Inactif' }}
-                                                                    </span>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="mt-3 text-center">
+                                            <small class="opacity-75">
+                                                <i class="fas fa-id-card me-1"></i>
+                                                Chauffeur professionnel
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Pied de carte avec actions -->
-                            <div class="card-footer bg-light border-top-0 py-3">
-                                <div class="row">
-                                    <div class="col-12 text-center">
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('chauffeur.index') }}" class="btn btn-outline-secondary">
-                                                <i class="fa fa-list me-2"></i>Liste des chauffeurs
-                                            </a>
-                                            <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-warning">
-                                                <i class="fa fa-edit me-2"></i>Modifier
-                                            </a>
-                                            @if($chauffeur->status == 1)
-                                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#desactiverModal">
-                                                    <i class="fa fa-ban me-2"></i>Désactiver
-                                                </button>
-                                            @else
-                                                <form action="{{ route('activer.destroy_reactivation', $chauffeur->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-success">
-                                                        <i class="fa fa-check me-2"></i>Réactiver
-                                                    </button>
-                                                </form>
-                                            @endif
+                                
+                                <!-- Contenu principal -->
+                                <div class="col-lg-8 profile-content">
+                                    <h4 class="section-title">
+                                        <i class="fas fa-info-circle text-primary"></i>
+                                        Informations personnelles
+                                    </h4>
+                                    
+                                    <div class="info-grid">
+                                        <!-- Téléphone -->
+                                        <div class="info-card">
+                                            <div class="info-icon icon-phone">
+                                                <i class="fas fa-phone"></i>
+                                            </div>
+                                            <div class="info-label">Téléphone</div>
+                                            <div class="info-value">{{ $chauffeur->telephone ?? 'Non renseigné' }}</div>
                                         </div>
+                                        
+                                        <!-- Numéro de permis -->
+                                        <div class="info-card">
+                                            <div class="info-icon icon-permis">
+                                                <i class="fas fa-id-card"></i>
+                                            </div>
+                                            <div class="info-label">Numéro de permis</div>
+                                            <div class="info-value">{{ $chauffeur->numeros_permis ?? 'Non renseigné' }}</div>
+                                        </div>
+                                        
+                                        <!-- Date de naissance -->
+                                        <div class="info-card">
+                                            <div class="info-icon icon-calendar">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </div>
+                                            <div class="info-label">Date de naissance</div>
+                                            <div class="info-value">
+                                                {{ $chauffeur->date_naissance ? \Carbon\Carbon::parse($chauffeur->date_naissance)->format('d/m/Y') : 'Non renseignée' }}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Âge -->
+                                        <div class="info-card">
+                                            <div class="info-icon icon-user">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <div class="info-label">Âge</div>
+                                            <div class="info-value">
+                                                @if($chauffeur->date_naissance)
+                                                    {{ \Carbon\Carbon::parse($chauffeur->date_naissance)->age }} ans
+                                                @else
+                                                    Non renseigné
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Adresse -->
+                                    {{-- <div class="info-card">
+                                        <div class="d-flex align-items-start">
+                                            <div class="info-icon icon-location me-3">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="info-label">Adresse</div>
+                                                <div class="info-value">{{ $chauffeur->adresse ?? 'Non renseignée' }}</div>
+                                            </div>
+                                        </div>
+                                    </div> --}}
+
+                                    <!-- Métadonnées -->
+                                    <div class="metadata">
+                                        <p class="metadata-text">
+                                            <i class="fas fa-clock text-primary"></i>
+                                            Créé le : {{ $chauffeur->created_at->format('d/m/Y à H:i') }}
+                                        </p>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="actions-grid">
+                                        <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-primary">
+                                            <i class="fas fa-edit me-2"></i>
+                                            Modifier le profil
+                                        </a>
+                                        <a href="{{ route('chauffeur.index') }}" class="btn btn-outline-secondary">
+                                            <i class="fas fa-list me-2"></i>
+                                            Liste des chauffeurs
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -265,94 +388,27 @@
             </div>
         </div>
 
-        <!-- Modal de désactivation -->
-        <div class="modal fade" id="desactiverModal" tabindex="-1" aria-labelledby="desactiverModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-warning text-dark">
-                        <h5 class="modal-title" id="desactiverModalLabel">
-                            <i class="fa fa-exclamation-triangle me-2"></i>Confirmation
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body text-center py-4">
-                        <i class="fa fa-user-times fa-3x text-warning mb-3"></i>
-                        <h6>Êtes-vous sûr de vouloir désactiver ce chauffeur ?</h6>
-                        <p class="text-muted mb-0">
-                            {{ $chauffeur->nom }} {{ $chauffeur->prenom }} ne pourra plus être assigné à des trajets.
-                        </p>
-                    </div>
-                    <div class="modal-footer border-top-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <form action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="btn btn-warning">Confirmer la désactivation</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- start: page footer -->
         @include('compagnie.all_element.footer')
     </div>
 
-    <!-- Jquery Page Js -->
     <script src="../assets/js/theme.js"></script>
-    <!-- Plugin Js -->
     <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
-    <style>
-        .card {
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            border-radius: 15px 15px 0 0 !important;
-        }
-
-        .border-4 {
-            border-width: 4px !important;
-        }
-
-        .bg-opacity-10 {
-            background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
-        }
-
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .badge {
-            font-weight: 500;
-        }
-
-        .rounded-circle {
-            transition: transform 0.3s ease;
-        }
-
-        .rounded-circle:hover {
-            transform: scale(1.05);
-        }
-
-        .border {
-            border-color: #e9ecef !important;
-        }
-
-        .bg-light {
-            background-color: #f8f9fa !important;
-        }
-
-        .shadow-lg {
-            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
-        }
-    </style>
+    <script>
+        // Animation simple au chargement
+        document.addEventListener('DOMContentLoaded', function() {
+            const infoCards = document.querySelectorAll('.info-card');
+            infoCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
 </body>
 </html>
