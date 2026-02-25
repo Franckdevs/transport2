@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('info_user_id')->nullable()->constrained('info_users', 'id');
             $table->foreignId('gare_id')->nullable()->constrained('gares', 'id');
+            $table->foreignId('compagnie_id')->nullable()->constrained('compagnies', 'id');
             // 🧩 Nouveaux champs
             $table->text('nom')->nullable(); // Nom du siège
             $table->text('description')->nullable(); // Nom du siège

@@ -19,20 +19,16 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             RoleSeeder::class,
+            // UtilisateurSeeder::class, // Ajout du UtilisateurSeeder après RoleSeeder
             JourSeeder::class,
             VilleSeeder::class,
             SuperAdminBetroSeeder::class,
-            ConfigurationPlaceBusSeeder::class, // ✅ ici
+            // ConfigurationPlaceBusSeeder::class, // ✅ ici
             RoleUtilisateurSeeder::class,
-            CompagniesSeeder::class,
-            GareSeeder::class,
+            // CompagniesSeeder::class,
+            // GareSeeder::class,
+            ClasseSeeder::class,
+            UtilisateurSeeder::class,
             ]);
-
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }

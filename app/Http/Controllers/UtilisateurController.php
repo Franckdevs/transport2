@@ -2,27 +2,495 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\FinalisationInscription;
-use App\Models\Compagnies;
-use App\Models\Otp;
-use App\Models\PaiementEnAttente;
-use App\Models\reservation;
 use App\Models\Utilisateur;
 use App\Models\UtilisateurEnAttente;
-use App\Models\Voyage;
-use App\Models\gare;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Auth;
-use App\Mail\OtpMail; // Assure-toi d'avoir créé ce Mailable
+use App\Models\Gare;
 use App\Models\ArretVoyage;
 use App\Models\Bus;
 use App\Models\Itineraire;
+use App\Models\Otp;
+use App\Mail\OtpMail;
+use App\Models\Arret;
+use App\Models\Compagnies;
+use App\Models\Paiement;
+use App\Models\PaiementEnAttente;
+use App\Models\Reservation;
+use App\Models\RoleUtilisateur;
+use App\Models\TarificationMontantVoyage;
+use App\Models\User;
+use App\Models\Ville;
+use App\Models\Voyage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
+
 class UtilisateurController extends Controller
 {
+
+//     public function liste_detail_paiement($token){
+//     $utilisateur = Utilisateur::where('token', $token)->first();
+//     $paiement = Paiement::where('utilisateur_id' ,$utilisateur->id)->first();
+//     $Compagnies = Compagnies::where('id',$paiement->compagnie_id)->first();
+//     $gares = Gare::where('id' ,$Compagnies->gares_id)->first();
+//     $arret = Arret::where('id',$paiement->id_arret_voayage)->first();
+//     $tarrification = TarificationMontantVoyage::with(['villeDepart','villeArrivee'])->where('id',$arret->id_tarrification_voyage)->first();
+     
+//    return response()->json([
+    
+//    ]);
+//     }
+
+// public function liste_detail_paiement($token)
+// {
+//     $utilisateur = Utilisateur::where('token', $token)->first();
+
+//     if (!$utilisateur) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Utilisateur introuvable'
+//         ], 404);
+//     }
+
+//     $paiement = Paiement::where('utilisateur_id', $utilisateur->id)->first();
+
+//     if (!$paiement) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Aucun paiement trouvé'
+//         ], 404);
+//     }
+
+//     $compagnie = Compagnies::find($paiement->compagnie_id);
+//     $gare = Gare::where('id',$paiement->gares_id)->first();
+//     $arret = Arret::find($paiement->id_arret_voayage);
+//     $tarification = $arret
+//         ? TarificationMontantVoyage::with(['villeDepart', 'villeArrivee'])
+//             ->find($arret->id_tarrification_voyage)
+//         : null;
+
+//     return response()->json([
+//         'success' => true,
+//         'utilisateur' => $utilisateur,
+//         'paiement' => $paiement,
+//         'compagnie' => $compagnie,
+//         'gare' => $gare,
+//         'arret' => $arret,
+//         'tarification' => $tarification,
+//     ], 200);
+// }
+
+public function liste_detail_paiement($token)
+{
+    $utilisateur = Utilisateur::where('token', $token)->first();
+
+    if (!$utilisateur) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Utilisateur introuvable'
+        ], 404);
+    }
+
+    $paiements = Paiement::where('utilisateur_id', $utilisateur->id)->where('status', 1)->get();
+    // $paiements = Paiement::where('utilisateur_id', $utilisateur->id)->get();
+
+    if ($paiements->isEmpty()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Aucun paiement trouvé'
+        ], 404);
+    }
+
+    $detailsPaiements = [];
+
+    foreach ($paiements as $paiement) {
+
+        $compagnie = Compagnies::find($paiement->compagnie_id);
+        $gare = Gare::where('id', $paiement->gares_id)->first();
+        $arret = Arret::find($paiement->id_arret_voayage);
+
+        $tarification = $arret
+            ? TarificationMontantVoyage::with(['villeDepart', 'villeArrivee'])
+                ->find($arret->id_tarrification_voyage)
+            : null;
+
+        $detailsPaiements[] = [
+            'paiement' => $paiement,
+            'compagnie' => $compagnie,
+            'gare' => $gare,
+            'arret' => $arret,
+            'tarification' => $tarification,
+        ];
+    }
+
+    return response()->json([
+        'success' => true,
+        'utilisateur' => $utilisateur,
+        'paiements' => $detailsPaiements,
+    ], 200);
+}
+
+
+
+public function connexion(Request $request)
+{
+    // Validation des données
+    $request->validate([
+        'email' => 'required',
+        'password' => 'required',
+    ]);
+    // Vérifier si l'utilisateur existe
+    $utilisateur = Utilisateur::where('email', $request->email)->first();
+
+    if (!$utilisateur) {
+        return response()->json([
+            'success' => false,
+            'message' => 'information incorrecte'
+        ], 404);
+    }
+    // Vérifier le mot de passe
+    if (!Hash::check($request->password, $utilisateur->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'information incorrecte'
+        ], 401);
+    }
+    // Générer un token API avec Sanctum
+    $token = $utilisateur->createToken('API Token')->plainTextToken;
+    $utilisateur->token = $token;
+    $utilisateur->save();
+    return response()->json([
+        'success' => true,
+        'message' => 'Connexion réussie.',
+        'user' => $utilisateur,
+        'token' => $token
+    ]);
+}
+
+
+    public function verifier_utilisateur_existe ($token){
+
+        $utilisateur = Utilisateur::where('token', $token)->first();
+
+        if(!$utilisateur){
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non trouvé',
+            ], 404);
+        }else{
+            return response()->json([
+                'success' => true,
+                'message' => 'Utilisateur trouvé',
+                'data' => $utilisateur,
+            ], 200);
+        }
+    }
+
+    public function assignPermission(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'permission' => 'required|string'
+        ]);
+
+        $user = User::find($request->user_id);
+
+        // Vérifier si la permission existe
+        $permission = Permission::where('name', $request->permission)->first();
+
+        if (!$permission) {
+            return response()->json([
+                'success' => false,
+                'message' => "La permission '{$request->permission}' n'existe pas."
+            ], 404);
+        }
+
+        // Ajouter la permission
+        $user->givePermissionTo($permission);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Permission attribuée avec succès.",
+            'user' => $user->name,
+            'permission' => $request->permission
+        ]);
+    }
+
+
+    public function getUserPermissions($id)
+{
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json([
+            'success' => false,
+            'message' => "Utilisateur introuvable."
+        ], 404);
+    }
+
+    // Récupérer toutes les permissions de l’utilisateur
+    $permissions = $user->getAllPermissions()->pluck('name');
+
+    return response()->json([
+        'success' => true,
+        'user' => $user->name,
+        'permissions' => $permissions
+    ]);
+}
+
+
+   
+    public function liste_reservation(Request $request , $token){
+
+        $utilisateur = Utilisateur::where('token', $token)->first();
+        if (!$utilisateur) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non trouvé',
+            ], 404);
+        }
+        $reservation = Reservation::with(['arret','gares','arret.tarification','arret.tarification.villeDepart','arret.tarification.villeArrivee','voyage','voyage.bus' , 'voyage.bus.places'])
+        ->where('utilisateurs_id', $utilisateur->id)->orderBy('created_at', 'desc')->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Liste des reservations',
+            'data' => $reservation,
+        ], 200);
+    }
+
+    public function modifier_information_utilisateur(Request $request){
+    $request->validate([
+        'token' => 'required',
+        'nom' => 'nullable',
+        'prenom' => 'nullable',
+        'telephone' => 'nullable',
+        'password' => 'nullable', // facultatif et sécurisé
+    ]);
+
+    $utilisateur = Utilisateur::where('token', $request->token)->first();
+
+    if (!$utilisateur) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Utilisateur non trouvé',
+        ], 404);
+    }
+
+    if ($request->has('nom')) {
+        $utilisateur->nom = $request->nom;
+    }
+
+    if ($request->has('prenom')) {
+        $utilisateur->prenom = $request->prenom;
+    }
+
+    if ($request->has('telephone')) {
+        $utilisateur->telephone = $request->telephone;
+    }
+
+    // 🔐 Mise à jour du mot de passe seulement s'il est envoyé
+    if ($request->filled('password')) {
+        // $utilisateur->password = bcrypt($request->password);
+        $utilisateur->password = Hash::make($request->password);
+    }
+
+
+    $utilisateur->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Information modifiée',
+        'data' => $utilisateur,
+    ], 200);
+}
+
+
+
+    public function recuperer_utilisateur($token){
+        $utilisateur = Utilisateur::where('token', $token)->first();
+        return response()->json([
+            'success' => true,
+            'message' => 'Utilisateur trouvé',
+            'data' => $utilisateur,
+        ], 200);
+    }
+
+    public function bus_detail_place($busID , $id_voyage){
+        $bus = Bus::with('configurationPlace','places')->find($busID);
+        $voyage = Voyage::where('id',$id_voyage)->where('bus_id', $bus->id)->first();
+        $liste_place_deja_occupe = Reservation::where('voyages_id', $voyage->id)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Bus trouvé',
+            'nombre_places' => $bus->places->count(),
+            'voyage' => $voyage,
+            'liste_place_deja_occupe' => $liste_place_deja_occupe,
+            'data' => $bus,
+        ], 200);
+    }
+
+    public function liste_gare_compagnie($compagnieID){
+    $liste = gare::with('ville' , 'jourOuvert' , 'jourFermeture')->where('compagnie_id', $compagnieID)->get();
+    return response()->json([
+        'success' => true,
+        'message' => 'Liste des gares',
+        'data' => $liste,
+    ], 200);
+    }
+
+
+
+    public function liste_ville ()
+    {
+        $ville = Ville::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'Liste des villes',
+            'data' => $ville,
+        ], 200);
+    }
+
+    public function choisir_destination(Request $request)
+    {
+        $request->validate([
+            'compagnie_id' => 'required',
+            'ville_depart' => 'required',
+            'ville_arrivee' => 'required',
+            'date_depart' => 'required',
+            // 'gare_depart' => 'required',
+        ]);
+        // return $request->all();
+        $compagnie = Compagnies::where('id', $request->compagnie_id)->first();
+        if (!$compagnie) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Compagnie non trouvée',
+            ], 404);
+        }
+
+       $recuperer_voyage = Voyage::with([
+        'bus',
+        'bus.places',
+        'itineraire',
+        'itineraire.arrets',
+        'itineraire.arrets.tarification',
+        'itineraire.arrets.tarification.villeDepart',
+        'itineraire.arrets.tarification.villeArrivee',
+        'itineraire.arrets.tarification.classe'
+    ])
+    ->where('compagnie_id', $compagnie->id)
+    // ->where('gare_id', $request->gare_depart)
+    // ->whereDate('date_depart', $request->date_depart)
+    ->where(function ($q) use ($request) {
+    $q->where('disponible_toujours', 1)
+      ->orWhereDate('date_depart', $request->date_depart);
+})
+    ->whereHas('itineraire.arrets.tarification', function ($q) use ($request) {
+        $q->where('ville_depart_id', $request->ville_depart)
+          ->where('ville_arrivee_id', $request->ville_arrivee);
+    })
+    ->get()->map(function ($voyage) {
+        return [
+            'id' => $voyage->id,
+            'date_depart' => $voyage->date_depart,
+            'heure_depart' => $voyage->heure_depart,
+            'disponible_toujours'=>$voyage->disponible_toujours,
+            'bus' => [
+                'id' => $voyage->bus->id,
+                'nom_bus' => $voyage->bus->nom_bus,
+                'marque_bus' => $voyage->bus->marque_bus,
+                'immatriculation_bus' => $voyage->bus->immatriculation_bus,
+                'photo_bus' => $voyage->bus->photo_bus,
+                'nombre_places' => $voyage->bus->places->count(), // 👈 TOTAL PLACES
+            ],
+            'itineraire' => $voyage->itineraire,
+            'arrets' => $voyage->itineraire->arrets
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Voyages trouvés',
+        'data' => $recuperer_voyage,
+    ], 200);
+    }
+
+    
+    /**
+     * Génère et envoie un code OTP par email
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function generateOtp(Request $request)
+    {
+        // Validation de l'email
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        // Génération d'un code OTP à 6 chiffres
+        $otpCode = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $email = $request->email;
+
+        try {
+            // Récupération de l'utilisateur
+            $utilisateur = UtilisateurEnAttente::where('email', $email)->first();
+            
+            if (!$utilisateur) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Code OTP envoyé avec succès',
+                    'data' => [
+                        'email' => $email,
+                    ]
+                ], 200);
+            }
+
+            // Vérifier s'il existe déjà un OTP non expiré
+            $existingOtp = Otp::where('utilisateur_id', $utilisateur->id)
+                ->first();
+
+            if ($existingOtp) {
+
+                Mail::to($email)->send(new OtpMail($existingOtp->code, $utilisateur));
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Le code à été envoyé',
+                ], 200);
+            }
+
+            // Création du nouvel OTP
+            $otp = new Otp();
+            $otp->utilisateur_id = $utilisateur->id;
+            $otp->code = $otpCode;
+            $otp->status = '1'; // 1 = actif, 2 = utilisé, 3 = expiré
+            $otp->save();
+
+            // Envoi de l'email avec le code OTP
+            Mail::to($email)->send(new OtpMail($otpCode, $utilisateur));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Code OTP envoyé avec succès',
+                'data' => [
+                    'email' => $email,
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'envoi du code OTP',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    // Votre code existant ci-dessous
     //
     public function inscriptions(Request $request)
     {
@@ -66,7 +534,8 @@ class UtilisateurController extends Controller
         $retrouverutilisateur->telephone = $request->telephone;
         $retrouverutilisateur->nom = $request->nom;
         $retrouverutilisateur->prenom = $request->prenom;
-        $retrouverutilisateur->password = $request->password;
+        // $retrouverutilisateur->password = $request->password;
+        $retrouverutilisateur->password = Hash::make($request->password);
         $retrouverutilisateur->save(); // 🔑 sauvegarde avant token
 
         // ✅ Génération du token API
@@ -106,6 +575,10 @@ class UtilisateurController extends Controller
         if (UtilisateurEnAttente::where('email', $request->email)->exists()) {
             return response()->json(['message' => 'Email déjà utilisé'], 422);
         }
+
+        //    if (RoleUtilisateur::where('email', $request->email)->exists()) {
+        //     return response()->json(['message' => 'Email déjà utilisé'], 422);
+        // }
         // ✅ Création de l'utilisateur en attente
         $utilisateur = new UtilisateurEnAttente();
         $utilisateur->email = $request->email;
@@ -163,6 +636,12 @@ class UtilisateurController extends Controller
         'token' => 'required|string',
         'code'  => 'required',
     ]);
+
+    // return response()->json([
+    //     'message' => 'ok',
+    //     'token' => $request->token,
+    //     'code' => $request->code,
+    // ], 200);    
   
     // ✅ Récupération de l'utilisateur via token
     $utilisateur = UtilisateurEnAttente::where('token', $request->token)->first();
@@ -180,8 +659,6 @@ class UtilisateurController extends Controller
             'message' => 'Token invalide',
         ], 404);
     }
-  
-       
 //    return response()->json(['message' => 'Utilisateur trouvé', 'utilisateur' => $utilisateur], 200);
     // ✅ Vérification de l'OTP
     $otp = Otp::where('utilisateur_id', $utilisateur->id)
@@ -193,11 +670,11 @@ class UtilisateurController extends Controller
     }
 
     // ✅ Vérifier expiration (par ex. 10 minutes)
-    $expiration = Carbon::parse($otp->created_at)->addMinutes(10);
-    if (Carbon::now()->gt($expiration)) {
-        $otp->save();
-        return response()->json(['message' => 'Code OTP expiré'], 422);
-    }
+    // $expiration = Carbon::parse($otp->created_at)->addMinutes(10);
+    // if (Carbon::now()->gt($expiration)) {
+    //     $otp->save();
+    //     return response()->json(['message' => 'Code OTP expiré'], 422);
+    // }
 
     // return response()->json(['message' => 'ok'], 200);
     // ✅ OTP correct : marquer comme utilisé
@@ -255,7 +732,8 @@ class UtilisateurController extends Controller
 // }
 public function listeCompagnie(Request $request)
     {
-        $listeCompagnie = Compagnies::all();
+        // $listeCompagnie = Compagnies::all();
+        $listeCompagnie = Compagnies::where('status', 1)->get();
 
         if ($listeCompagnie->isEmpty()) {
             return response()->json([

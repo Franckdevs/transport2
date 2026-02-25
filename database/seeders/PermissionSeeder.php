@@ -26,6 +26,10 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'itineraires']);
         Permission::firstOrCreate(['name' => 'voyages']);
         Permission::firstOrCreate(['name' => 'ajouter-une-gars']);
+        Permission::firstOrCreate(['name' => 'tarification']);
+        Permission::firstOrCreate(['name' => 'reservation']);
+        Permission::firstOrCreate(['name' => 'paramettre']);
+        Permission::firstOrCreate(['name' => 'agents']);
 
         Permission::firstOrCreate(['name' => 'tout-les-permissions']);
     }

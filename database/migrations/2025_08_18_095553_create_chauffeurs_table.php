@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('chauffeurs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('info_user_id')->constrained('info_users', 'id');
+            $table->foreignId('compagnies_id')->nullable()->constrained('compagnies', 'id');
             $table->string('nom')->nullable();
             $table->string('prenom')->nullable();
             $table->string('telephone')->nullable();

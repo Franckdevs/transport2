@@ -27,35 +27,39 @@
             overflow: hidden;
         }
         .header {
-            padding: 32px 40px 24px;
-            background: linear-gradient(135deg, #4f46e5, #2563eb);
-            color: #ffffff;
+            background: linear-gradient(135deg, #FFD700, #FFC000);
+            color: #000000;
+            padding: 40px 0;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 32px;
+            text-align: center;
         }
         .header h1 {
             margin: 0;
             font-size: 24px;
             font-weight: 600;
+            color: #000000;
         }
         .content {
             padding: 40px;
         }
         .badge {
             display: inline-block;
-            padding: 6px 14px;
-            border-radius: 999px;
-            background: rgba(37, 99, 235, 0.12);
-            color: #1d4ed8;
+            background: linear-gradient(135deg, #FFD700, #FFC000);
+            color: #000000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         .card {
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
+            background: #FFF9C4;
+            border-radius: 16px;
             padding: 24px;
-            margin: 28px 0;
+            margin: 24px 0;
+            box-shadow: 0 4px 20px rgba(255, 200, 0, 0.1);
+            border: 1px solid #FFE082;
         }
         .card-title {
             font-size: 15px;
@@ -67,16 +71,16 @@
             gap: 8px;
         }
         .card-title span {
-            display: inline-flex;
-            width: 18px;
-            height: 18px;
+            background: #FFC107;
+            color: #000000;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
-            background: #eef2ff;
-            color: #4f46e5;
-            font-size: 12px;
-            font-weight: 700;
+            margin-right: 12px;
+            font-size: 14px;
         }
         ul {
             padding-left: 20px;
@@ -89,12 +93,12 @@
             text-align: center;
             text-decoration: none;
             margin: 36px 0 8px;
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
-            color: #ffffff;
+            background: linear-gradient(135deg, #FFD700, #FFC000);
+            color: #000000;
             padding: 14px 20px;
             border-radius: 12px;
             font-weight: 600;
-            box-shadow: 0 15px 30px rgba(59, 130, 246, 0.35);
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.35);
         }
         .cta span {
             margin-left: 8px;
@@ -107,7 +111,7 @@
         .footer {
             padding: 0 40px 36px;
             font-size: 13px;
-            color: #6b7280;
+            color: #000000;
             line-height: 1.6;
         }
     </style>
@@ -116,32 +120,51 @@
 <div class="wrapper">
     <div class="container">
         <div class="header">
-            <h1>Bienvenue dans BETRO</h1>
-            <p style="margin: 6px 0 0; opacity: 0.9;">Votre compagnie est désormais prête à rejoindre la plateforme.</p>
+            <h1>Bienvenue sur BETRO</h1>
+            <p style="margin: 10px 0 0; font-size: 18px; font-weight: 500;">{{ $compagnie->nom_complet_compagnies }}</p>
+
         </div>
         <div class="content">
-            <div class="badge">Validation confirmée</div>
-            <p>Bonjour,<br><br>
-                Nous sommes ravis de vous informer que la demande d'inscription de votre compagnie
+            <div class="badge">Votre compte a été validé</div>
+            <p>Nous sommes ravis de vous informer que la demande d'inscription de votre compagnie
                 <strong>{{ $compagnie->nom_complet_compagnies }}</strong> a été validée avec succès.</p>
 
+            @if($user)
+            <div class="card" style="margin-top: 20px;">
+                <div>
+                    <span><i class="fas fa-user"></i></span>
+                    Informations de l'administrateur
+                </div>
+                <p>
+                    <strong>Email :</strong> {{ $user->email }}<br>
+                    <strong>Nom :</strong> {{ $user->nom ?? 'Non spécifié' }}<br>
+                    <strong>Prénom :</strong> {{ $user->prenom ?? 'Non spécifié' }}<br>
+                </p>
+            </div>
+            @endif
+
             <div class="card">
-                <div class="card-title"><span>1</span>Informations de la compagnie</div>
+                <div><span><i class="fas fa-building"></i></span>Informations de la compagnie</div>
                 <ul>
                     <li><strong>Email</strong> : {{ $compagnie->email_compagnies }}</li>
                     <li><strong>Téléphone</strong> : {{ $compagnie->telephone_compagnies }}</li>
                     <li><strong>Adresse</strong> : {{ $compagnie->adresse_compagnies }}</li>
+                  <li><strong>Ville</strong> :  @if(is_array($ville))
+                        {{ $ville['nom_ville'] ?? 'Ville non spécifiée' }}
+                    @else
+                        {{ $ville ?? 'Ville non spécifiée' }}
+                    @endif</li>
                 </ul>
             </div>
 
             <div class="card">
-                <div class="card-title"><span>2</span>Étape suivante</div>
+                <div><span><i class="fas fa-key"></i></span>Création de votre compte</div>
                 <p style="margin: 0; color: #4b5563;">
                     Créez maintenant les accès sécurisés pour vos administrateurs en suivant le lien ci-dessous :
                 </p>
-                <a href="{{ $createAccessUrl }}" class="cta">
+                <a href="{{ $createAccessUrl }}" class="cta" style="color: #000000 !important;">
                     Configurer les accès
-                    <span>→</span>
+                    <span style="color: #000000 !important;">→</span>
                 </a>
                 <p style="margin-top: 8px; text-align: center; font-size: 12px; color: #9ca3af;">
                     Ce lien est personnel et ne doit pas être partagé publiquement.

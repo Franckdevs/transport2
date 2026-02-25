@@ -177,19 +177,19 @@
         }
         </style>
         <div class="row mt-4">
-            <div class="col-md-6">
+            {{-- <div class="col-md-6">
                 <h5><i class="fas fa-info-circle me-2"></i>Détails de l'adresse:</h5>
                 <div id="addressDetails" class="address-details">
                     Les détails de l'adresse s'afficheront ici...
                 </div>
-            </div>
-            <div class="col-md-6">
+            </div> --}}
+            {{-- <div class="col-md-6">
                 <h5><i class="fas fa-globe me-2"></i>Coordonnées:</h5>
                 <div id="coordinates" class="address-details">
                     Latitude: <span id="latValue">5.345317</span><br>
                     Longitude: <span id="lngValue">-4.024429</span>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 
@@ -482,190 +482,133 @@
 
 <div class="row mt-4">
   <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white py-3 border-bottom-0">
-        <h5 class="card-title mb-0 text-primary">
-          <i class="fas fa-info-circle me-2"></i>Informations générales
-        </h5>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-12 mb-3">
-            <label for="nom_gare" class="form-label">Nom de la gare</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="fas fa-train"></i></span>
-              <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare', $gare->nom_gare) }}">
-            </div>
-  </div>
-</div>
-
-<div class="row">
-  {{-- Adresse gare --}}
-  {{-- <div class="col-12 mb-3">
-  <label for="adresse_gare" class="form-label">Adresse</label>
-  <div class="input-group">
-    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-    <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare', $gare->adresse_gare) }}">
-  </div>
-</div> --}}
-
-  {{-- Téléphone gare --}}
-  <div class="col-md-6 mb-3">
-    <label for="telephone_gare" class="form-label">Téléphone</label>
-    <div class="input-group">
-      <span class="input-group-text">
-        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
-        +225
-      </span>
-      <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" 
-             placeholder="XX XX XX XX XX" 
-             value="{{ old('telephone_gare', $gare->telephone_gare) }}" 
-             pattern="[0-9]{2}( [0-9]{2}){4}" 
-             onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 32"
-             oninput="formatPhoneNumber(this)"
-             onpaste="return false;"
-             ondrop="return false;"
-             autocomplete="off">
-    </div>
-    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
-  </div>
-</div>
-
-<div class="row">
-  {{-- Ville --}}
-  <div class="col-md-6 mb-3">
-    <label for="ville_id" class="form-label">Ville</label>
-    <select name="ville_id" id="ville_id" class="form-select">
-      <option value="">-- Sélectionner une ville --</option>
-      @foreach($villes as $ville)
-        <option value="{{ $ville->id }}" {{ old('ville_id',$gare) == $ville->id ? 'selected' : '' }}>
-          {{ $ville->nom_ville ?? $ville->id }}
-        </option>
-      @endforeach
-    </select>
-  </div>
-
-  {{-- Jour d'ouverture --}}
-  <div class="col-md-6 mb-3">
-    <label for="jour_ouvert_id" class="form-label">Jour d'ouverture</label>
-    <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select">
-      <option value="">-- Sélectionner un jour d'ouverture --</option>
-      @foreach($jours as $jour)
-        <option value="{{ $jour->id }}" {{ old('jour_ouvert_id',$gare) == $jour->id ? 'selected' : '' }}>
-          {{ $jour->nom_jour ?? $jour->id }}
-        </option>
-      @endforeach
-    </select>
-  </div>
-</div>
-
-<div class="row">
-  {{-- Jour de fermeture --}}
-  <div class="col-md-6 mb-3">
-    <label for="jour_de_fermeture_id" class="form-label">Jour de fermeture</label>
-    <select name="jour_de_fermeture_id" id="jour_de_fermeture_id" class="form-select">
-      <option value="">-- Sélectionner un jour de fermeture --</option>
-      @foreach($jours as $jour)
-        <option value="{{ $jour->id }}" {{ old('jour_de_fermeture_id',$gare) == $jour->id ? 'selected' : '' }}>
-          {{ $jour->nom_jour ?? $jour->id }}
-        </option>
-      @endforeach
-    </select>
-  </div>
-
-</div>
-
-<div class="row">
-  {{-- Heure ouverture --}}
-  <div class="col-md-6 mb-3">
-    <label for="heure_ouverture" class="form-label">Heure d'ouverture</label>
-    <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture',$gare) }}">
-  </div>
-
-  {{-- Heure fermeture --}}
-  <div class="col-md-6 mb-3">
-    <label for="heure_fermeture" class="form-label">Heure de fermeture</label>
-    <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture',$gare) }}">
-  </div>
-</div>
-
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card shadow-sm">
-      <div class="card-header bg-white py-3 border-bottom-0">
-        <h5 class="card-title mb-0 text-primary">
-          <i class="fas fa-cogs me-2"></i>Équipements disponibles
-        </h5>
-      </div>
-      <div class="card-body">
-     
-
-     
-        {{-- <div class="row">
-  <div class="col-md-6 mb-3">
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" id="parking_disponible" name="parking_disponible" value="1" {{ (old('parking_disponible', $gare->parking_disponible) == 1) ? 'checked' : '' }}>
-      <label class="form-check-label" for="parking_disponible">
-        <i class="fas fa-parking me-2"></i>Parking disponible
-      </label>
-    </div>
-  </div>
-
-  <div class="col-md-6 mb-3">
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" id="wifi_disponible" name="wifi_disponible" value="1" {{ (old('wifi_disponible', $gare->wifi_disponible) == 1) ? 'checked' : '' }}>
-      <label class="form-check-label" for="wifi_disponible">
-        <i class="fas fa-wifi me-2"></i>Wi-Fi disponible
-      </label>
-    </div>
-  </div>
-</div> --}}
-
-<!-- Section Équipements -->
-<div class="row mb-4">
-  <div class="col-12">
     <div class="card">
       <div class="card-header">
-        <h6 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Équipements disponibles</h6>
-        <p class="text-muted small mb-0">Sélectionnez les équipements disponibles dans cette gare</p>
+        <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Informations générales</h5>
       </div>
       <div class="card-body">
         <div class="row">
-          <!-- Parking -->
-          <div class="col-md-6 mb-3">
-            <div class="d-flex align-items-center">
-              <div class="form-check form-switch me-3">
-                <input type="hidden" name="parking_disponible" value="0">
-                <input class="form-check-input" type="checkbox" role="switch" id="parking_disponible" name="parking_disponible" value="1" {{ (old('parking_disponible', $gare->parking_disponible) ? 'checked' : '') }}>
-                <label class="form-check-label" for="parking_disponible"></label>
-              </div>
-              <div class="d-flex align-items-center">
-                {{-- <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                  <i class="fas fa-parking text-primary fs-4"></i>
-                </div> --}}
-                <div>
-                  <h6 class="mb-0">Parking</h6>
-                  <p class="text-muted small mb-0">Espace de stationnement disponible</p>
-                </div>
-              </div>
+          <div class="col-md-4 mb-3">
+            <label for="nom_gare" class="form-label">Nom de la gare <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="fas fa-train"></i></span>
+              <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare', $gare->nom_gare) }}" required>
             </div>
+            <small class="form-text text-muted">Ex: Gare de Yopougon</small>
+          </div>
+          {{-- Adresse gare --}}
+          <div class="col-md-4 mb-3">
+            <label for="adresse_gare" class="form-label">Adresse (facultative)</label>
+            <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare', $gare->adresse_gare) }}">
           </div>
 
-          <!-- Wifi -->
-          <div class="col-md-6 mb-3">
-            <div class="d-flex align-items-center">
-              <div class="form-check form-switch me-3">
-                <input type="hidden" name="wifi_disponible" value="0">
-                <input class="form-check-input" type="checkbox" role="switch" id="wifi_disponible" name="wifi_disponible" value="1" {{ (old('wifi_disponible', $gare->wifi_disponible) ? 'checked' : '') }}>
-                <label class="form-check-label" for="wifi_disponible"></label>
+          <div class="col-md-4 mb-3">
+            <label for="ville_id" class="form-label">Ville de la gare <span class="text-danger">*</span></label>
+            <select name="ville_id" id="ville_id" class="form-select" required>
+              <option value="">-- Sélectionner une ville --</option>
+              @foreach($villes as $ville)
+                <option value="{{ $ville->id }}" {{ old('ville_id', $gare->ville_id) == $ville->id ? 'selected' : '' }}>
+                  {{ $ville->nom_ville ?? $ville->id }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+        
+        <div class="row">
+           {{-- Téléphone gare --}}
+          <div class="col-md-4 mb-3">
+            <label for="telephone_gare" class="form-label">Téléphone <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+                +225
+              </span>
+              <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('telephone_gare', $gare->telephone_gare) }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)" required>
+            </div>
+            <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
+          </div>
+
+          {{-- Jour d'ouverture --}}
+          <div class="col-md-4 mb-3">
+            <label for="jour_ouvert_id" class="form-label">Jour d'ouverture <span class="text-danger">*</span></label>
+            <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select" required>
+              <option value="">-- Sélectionner un jour d'ouverture --</option>
+              @foreach($jours as $jour)
+                <option value="{{ $jour->id }}" {{ old('jour_ouvert_id', $gare->jour_ouvert_id) == $jour->id ? 'selected' : '' }}>
+                  {{ $jour->nom_jour ?? $jour->id }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+
+          {{-- Jour de fermeture --}}
+          <div class="col-md-4 mb-3">
+            <label for="jour_de_fermeture_id" class="form-label">Jour de fermeture </label>
+            <select name="jour_de_fermeture_id" id="jour_de_fermeture_id" class="form-select">
+              <option value="">-- Sélectionner un jour de fermeture --</option>
+              @foreach($jours as $jour)
+                <option value="{{ $jour->id }}" {{ old('jour_de_fermeture_id', $gare->jour_de_fermeture_id) == $jour->id ? 'selected' : '' }}>
+                  {{ $jour->nom_jour ?? $jour->id }}
+                </option>
+              @endforeach
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          {{-- Heure ouverture --}}
+          <div class="col-md-2 mb-3">
+            <label for="heure_ouverture" class="form-label">Heure d'ouverture <span class="text-danger">*</span></label>
+            <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture', $gare->heure_ouverture) }}" required>
+          </div>
+
+          {{-- Heure fermeture --}}
+          <div class="col-md-2 mb-3">
+            <label for="heure_fermeture" class="form-label">Heure de fermeture <span class="text-danger">*</span></label>
+            <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture', $gare->heure_fermeture) }}" required>
+          </div>
+
+          <!-- Section Équipements -->
+          <div class="col-8">
+            <div class="card">
+              <div class="card-header">
+                <h6 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Équipements disponibles</h6>
+                <p class="text-muted small mb-0">Sélectionnez les équipements disponibles dans cette gare</p>
               </div>
-              <div class="d-flex align-items-center">
-                {{-- <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                  <i class="fas fa-wifi text-primary fs-4"></i>
-                </div> --}}
-                <div>
-                  <h6 class="mb-0">Wi-Fi gratuit</h6>
-                  <p class="text-muted small mb-0">Accès Internet sans fil</p>
+              <div class="card-body">
+                <div class="row">
+                  <!-- Parking -->
+                  <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                      <div class="form-check form-switch me-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="parking_disponible" name="parking_disponible" value="1" {{ old('parking_disponible', $gare->parking_disponible) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="parking_disponible"></label>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="mb-0">Parking</h6>
+                          <p class="text-muted small mb-0">Espace de stationnement disponible</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Wifi -->
+                  <div class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                      <div class="form-check form-switch me-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="wifi_disponible" name="wifi_disponible" value="1" {{ old('wifi_disponible', $gare->wifi_disponible) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="wifi_disponible"></label>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <h6 class="mb-0">Wi-Fi gratuit</h6>
+                          <p class="text-muted small mb-0">Accès Internet sans fil</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -676,10 +619,10 @@
   </div>
 </div>
 
-<div class="row">
-  {{-- Téléphone --}}
+{{-- <div class="row">
   <div class="col-md-6 mb-3">
     <label for="telephone" class="form-label">Téléphone (contact général)</label>
+{{ ... }
     <div class="input-group">
       <span class="input-group-text">
         <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
@@ -698,64 +641,77 @@
     <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
   </div>
 
-  {{-- Email --}}
   <div class="col-md-6 mb-3">
     <label for="email" class="form-label">Email (contact général)</label>
     <input type="email" name="email" id="email" class="form-control" value="{{ old('email',$gare) }}">
   </div>
+</div> --}}
+
+<div class="row">
+  {{-- Téléphone --}}
+  <div class="col-md-6 mb-3">
+    <label for="telephone" class="form-label">Téléphone Secondaire</label>
+    <div class="input-group">
+      <span class="input-group-text">
+        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+        +225
+      </span>
+      <input type="text" name="telephone" id="telephone" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('telephone', $gare->telephone) }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)">
+    </div>
+    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
+  </div>
+
+  {{-- Email --}}
+  <div class="col-md-6 mb-3">
+    <label for="email" class="form-label">Email Gare (facultative)</label>
+    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $gare->email) }}">
+  </div>
 </div>
 
 {{-- Site web (plein largeur) --}}
-<div class="mb-3">
+{{-- <div class="mb-3">
   <label for="site_web" class="form-label">Site web</label>
   <input type="url" name="site_web" id="site_web" class="form-control" value="{{ old('site_web',$gare) }}">
-</div>
+</div> --}}
 
 {{-- Description (plein largeur) --}}
-<div class="col-12 mb-3">
+<div class="mb-3">
   <label for="description" class="form-label">Description</label>
-  <div class="input-group">
-    <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-    <textarea name="description" id="description" class="form-control" rows="3">{{ old('description', $gare->description) }}</textarea>
-  </div>
+  <textarea name="description" id="description" class="form-control" rows="3">{{ old('description', $gare->description) }}</textarea>
 </div>
 
 
   {{-- Section Administrateur de la gare --}}
-  <div class="card shadow-sm mt-4 mb-4">
-    <div class="card-header bg-white py-3 border-bottom-0">
-      <h5 class="card-title mb-0 text-primary">
-        <i class="fas fa-user-shield me-2"></i>Administrateur de la gare
-      </h5>
-    </div>
-    <div class="card-header bg-primary text-white">
-      <h6 class="mb-0"><i class="fas fa-user-tie"></i>Informations de l'Administrateur de la Gare</h6>
+  <div class="card mt-4">
+     <div class="card-header">
+      <h5 class="card-title mb-0"><i class="fas fa-user-shield me-2"></i>Administrateur de la gare</h5>
+      <p class="text-muted mb-0">Informations du responsable de cette gare</p>
     </div>
     <div class="card-body">
       <div class="row">
         {{-- Nom admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_nom" class="form-label">Nom de l'administrateur</label>
-          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom',$gare->infoUser->nom) }}" placeholder="Nom de famille">
+          <label for="admin_nom" class="form-label">Nom de l'administrateur <span class="text-danger">*</span></label>
+          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom',$gare->infoUser->nom) }}" placeholder="Nom de famille" required>
         </div>
 
         {{-- Prénom admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_prenom" class="form-label">Prénom de l'administrateur</label>
-          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom' ,$gare->infoUser->prenom) }}" placeholder="Prénom">
+          <label for="admin_prenom" class="form-label">Prénom de l'administrateur <span class="text-danger">*</span></label>
+          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom' ,$gare->infoUser->prenom) }}" placeholder="Prénom" required>
         </div>
       </div>
 
       <div class="row">
         {{-- Email admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_email" class="form-label">Email de l'administrateur</label>
-          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email',$gare->infoUser->email) }}" placeholder="admin@exemple.com">
+          <label for="admin_email" class="form-label">Email de l'administrateur <span class="text-danger">*</span></label>
+          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email',$gare->infoUser->email) }}" placeholder="admin@exemple.com" required>
         </div>
 
         {{-- Téléphone admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_telephone" class="form-label">Téléphone de l'administrateur</label>
+          <label for="admin_telephone" class="form-label">Téléphone de l'administrateur <span class="text-danger">*</span></label>
           <div class="input-group">
             <span class="input-group-text">
               <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
@@ -765,11 +721,8 @@
                    placeholder="XX XX XX XX XX" 
                    value="{{ old('admin_telephone', $gare->infoUser->telephone ?? '') }}"
                    pattern="[0-9]{2}( [0-9]{2}){4}"
-                   onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 32"
                    oninput="formatPhoneNumber(this)"
-                   onpaste="return false;"
-                   ondrop="return false;"
-                   autocomplete="off">
+                   required>
           </div>
           <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
         </div>
@@ -808,10 +761,10 @@
 @endif
 
 <div class="mt-3">
-    <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
+    <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()" style="min-width: 180px;">
         <i class="fas fa-check-double me-1"></i>Tout sélectionner
     </button>
-    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="deselectAllPermissions()">
+    <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="deselectAllPermissions()" style="min-width: 180px;">
         <i class="fas fa-times me-1"></i>Tout désélectionner
     </button>
 </div>
@@ -831,15 +784,39 @@ function deselectAllPermissions() {
 
     </div>
   </div>
-    <div class="d-flex justify-content-between mt-4 mb-2">
-        <a href="{{ route('gares.index.2') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Retour
-        </a>
+
+    {{-- <div class="d-flex justify-content-end mt-4 mb-2">
         <button type="submit" class="btn btn-primary px-4">
             <i class="fas fa-save me-1"></i> Enregistrer les modifications
         </button>
+    </div> --}}
+    
+    <div class="d-flex justify-content-center mt-4 mb-2">
+      <button type="submit" class="btn btn-primary w-50" id="submitButton">
+        <span id="btnText">Enregistrer la gare</span>
+        <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+      </button>
     </div>
-      </form>
+  </form>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('gareForm');
+    const btn = document.getElementById('submitButton');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnText = document.getElementById('btnText');
+
+    form.addEventListener('submit', function() {
+        // Afficher le spinner
+        btnSpinner.classList.remove('d-none');
+        // Changer le texte
+        btnText.textContent = 'Enregistrement...';
+        // Désactiver le bouton pour éviter double clic
+        btn.disabled = true;
+        // Laisser le formulaire se soumettre normalement
+    });
+});
+</script>
+
 
     </div>
   </div>

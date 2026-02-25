@@ -8,9 +8,23 @@ use App\Models\PaiementEnAttente;
 use App\Models\Reservation;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
+use app\Helpers\GlobalHelper;
+use Illuminate\Support\Str;
 
 class PaiementController extends Controller
 {
+    //page du status paiement 
+    public function status_paiement($code){
+        $paiement = Paiement::with('utilisateur','compagnie','reservation')->where('code_paiement',$code)->first();
+        
+        // Si le paiement n'existe pas ou si le code est null, afficher la page d'erreur
+        if (!$paiement || $paiement->code === null) {
+            return view('erreur_paiement');
+        }
+        
+        $status_code_paiement = $paiement->code;
+        return view('felicitation_paiement' , compact('status_code_paiement','paiement') );
+    }
     /**
      * Display a listing of the resource.
      */
@@ -67,6 +81,17 @@ class PaiementController extends Controller
         //
     }
 
+public static function generateNumeroReservation()
+{
+    do {
+        //$numero = 'RES-' . date('Ymd-His') . '-' . strtoupper(Str::random(8));
+        $numero = 'RES-' . strtoupper(Str::random(5));
+    } while (Reservation::where('numero_reservation', $numero)->exists());
+
+    return $numero;
+   
+}
+
 
     public function callback(Request $request)
     {
@@ -79,12 +104,7 @@ class PaiementController extends Controller
             // Recupère le paiement en attente avec le statut '2'
             $paiementinit = PaiementEnAttente::where('codePaiement', $codePaiement)
             ->first();
-            // return response()->json([
-            // "data"=> "test",
-            // "montant"=> $RetourPaiementEnJSON,
-            // "paiement"=>$paiementinit
-            // ]);
-
+            
             if(!$paiementinit){
                 return response()->json([
                     'success' => false,
@@ -99,6 +119,7 @@ class PaiementController extends Controller
                     'message' => 'Aucun voyage trouvé pour ce paiement.'
                 ], 404);
             }
+
             $compagnie = Compagnies::where('id', $trouvervoyage->compagnie_id)->first();
             if(!$compagnie){
                 return response()->json([
@@ -133,15 +154,35 @@ class PaiementController extends Controller
                     $paiement->telephone =  $request->numTel;
                     $paiement->moyenPaiement =  $request->moyenPaiement;
                     $paiement->compagnie_id = $compagnie->id;
+                    $paiement->gares_id = $paiementinit->gares_id;
+                    $paiement->nom_complet = $paiementinit->nom_complet;
+                    $paiement->telephone_proprietaire = $paiementinit->telephone_proprietaire;
+
                     // compagnie
                     $paiement->save();
-
+                    
                     $creation_reservations = new Reservation();
-                    $creation_reservations->voyages_id = $paiementinit->voyages_id;
-                    $creation_reservations->utilisateurs_id = $paiementinit->utilisateur_id;
-                    $creation_reservations->numero_place = $paiementinit->numero_place;
-                    $creation_reservations->id_arret_voayage = $paiementinit->id_arret_voayage; 
+                    $creation_reservations->voyages_id = $paiement->voyages_id;
+                    $creation_reservations->utilisateurs_id = $paiement->utilisateur_id;
+                    $creation_reservations->numero_place = $paiement->numero_place;
+                    $creation_reservations->id_arret_voayage = $paiement->id_arret_voayage; 
                     $creation_reservations->paiements_id = $paiement->id;
+                    $creation_reservations->compagnies_id = $compagnie->id;
+                    $creation_reservations->nom_complet = $paiement->nom_complet;
+                    $creation_reservations->gare_id = $paiement->gares_id;
+                    $creation_reservations->telephone_proprietaire = $paiement->telephone_proprietaire;
+                    $creation_reservations->numero_reservation = $this->generateNumeroReservation();
+                    // return response()->json(["message" => "Paiement traité avec succès"]);
+                    $creation_reservations->status  = 2;
+            //         return response()->json([
+            // "data"=> "test",
+            // "montant"=> $RetourPaiementEnJSON,
+            // "paiement"=>$paiementinit,
+            // "trouvervoyage"=>$trouvervoyage,
+            // "reservation_created"=>true,
+            // "reservation"=>$creation_reservations,
+            // 'numero_reservation'=>$creation_reservations->numero_reservation
+            // ]);
                     $creation_reservations->save();	
 
                     return response()->json([
@@ -162,15 +203,19 @@ class PaiementController extends Controller
                     $paiement->voyages_id = $paiementinit->voyages_id;
                     $paiement->numero_place = $paiementinit->numero_place;
                     $paiement->montant = $paiementinit->montant;
-                    $paiement->status = 1;
+                    $paiement->status = 2;
                     $paiement->id_arret_voayage = $paiementinit->id_arret_voayage;
                     $paiement->datePaiement =  $request->datePaiement;
                     $paiement->HeurePaiement =  $request->HeurePaiement;
                     $paiement->code =  $request->code;
+                    $paiement->compagnie_id = $compagnie->id;
                     $paiement->referencePaiement =  $request->referencePaiement;
                     $paiement->telephone =  $request->numTel;
                     $paiement->moyenPaiement =  $request->moyenPaiement;
-                    $paiement->compagnie_id = $compagnie->compagnie_id;
+                    $paiement->nom_complet = $paiementinit->nom_complet;
+                    $paiement->telephone_proprietaire = $paiementinit->telephone_proprietaire;
+                    // $paiement->compagnie_id = $compagnie->compagnie_id;
+                    $paiement->gares_id = $paiementinit->gares_id;
                     $paiement->save();
                     // return response()->json([
                     //  "data"=> $RetourPaiementEnJSON,
@@ -198,6 +243,11 @@ class PaiementController extends Controller
 
         return 'Ok';
     }
+
+
+
+
+    
     // public function callbacks(Request $request)
     // {
     //     (string) $RetourPaiementEnJSON = json_encode($request->input());

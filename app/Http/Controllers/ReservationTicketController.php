@@ -12,10 +12,16 @@ class ReservationTicketController extends Controller
      */
 public function index(Request $request)
 {
+    // $query = Reservation::with([
+    //     'voyage.itineraire.arrets',  // 🔁 itinéraire + arrêts
+    //     'voyage.gare',               // Gare de départ
+    //     'utilisateur'                // Client
+    // ])->orderBy('id', 'desc');
     $query = Reservation::with([
         'voyage.itineraire.arrets',  // 🔁 itinéraire + arrêts
         'voyage.gare',               // Gare de départ
-        'utilisateur'                // Client
+        'utilisateur',               // Client
+        'arret'
     ])->orderBy('id', 'desc');
 
     // 🔎 Filtre par date de départ du voyage
@@ -32,8 +38,19 @@ public function index(Request $request)
     }
 
     $reservations = $query->get();
+    
+    // Calculer le montant total des réservations
+    $totalMontant = 0;
+    foreach ($reservations as $reservation) {
+        if ($reservation->paiement) {
+            $totalMontant += $reservation->paiement->montant;
+        }
+    }
 
-    return view('betro.reservation_ticket.index', compact('reservations'));
+    return view('betro.reservation_ticket.index', [
+        'reservations' => $reservations,
+        'totalMontant' => $totalMontant
+    ]);
 }
 
 

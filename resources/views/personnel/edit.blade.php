@@ -150,24 +150,27 @@
         <!-- start: page body -->
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
-                <!-- En-tête de page -->
+                <!-- En-tête avec bouton à droite -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="section-title mb-0">
-                      {{-- Modifier l'utilisateur --}}
-                    </h4>
-                    <a href="{{ route('personnel.index') }}" class="btn" title="Retour">
-                        <i class="fa fa-arrow-left me-2"></i> Retour à la liste
-                    </a>
+                    <h1 class="page-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Modifier le membre du personnel
+                    </h1>
+                    <div class="ms-auto">
+                        
+                        <a href="{{ route('personnel.index') }}" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
                 </div>
-                
-                <!-- Carte du formulaire - PREND TOUTE LA LARGEUR -->
+
                 <div class="row">
                     <div class="col-12">
-                        <div class="card card-form">
-             <div class="info-badge">
-            <i class="fas fa-info-circle"></i>
-            Vous allez Modifier les informations de ce membre du personnel {{ $personnel->nom }} {{ $personnel->prenom }}.
-          </div>
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user-circle me-2"></i>Informations personnelles
+                                </h5>
+                            </div>
                             <div class="card-body p-4">
                                 <form action="{{ route('personnel.update', $personnel->id) }}" method="POST" enctype="multipart/form-data" id="user-form">
                                     @csrf
@@ -290,16 +293,16 @@
                                     </div>
                                     
                                     <!-- Boutons d'action -->
-                                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                                        {{-- <a href="{{ route('personnel.index') }}" class="btn btn-light">
-                                            <i class="fa fa-times me-2"></i>Annuler
-                                        </a> --}}
+                                    <div class="d-flex justify-content-between pt-3 border-top mt-4">
+                                        <a href="{{ route('personnel.index') }}" class="btn btn-light">
+                                            <i class="fas fa-times me-2"></i>Annuler
+                                        </a>
                                         <div>
-                                            {{-- <button type="reset" class="btn btn-light me-3">
-                                                <i class="fa fa-undo me-2"></i>Réinitialiser
-                                            </button> --}}
+                                            <a href="{{ route('personnel.show', $personnel->id) }}" class="btn btn-info me-2">
+                                                <i class="fas fa-eye me-2"></i>Voir les détails
+                                            </a>
                                             <button type="submit" class="btn btn-primary">
-                                                <i class="fa fa-save me-2"></i>Mettre à jour
+                                                <i class="fas fa-save me-2"></i>Mettre à jour
                                             </button>
                                         </div>
                                     </div>

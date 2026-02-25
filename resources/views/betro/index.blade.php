@@ -30,6 +30,60 @@
             </div>
           </div> --}}
 
+<!-- Filtre de date -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="{{ route('dashboard') }}" method="GET">
+                  <div class="row align-items-center">
+                    <div class="col-auto">
+                        <label class="form-label mb-0">Période :</label>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">Du</span>
+                            <input type="date" class="form-control" id="dateDebut" name="date_debut" value="{{ $dateDebut }}">
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">au</span>
+                            <input type="date" class="form-control" id="dateFin" name="date_fin" value="{{ $dateFin }}">
+                        </div>
+                    </div>
+                    <div class="col-auto me-4">
+                        <div class="input-group input-group-sm" style="min-width: 300px;">
+                            <span class="input-group-text">Compagnie</span>
+                            <select class="form-select form-select-sm select2" name="compagnie_id" id="compagnieSelect">
+                                <option value="">Toutes les compagnies</option>
+                                @foreach($compagnies as $compagnie)
+                                    <option value="{{ $compagnie->id }}" {{ $compagnieId == $compagnie->id ? 'selected' : '' }}>
+                                        {{ $compagnie->nom_complet_compagnies }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary btn-sm" id="btnFiltrer">
+                            <i class="fas fa-filter me-1"></i>
+                            <span class="btn-text">Filtrer</span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                        <a href="{{ route('dashboard') }}" class="btn btn-secondary btn-sm" id="btnReset" title="Réinitialiser les filtres sur le mois actuel (du 1er jour au jour actuel)">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            <span class="btn-text">Réinitialiser</span>
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
   <div class="col-lg-3 col-md-6 col-sm-6">
   <div class="card overflow-hidden">
     <div class="card-body text-center">
@@ -96,7 +150,7 @@
               <div class="card-body text-center">
 <i class="fa fa-credit-card fa-lg position-absolute top-0 end-0 p-3"></i>
                 <div class="mb-2 text-uppercase">PAIEMENT</div>
-                <div><span class="h4">0</span> FCFA <span class="small text-muted">
+                <div><span class="h4">{{ $total_paiements ?? 0 }} FCFA</span><span class="small text-muted">
                   {{-- <i class="fa fa-level-up"></i> 11.2% --}}
                 </span></div>
               </div>
@@ -108,29 +162,409 @@
 
            <div class="col-xl-12 col-lg-12">
             <div class="card">
-              <div class="card-body d-flex flex-wrap flex-row align-items-center border-bottom">
+              <div class="card-header  text-white d-flex justify-content-between align-items-center">
                 <div>
-                  <div class="d-flex align-items-center">
-                    {{-- ajoute un champs de filtre par date  --}}
-                    <i class="fas fa-chart-line"></i>
-
-
-                    <div class="flex-fill ms-3 text-truncate">
-                      <div>Graphique des voyages</div>
-                      <div><span class="h6 fw-bold">315</span> <small class="text-muted">Hours</small></div>
-                    </div>
-                  </div>
+                  <h6 class="card-title mb-0"><i class="fas fa-chart-line me-2"></i>Statistiques des Réservations et Paiements</h6>
+                  <small class="text-black-50">Période du {{ \Carbon\Carbon::parse($dateDebut)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($dateFin)->format('d/m/Y') }}</small>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-light" id="export-png">
+                    <i class="fas fa-download me-1"></i> PNG
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-light" id="export-csv">
+                    <i class="fas fa-file-csv me-1"></i> CSV
+                  </button>
                 </div>
               </div>
               <div class="card-body">
-                <div class="apexcharts-canvas" id="apex-WorkoutStatistic"></div>
+                <div id="statistics-chart" style="min-height: 400px;">
+                  <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Chargement des données...</p>
+                  </div>
+                </div>
+                <div class="mt-3 text-end">
+                  <small class="text-muted">Dernière mise à jour : {{ now()->format('d/m/Y H:i') }}</small>
+                </div>
               </div>
+              <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Animation de chargement
+                    const chartContainer = document.getElementById('statistics-chart');
+                    
+                    // Options du graphique
+                    var options = {
+                        series: [{
+                            name: 'Réservations',
+                            type: 'column',
+                            data: @json($reservationsData)
+                        }, {
+                            name: 'Paiements (FCFA)',
+                            type: 'line',
+                            data: @json($paiementsData)
+                        }],
+                        chart: {
+                            height: 400,
+                            type: 'line',
+                            stacked: false,
+                            animations: {
+                                enabled: true,
+                                easing: 'easeinout',
+                                speed: 800,
+                                animateGradually: {
+                                    enabled: true,
+                                    delay: 150
+                                },
+                                dynamicAnimation: {
+                                    enabled: true,
+                                    speed: 350
+                                }
+                            },
+                            toolbar: {
+                                show: true,
+                                tools: {
+                                    download: false, // On désactive le téléchargement par défaut pour utiliser notre propre bouton
+                                    selection: true,
+                                    zoom: true,
+                                    zoomin: true,
+                                    zoomout: true,
+                                    pan: true,
+                                    reset: true
+                                },
+                                export: {
+                                    csv: {
+                                        filename: 'statistiques-' + new Date().toISOString().split('T')[0],
+                                        columnDelimiter: ';',
+                                        headerCategory: 'Date',
+                                        headerValue: 'Valeur',
+                                    },
+                                    svg: {
+                                        filename: 'statistiques-' + new Date().toISOString().split('T')[0],
+                                    },
+                                    png: {
+                                        filename: 'statistiques-' + new Date().toISOString().split('T')[0],
+                                    }
+                                }
+                            },
+                            zoom: {
+                                enabled: true,
+                                type: 'x',
+                                autoScaleYaxis: true,
+                                zoomedArea: {
+                                    fill: {
+                                        color: '#90CAF9',
+                                        opacity: 0.4
+                                    },
+                                    stroke: {
+                                        color: '#0D47A1',
+                                        opacity: 0.4,
+                                        width: 1
+                                    }
+                                }
+                            },
+                            fontFamily: 'Nunito, sans-serif',
+                            foreColor: '#373d3f',
+                            toolbar: {
+                                show: true,
+                                offsetX: 0,
+                                offsetY: 0,
+                                tools: {
+                                    download: false,
+                                    selection: true,
+                                    zoom: true,
+                                    zoomin: true,
+                                    zoomout: true,
+                                    pan: true,
+                                    reset: true
+                                },
+                                autoSelected: 'zoom'
+                            },
+                            events: {
+                                mounted: function(chartContext, config) {
+                                    // Masquer le spinner de chargement une fois le graphique chargé
+                                    const loadingElement = chartContainer.querySelector('.spinner-border');
+                                    if (loadingElement) {
+                                        loadingElement.style.display = 'none';
+                                        chartContainer.querySelector('p').style.display = 'none';
+                                    }
+                                },
+                                animationEnd: function(chartContext, config) {
+                                    // Animation terminée
+                                }
+                            }
+                        },
+                        stroke: {
+                            width: [1, 4]
+                        },
+                        plotOptions: {
+                            bar: {
+                                columnWidth: '50%'
+                            }
+                        },
+                        xaxis: {
+                            categories: @json($categories),
+                            labels: {
+                                rotate: -45,
+                                style: {
+                                    fontSize: '12px'
+                                }
+                            }
+                        },
+                        yaxis: [{
+                            axisTicks: {
+                                show: true,
+                            },
+                            axisBorder: {
+                                show: true,
+                                color: '#008FFB'
+                            },
+                            labels: {
+                                style: {
+                                    colors: '#008FFB',
+                                }
+                            },
+                            title: {
+                                text: "Nombre de Réservations",
+                                style: {
+                                    color: '#008FFB',
+                                }
+                            },
+                        },
+                        {
+                            opposite: true,
+                            axisTicks: {
+                                show: true,
+                            },
+                            axisBorder: {
+                                show: true,
+                                color: '#00E396'
+                            },
+                            labels: {
+                                style: {
+                                    colors: '#00E396',
+                                }
+                            },
+                            title: {
+                                text: "Montant des Paiements (FCFA)",
+                                style: {
+                                    color: '#00E396',
+                                }
+                            }
+                        }],
+                        tooltip: {
+                            enabled: true,
+                            theme: 'light',
+                            style: {
+                                fontSize: '12px',
+                                fontFamily: 'Nunito, sans-serif'
+                            },
+                            x: {
+                                show: true,
+                                format: 'dd MMM yyyy',
+                                formatter: undefined,
+                            },
+                            y: {
+                                formatter: function(value, { series, seriesIndex, dataPointIndex, w }) {
+                                    if (seriesIndex === 0) {
+                                        return value + ' réservation' + (value > 1 ? 's' : '');
+                                    } else {
+                                        return new Intl.NumberFormat('fr-FR', { 
+                                            style: 'currency', 
+                                            currency: 'XOF',
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        }).format(value).replace('XOF', '') + ' FCFA';
+                                    }
+                                }
+                            },
+                            marker: {
+                                show: true,
+                            },
+                            fixed: {
+                                enabled: true,
+                                position: 'topLeft',
+                                offsetY: 30,
+                                offsetX: 60
+                            }
+                        },
+                        legend: {
+                            horizontalAlign: 'center',
+                            offsetX: 40
+                        },
+                        colors: ['#5e72e4', '#2dce89'],
+                        dataLabels: {
+                            enabled: false
+                        },
+                        stroke: {
+                            width: [2, 3],
+                            curve: 'smooth'
+                        },
+                        markers: {
+                            size: [4, 6],
+                            strokeWidth: [2, 2],
+                            strokeColors: ['#fff', '#fff'],
+                            hover: {
+                                size: 6,
+                                sizeOffset: 2
+                            }
+                        },
+                        grid: {
+                            borderColor: '#f1f3f9',
+                            strokeDashArray: 4,
+                            padding: {
+                                top: 0,
+                                right: 20,
+                                bottom: 0,
+                                left: 20
+                            }
+                        },
+                        fill: {
+                            type: 'gradient',
+                            gradient: {
+                                shade: 'light',
+                                type: 'vertical',
+                                shadeIntensity: 0.4,
+                                inverseColors: false,
+                                opacityFrom: 0.8,
+                                opacityTo: 0.1,
+                                stops: [0, 100]
+                            }
+                        },
+                        noData: {
+                            text: 'Aucune donnée disponible',
+                            align: 'center',
+                            verticalAlign: 'middle',
+                            offsetX: 0,
+                            offsetY: 0,
+                            style: {
+                                color: '#6c757d',
+                                fontSize: '14px',
+                                fontFamily: 'Nunito, sans-serif'
+                            }
+                        }
+                    };
+
+                    // Initialisation du graphique
+                    var chart = new ApexCharts(document.querySelector("#statistics-chart"), options);
+                    chart.render();
+                    
+                    // Gestion des boutons d'export
+                    document.getElementById('export-png').addEventListener('click', function() {
+                        chart.dataURI().then(({ imgURI }) => {
+                            const link = document.createElement('a');
+                            link.download = 'statistiques-' + new Date().toISOString().split('T')[0] + '.png';
+                            link.href = imgURI;
+                            link.click();
+                        });
+                    });
+                    
+                    document.getElementById('export-csv').addEventListener('click', function() {
+                        const data = [
+                            ['Date', 'Réservations', 'Paiements (FCFA)'],
+                            ...options.series[0].data.map((value, index) => [
+                                options.xaxis.categories[index],
+                                value,
+                                options.series[1].data[index]
+                            ])
+                        ];
+                        
+                        let csvContent = 'data:text/csv;charset=utf-8,';
+                        data.forEach(row => {
+                            csvContent += row.map(cell => `"${cell}"`).join(';') + '\r\n';
+                        });
+                        
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement('a');
+                        link.setAttribute('href', encodedUri);
+                        link.setAttribute('download', 'statistiques-' + new Date().toISOString().split('T')[0] + '.csv');
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+                    
+                    // Redimensionnement réactif
+                    window.addEventListener('resize', function() {
+                        chart.updateOptions({
+                            chart: {
+                                width: chartContainer.offsetWidth
+                            }
+                        });
+                    });
+                });
+              </script>
             </div> <!-- .card end -->
           </div>
 
 
-          <script src="../assets/js/theme.js"></script>
+          <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+  
+  <script src="../assets/js/theme.js"></script>
   <!-- Plugin Js -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function() {
+        // Initialisation de Select2
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            width: '300px',
+            placeholder: 'Rechercher une compagnie...',
+            allowClear: true,
+            language: {
+                noResults: function() {
+                    return "Aucun résultat trouvé";
+                },
+                searching: function() {
+                    return "Recherche en cours...";
+                },
+                inputTooShort: function(args) {
+                    return "Saisissez au moins " + args.minimum + " caractères";
+                }
+            }
+        });
+
+        // Fermer le sélecteur après sélection sur mobile
+        if ($(window).width() < 768) {
+            $('.select2').on('select2:select', function() {
+                $(this).select2('close');
+            });
+        }
+
+        // Gestion des spinners pour les boutons
+        $('#btnFiltrer').on('click', function() {
+            var $this = $(this);
+            var $btnText = $this.find('.btn-text');
+            var $spinner = $this.find('.spinner-border');
+            
+            // Afficher le spinner et cacher le texte
+            $btnText.addClass('d-none');
+            $spinner.removeClass('d-none');
+            
+            // Désactiver le bouton après un court délai pour permettre la soumission
+            setTimeout(function() {
+                $this.prop('disabled', true);
+            }, 100);
+        });
+
+        $('#btnReset').on('click', function(e) {
+            var $this = $(this);
+            var $btnText = $this.find('.btn-text');
+            var $spinner = $this.find('.spinner-border');
+            
+            // Afficher le spinner et cacher le texte
+            $btnText.addClass('d-none');
+            $spinner.removeClass('d-none');
+            
+            // Désactiver le bouton après un court délai pour permettre la navigation
+            setTimeout(function() {
+                $this.prop('disabled', true);
+            }, 100);
+        });
+    });
+  </script>
   <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
   <!-- Vendor Script -->
   <script src="../assets/js/bundle/apexcharts.bundle.js"></script>

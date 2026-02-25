@@ -36,7 +36,10 @@ class PaiementEnAttente extends Model
         'no_transation',
         'numTel',
         'status',
-        'id_arret_voayage'
+        'id_arret_voayage',
+        'gares_id',
+        'nom_complet',
+        'telephone_proprietaire'
     ];
 
     

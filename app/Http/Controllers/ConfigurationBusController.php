@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bus;
 use App\Models\ConfigurationBus;
 use App\Models\ConfigurationPlaceBus;
 use App\Models\PlaceConfiguration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ConfigurationBusController extends Controller
 {
@@ -15,8 +17,15 @@ class ConfigurationBusController extends Controller
 public function index()
 {
     // Récupère toutes les configurations avec leurs sièges
-    $configurations = ConfigurationBus::with('placeconfigbussave')->get();
+    $user = Auth::user();
+    // $bus = Bus::where('info_user_id', $user->info_user->id)->get();
+    $configurations = ConfigurationBus::with('placeconfigbussave')
+    ->where('compagnie_id', $user->info_user->compagnie->id)
+    ->orderBy('id', 'asc')  // Du plus récent (ID le plus élevé) au plus ancien (ID le plus bas)
+    ->get();
 
+    // $configurations = $configurations->reverse();
+    // dd($configurations);
     // Passe les données à la vue
     return view('compagnie.Configplace.index', compact('configurations'));
 }
@@ -40,9 +49,11 @@ public function index()
 
     public function store(Request $request)
 {
+    $user = Auth::user();
+
     $data = $request->validate([
         'sieges' => 'required|json',
-        'info_user_id' => 'required|exists:users,id',
+        // 'info_user_id' => 'required|exists:users,id',
         'gare_id' => 'nullable',
         'colonne' => 'required|integer',
         'ranger' => 'required|integer',
@@ -50,12 +61,13 @@ public function index()
         'places_cote_chauffeur' => 'required|integer',
         'description' => 'nullable|string',
     ], [
-        'sieges.required' => 'Veuillez sélectionner au moins un siège.',
-        'info_user_id.exists' => 'L\'utilisateur spécifié n\'existe pas.',
+        'sieges.required' => 'Veuillez générer la configuration des sièges avant de sauvegarder votre configuration.',
+        // 'info_user_id.exists' => 'L\'utilisateur spécifié n\'existe pas.',
         'colonne.required' => 'Veuillez entrer le nombre de colonnes.',
         'colonne.integer' => 'Le nombre de colonnes doit être un entier.',
         'ranger.required' => 'Veuillez entrer le nombre de rangées.',
         'ranger.integer' => 'Le nombre de rangées doit être un entier.',
+        
     ]);
 
     $sieges = json_decode($data['sieges'], true);
@@ -64,14 +76,16 @@ public function index()
     // ConfigurationBus::where('info_user_id', $data['info_user_id'])->delete();
 
     // Crée la configuration globale du bus
+    $user = Auth::user();   
     $configuration = ConfigurationBus::create([
-        'info_user_id' => $data['info_user_id'],
+        'info_user_id' => $user->info_user->id,
         'gare_id' => $data['gare_id'] ?? null,
         'nom' => $data['nom'] ?? null,
         'description' => $data['description'] ?? null,
         'colonne' => $data['colonne'],
         'ranger' => $data['ranger'],
         'places_cote_chauffeur' => $data['places_cote_chauffeur'],
+        'compagnie_id' => $user->info_user->compagnie->id,
         'status'=> 1,
     ]);
     // Crée les sièges associés
@@ -93,8 +107,14 @@ public function show_vrai($id)
 {
     // Récupère la configuration avec ses places
     $configuration = ConfigurationBus::with('placeconfigbussave')->findOrFail($id);
-// dd($configuration);
-    return view('compagnie.Configplace.show', compact('configuration'));
+    // $verifier_si_configuration_existe = Bus::where('configuration_place_buses_id',$configuration->id)->first();
+
+$configurationUtilisee = Bus::where(
+    'configuration_place_buses_id',
+    $configuration->id
+)->exists();
+    // dd($configurationUtilisee);
+    return view('compagnie.Configplace.show', compact('configuration', 'configurationUtilisee'));
 }
 
 
@@ -134,20 +154,42 @@ public function show_vrai($id)
     //ecrir deux function activation et desactivation du status des configurations
     public function activation($id)
     {
-        $configuration = ConfigurationBus::findOrFail($id);
-        $configuration->update([
-            'status' => 1,
-        ]);
-        return redirect()->route('listeconfig.index')->with('success', 'Configuration activée avec succès !');
+        try {
+            $configuration = ConfigurationBus::findOrFail($id);
+            $configuration->update([
+                'status' => 1,
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Configuration activée avec succès !',
+                'status' => 1
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'activation de la configuration: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function desactivation($id)
     {
-        $configuration = ConfigurationBus::findOrFail($id);
-        $configuration->update([
-            'status' => 3,
-        ]);
-        return redirect()->route('listeconfig.index')->with('success', 'Configuration desactivée avec succès !');
+        try {
+            $configuration = ConfigurationBus::findOrFail($id);
+            $configuration->update([
+                'status' => 3,
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Configuration désactivée avec succès !',
+                'status' => 3
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la désactivation de la configuration: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 
@@ -179,6 +221,7 @@ public function update(Request $request, $id)
         'colonne.integer' => 'Le nombre de colonnes doit être un entier.',
         'ranger.required' => 'Veuillez entrer le nombre de rangées.',
         'ranger.integer' => 'Le nombre de rangées doit être un entier.',
+        'nom.required' => 'Veuillez entrer le nom de la configuration.',
     ]);
 
     // ✅ Décodage du JSON des sièges

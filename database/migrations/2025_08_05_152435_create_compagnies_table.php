@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('longitude')->nullable();
             $table->string('adresse')->nullable();
 
-            $table->enum('status', ['1', '2', '3'])->default('1');
+            $table->enum('status', ['1', '2', '3','demande_refuse'])->default('1');
             $table->timestamps();
         });
     }

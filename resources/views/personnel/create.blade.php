@@ -145,25 +145,40 @@
         <!-- start: page body -->
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
-                <!-- En-tête de page -->
+                <!-- En-tête avec bouton à droite -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="section-title mb-0">
+                    <h1 class="page-title mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Nouveau membre du personnel
+                    </h1>
+                    <div class="ms-auto">
+                        <a href="{{ route('personnel.index') }}" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user-circle me-2"></i>Informations personnelles
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
                       {{-- Créer un nouvel utilisateur --}}
                     </h4>
-                    <a href="{{ route('personnel.index') }}" class="btn btn-light" title="Retour">
+                    {{-- <a href="{{ route('personnel.index') }}" class="btn btn-light" title="Retour">
                         <i class="fa fa-arrow-left me-2"></i> Retour à la liste
-                    </a>
+                    </a> --}}
                 </div>
                 
                 <!-- Carte du formulaire - PREND TOUTE LA LARGEUR -->
                 <div class="row">
                     <div class="col-12">  <!-- Changement ici : col-12 au lieu de col-lg-10 -->
                         <div class="card card-form full-width-form">
-                          <div class="info-badge">
-            <i class="fas fa-info-circle"></i>
-            Creation d'un membre du personnel
-          </div>
-                            <div class="card-body p-4">
+             
+                            <div class="card-body">
                                 <form action="{{ route('personnel.store') }}" method="POST" enctype="multipart/form-data" id="user-form">
                                     @csrf
                                     
@@ -254,14 +269,16 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Bouton de soumission -->
-                                    <div class="d-flex justify-content-end mt-4">
-                                        {{-- <button type="reset" class="btn btn-light me-3">
-                                            <i class="fa fa-undo me-2"></i>Réinitialiser
-                                        </button> --}}
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fa fa-save me-2"></i>Enregistrer l'utilisateur
-                                        </button>
+                                    <!-- Boutons d'action -->
+                                    <div class="d-flex justify-content-between pt-3 border-top mt-4">
+                                        <a href="{{ route('personnel.index') }}" class="btn btn-light">
+                                            <i class="fas fa-times me-2"></i>Annuler
+                                        </a>
+                                        <div>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-save me-2"></i>Enregistrer
+                                            </button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>

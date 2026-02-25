@@ -1,24 +1,16 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier Chauffeur - BETRO</title>
-    @include('compagnie.all_element.header')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
+@include('compagnie.all_element.header')
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+
+<style>
+    :root {
         --primary: #3498db;
         --light: #f8f9fa;
         --dark: #2c3e50;
         --border: #e9ecef;
     }
     
-    body {
-        background: #f8f9fa;
-        font-family: 'Segoe UI', system-ui, sans-serif;
-    }
+
 
     .page-header {
         background: #ffffff;
@@ -64,7 +56,6 @@
     }
 
     .btn {
-        border: none;
         border-radius: 6px;
         padding: 10px 20px;
         font-weight: 500;
@@ -78,6 +69,34 @@
 
     .btn-primary:hover {
         background: #2980b9;
+    }
+
+    /* Style du loader */
+    .btn-loader {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .btn .spinner-border {
+        display: none;
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.15em;
+    }
+    
+    .btn.loading .spinner-border {
+        display: inline-block;
     }
 
     /* Aperçu de la photo */
@@ -164,7 +183,7 @@
             padding: 15px;
         }
     }
-    </style>
+</style>
 </head>
 
 <body class="layout-1" data-luno="theme-blue">
@@ -185,32 +204,33 @@
     <!-- start: page body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
+        <!-- En-tête avec bouton à droite -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h5 class="mb-0"></h5>
-          <a href="{{ route('chauffeur.index') }}" class="btn">
-            <i class="fas fa-arrow-left me-2"></i>
-            Retour à la liste
-          </a>
+         
+          <div class="ms-auto">
+            <a href="{{ route('chauffeur.index') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+               {{-- <a href="{{ route('chauffeur.index') }}" class="btn btn-light border">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a> --}}
+          </div>
         </div>
 
         <!-- Carte du formulaire prenant toute la largeur -->
-        <div class="card form-card">
-          {{-- <div class="card-header"> --}}
-            {{-- <span><i class="fas fa-user-edit me-2"></i>Modifier le chauffeur</span> --}}
-          {{-- </div> --}}
+        <div class="card shadow-sm">
    
           <div class="card-body">
             <form action="{{ route('modifier.update', $chauffeur->id) }}" method="POST" enctype="multipart/form-data" id="chauffeurForm">
               @csrf
               <div class="form-section">
-                <h6 class="section-title"><i class="fas fa-id-card"></i> Informations personnelles</h6>
                 <div class="form-grid">
                               
                   <div class="row">
 
                   <!-- Nom -->
  <div class="col-md-6 col-lg-4 mb-3">
-                      <label for="nom" class="form-label"><i class="fas fa-user"></i> Nom</label>
+                      <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
                     <input type="text" name="nom" id="nom" class="form-control"
                            value="{{ old('nom', $chauffeur->nom) }}" placeholder="Entrez le nom" required>
                     @error('nom')
@@ -220,7 +240,7 @@
 
                   <!-- Prénom -->
  <div class="col-md-6 col-lg-4 mb-3">
-                      <label for="prenom" class="form-label"><i class="fas fa-user"></i> Prénom</label>
+                      <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
                     <input type="text" name="prenom" id="prenom" class="form-control"
                            value="{{ old('prenom', $chauffeur->prenom) }}" placeholder="Entrez le prénom" required>
                     @error('prenom')
@@ -230,7 +250,7 @@
 
                   <!-- Date de naissance -->
  <div class="col-md-6 col-lg-4 mb-3">
-                      <label for="date_naissance" class="form-label"><i class="fas fa-calendar-alt"></i> Date de naissance</label>
+                      <label for="date_naissance" class="form-label">Date de naissance</label>
                     <input type="date" name="date_naissance" id="date_naissance" class="form-control"
                            value="{{ old('date_naissance', $chauffeur->date_naissance) }}">
                     @error('date_naissance')
@@ -242,18 +262,23 @@
                 
                    <div class="row">
                   <!-- Téléphone -->
- <div class="col-md-6 col-lg-4 mb-3">
-                      <label for="telephone" class="form-label"><i class="fas fa-phone"></i> Téléphone</label>
-                    <input type="text" name="telephone" id="telephone" class="form-control"
-                           value="{{ old('telephone', $chauffeur->telephone) }}" placeholder="Ex: +225 07 00 00 00 00" required>
+                  <div class="col-md-6 col-lg-5 mb-3">
+                    <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <span class="input-group-text" style="background: #f8f9fa;height: 42px;">+225</span>
+                      <input type="tel" name="telephone" id="telephone" class="form-control"
+                             value="{{ old('telephone', str_replace('+225', '', $chauffeur->telephone)) }}" 
+                             placeholder="07 00 00 00 00" required maxlength="10" pattern="[0-9]{10}">
+                    </div>
+                    <input type="hidden" name="telephone_full" id="telephone_full" value="{{ old('telephone', $chauffeur->telephone) }}">
                     @error('telephone')
                       <small class="text-danger">{{ $message }}</small>
                     @enderror
                   </div>
 
 
-                   <div class="col-md-6 col-lg-4 mb-3">
-                      <label for="numeros_permis" class="form-label"><i class="fas fa-id-card"></i> Numéro de permis</label>
+                   <div class="col-md-6 col-lg-7 mb-3">
+                      <label for="numeros_permis" class="form-label">Numéro de permis <span class="text-danger">*</span></label>
                     <input type="text" name="numeros_permis" id="numeros_permis" class="form-control"
                            value="{{ old('numeros_permis', $chauffeur->numeros_permis) }}" placeholder="Entrez le numéro de permis">
                     @error('numeros_permis')
@@ -281,9 +306,12 @@
 
                   <!-- Photo -->
                   <div class="mb-3">
-                    <label for="photo" class="form-label"><i class="fas fa-camera"></i> Photo du chauffeur</label>
+                    <label for="photo" class="form-label">Photo du chauffeur</label>
                     <input type="file" name="photo" id="photo" class="form-control d-none" accept="image/*">
-                    
+                      <div class="text-center">
+                              <div class="mb-1">Cliquez pour télécharger une photo</div>
+                              <small class="text-muted">Formats acceptés : JPG, PNG (max 5MB)</small>
+                            </div>
                     <div class="photo-upload-container">
                       <div class="photo-preview" id="photoPreview" onclick="document.getElementById('photo').click()">
                         @if (!empty($chauffeur->photo))
@@ -321,14 +349,16 @@
                 </div>
               </div>
 
-              <div class="form-actions">
-                {{-- <a href="{{ route('chauffeur.index') }}" class="btn btn-light">
-                  <i class="fas fa-times me-2"></i>Annuler
-                </a> --}}
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                  <i class="fas fa-save me-2"></i>Mettre à jour
-                </button>
-              </div>
+              <div class="form-section mt-4 pt-3">
+                <div class="form-section mt-4 pt-3">
+                  <div class="row">
+                    <div class="col-12 text-end">
+                      <button type="submit" class="btn btn-warning px-4" id="submitBtn">
+                        <i class="fas fa-save me-2"></i>Enregistrer
+                      </button>
+                    </div>
+                  </div>
+                </div>
             </form>
           </div>
         </div>
@@ -342,6 +372,23 @@
   <script src="../assets/js/theme.js"></script>
 
   <script>
+    // Validation du numéro de téléphone
+    const phoneInput = document.getElementById('telephone');
+    const phoneFullInput = document.getElementById('telephone_full');
+    
+    phoneInput.addEventListener('input', function(e) {
+      // Ne garder que les chiffres
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      // Mettre à jour le champ caché avec le numéro complet
+      phoneFullInput.value = '+225' + this.value;
+    });
+    
+    // S'assurer que le champ est correctement rempli au chargement
+    if (phoneInput.value) {
+      phoneFullInput.value = '225' + phoneInput.value;
+    }
+    
     // Aperçu de la photo
     document.getElementById('photo').addEventListener('change', function(e) {
       const preview = document.getElementById('photoPreview');
@@ -377,6 +424,13 @@
       const requiredFields = this.querySelectorAll('[required]');
       let isValid = true;
       
+      // Vérifier si le formulaire est déjà en cours de soumission
+      if (submitBtn.getAttribute('data-submitting') === 'true') {
+        e.preventDefault();
+        return false;
+      }
+      
+      // Vérifier les champs requis
       requiredFields.forEach(field => {
         if (!field.value.trim()) {
           field.classList.add('is-invalid');
@@ -384,14 +438,22 @@
         }
       });
       
-      if (isValid) {
-        // Animation de chargement
-        submitBtn.innerHTML = '<div class="loading"></div> Mise à jour...';
-        submitBtn.disabled = true;
-      } else {
+      if (!isValid) {
         e.preventDefault();
         alert('Veuillez remplir tous les champs obligatoires');
+        return false;
       }
+      
+      // Si tout est valide, afficher le spinner et soumettre
+      e.preventDefault();
+      submitBtn.setAttribute('data-submitting', 'true');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enregistrement...';
+      
+      // Soumettre le formulaire après un court délai pour permettre l'affichage du spinner
+      setTimeout(() => {
+        this.submit();
+      }, 50);
     });
 
     // Retirer la validation quand l'utilisateur commence à taper
@@ -421,6 +483,15 @@
         }
       }
     });
+
+      // @if($errors->any())
+      //       Swal.fire({
+      //           title: 'Erreur !',
+      //           html: '{!! implode('<br>', $errors->all()) !!}',
+      //           icon: 'error',
+      //           confirmButtonText: 'OK'
+      //       });
+      //   @endif
   </script>
 </body>
 </html>

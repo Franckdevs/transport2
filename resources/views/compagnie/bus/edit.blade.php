@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Style pour le bouton de chargement */
+        #buttonLoader {
+            display: none;
+        }
+        .btn-loading #buttonText {
+            display: none;
+        }
+        .btn-loading #buttonLoader {
+            display: inline-block;
+        }
+    </style>
     <title>Nouveau Bus - BETRO</title>
     @include('compagnie.all_element.header')
     
@@ -566,17 +578,21 @@
         </nav>
       </div>
     </header>
+    
+        @include('compagnie.all_element.cadre')
 
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
-        <!-- En-tête simple -->
-        <div class="page-header-custom">
-          <h1 class="page-title">
-            {{-- Ajouter un nouveau bus --}}
-          </h1>
-          <a href="{{ route('liste.bus') }}" class="btn">
-            ← Retour à la liste
-          </a>
+        <!-- En-tête avec bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          {{-- <h1 class="page-title mb-0">
+            <i class="fas fa-edit me-2"></i>Modification du bus
+          </h1> --}}
+          <div class="ms-auto">
+            <a href="{{ route('liste.bus') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+          </div>
         </div>
 
         <!-- Carte du formulaire -->
@@ -584,10 +600,28 @@
           <div class="col-12">
             <div class="card form-card">
               <div class="card-header">
-                <h5>Informations du bus</h5>
+                <h5>Informations du bus - {{ $bus->nom_bus }}</h5>
               </div>
+        <style>
+            /* Style pour le bouton de chargement */
+            #buttonLoader {
+                display: none;
+            }
+            .btn-loading #buttonText {
+                display: none;
+            }
+            .btn-loading #buttonLoader {
+                display: inline-flex !important;
+                align-items: center;
+            }
+            .spinner-border {
+                width: 1rem;
+                height: 1rem;
+                margin-right: 0.5rem;
+            }
+        </style>
         <div class="card-body">
-            <form action="{{ route('bus.update', $bus->id) }}" method="POST" enctype="multipart/form-data" id="busForm">
+            <form action="{{ route('bus.update', $bus->id) }}" method="POST" enctype="multipart/form-data" id="busForm" onsubmit="showButtonLoader(event)">
               @csrf
 
               <div class="form-section">
@@ -643,17 +677,23 @@
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label for="configuration_place_buses_id" class="form-label">Configuration des places <span class="text-danger">*</span></label>
-                    <select class="form-select @error('configuration_place_buses_id') is-invalid @enderror" 
-                            id="configuration_place_buses_id" name="configuration_place_buses_id" required>
-                      <option value="">Sélectionner une configuration</option>
-                      @foreach($configurationPlaces as $config)
-                        <option value="{{ $config->id }}" 
-                                {{ old('configuration_place_buses_id' , $bus->configuration_place_buses_id) == $config->id ? 'selected' : '' }}>
-                          {{ $config->nom }} ({{ $config->colonne }}x{{ $config->ranger }} - {{ $config->colonne * $config->ranger }} places)
-                        </option>
-                        <input type="hidden" name="nombre_places" value="{{ $config->colonne * $config->ranger }}">
-                      @endforeach
+                    <select class="form-select @error('configuration_place_buses_id') is-invalid @enderror"
+                            id="configuration_place_buses_id"
+                            name="configuration_place_buses_id"
+                            required>
+                        <option value="">Sélectionner une configuration</option>
+                        @foreach($configurationPlaces as $config)
+                            <option
+                                value="{{ $config->id }}"
+                                data-places="{{ $config->colonne * $config->ranger }}"
+                                {{ old('configuration_place_buses_id', $bus->configuration_place_buses_id) == $config->id ? 'selected' : '' }}>
+                                Titre: {{ $config->nom }}
+                                (Colonne: {{ $config->colonne }} x Ranger: {{ $config->ranger }}
+                                - Total: {{ $config->colonne * $config->ranger }} places)
+                            </option>
+                        @endforeach
                     </select>
+                    <input type="hidden" name="nombre_places" id="nombre_places" value="{{ $bus->nombre_places }}">
                     @error('configuration_place_buses_id')
                       <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -698,7 +738,7 @@
                       @error('photo_bus')
                         <div class="invalid-feedback">{{ $message }}</div>
                       @enderror
-                        <div class="form-text text-muted small">Formats acceptés: JPG, PNG, GIF. Taille max: 2MB</div>
+                        <div class="form-text text-muted small">Formats acceptés: JPG, PNG, GIF. Taille max: 25MB</div>
                     
                       <div class="mt-3">
                         <div class="image-preview bg-light rounded border p-3 text-center" id="imagePreview" style="min-height: 150px;">
@@ -728,12 +768,18 @@
                 </div>
               </div>
 
-              <div class="d-flex justify-content-between pt-3 border-top">
+              <div class="d-flex justify-content-between mt-4">
                 <a href="{{ route('liste.bus') }}" class="btn btn-light">
-                  <i class="fas fa-times me-2"></i>Annuler
+                  <i class="fas fa-arrow-left me-2"></i>Annuler
                 </a>
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                  <i class="fas fa-save me-2"></i>Enregistrer le bus
+                <button type="submit" class="btn btn-warning" id="submitButton">
+                  <span id="buttonText">
+                    <i class="fas fa-save me-2"></i>Enregistrer les modifications
+                  </span>
+                  <span id="buttonLoader" class="d-none">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Enregistrement...
+                  </span>
                 </button>
               </div>
                 </form>
@@ -749,7 +795,21 @@
   </div>
 
   <script src="../assets/js/theme.js"></script>
-
+<script>
+    // Fonction pour afficher le loader du bouton
+    function showButtonLoader(event) {
+        const button = document.getElementById('submitButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonLoader = document.getElementById('buttonLoader');
+        
+        if (button && buttonText && buttonLoader) {
+            button.classList.add('btn-loading');
+            buttonText.classList.add('d-none');
+            buttonLoader.classList.remove('d-none');
+            button.disabled = true;
+        }
+    }
+</script>
   <script>
     // Aperçu de l'image
     function previewImage(input) {

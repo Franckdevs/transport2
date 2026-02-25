@@ -22,53 +22,102 @@
     <!-- start: page body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
-       <div class="container py-5">
-    <h2 class="text-center mb-4">Configuration du Bus</h2>
-
-    <div class="card shadow-sm p-4">
-        <div class="mb-3">
-            <a href="{{ route('listeconfig.index') }}" class="btn btn-outline-secondary">
-                <i class="fa fa-arrow-left me-2"></i>Retour à la liste
+        <!-- En-tête avec bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          {{-- <h1 class="page-title mb-0">
+            <i class="fas fa-cog me-2"></i>Configuration du Bus
+          </h1> --}}
+          <div class="ms-auto">
+            <a href="{{ route('listeconfig.index') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
             </a>
+          </div>
         </div>
-        <form id="configBusForm" method="POST" action="{{ route('seats.store') }}" novalidate>
-    @csrf            <div class="row g-3">
+
+        <div class="container py-3">
+          <div class="card shadow-sm">
+                {{-- <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>Configuration du bus
+                </h5>
+                </div> --}}
+            <div class="card-body p-4">
+            <form id="configBusForm" method="POST" action="{{ route('seats.store') }}" novalidate>
+              @csrf
+              <div class="row g-3">
                 <!-- Première ligne : Configuration de base -->
-                <div class="col-md-3">
-                    <label class="form-label">Nom de la configuration <span class="text-danger">*</span></label>
-                    <input type="text" name="nom" class="form-control" required>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="nom" class="form-label fw-bold">Nom de la configuration <span class="text-danger">*</span></label>
+                        <input type="text" name="nom" id="nom" class="form-control form-control-lg" 
+                               placeholder="Ex: Bus VIP 40 places" required
+                               aria-describedby="nomHelp">
+                        <small id="nomHelp" class="form-text text-muted">Donnez un nom clair à cette configuration</small>
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Nombre de colonnes <span class="text-danger">*</span></label>
-                    <input type="number" name="colonne" id="colonne" class="form-control" min="1" max="7" value="4" required>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="colonne" class="form-label fw-bold">Colonnes <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-columns"></i></span>
+                            <input type="number" name="colonne" id="colonne" class="form-control" 
+                                   min="1" max="7" value="4" required
+                                   oninput="validateColumnCount(this)"
+                                   aria-label="Nombre de colonnes">
+                        </div>
+                        <small class="form-text text-muted">Max: 7 colonnes</small>
+                        <div id="colonneError" class="invalid-feedback">
+                            Le nombre de colonnes ne peut pas dépasser 7.
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Nombre de rangées <span class="text-danger">*</span></label>
-                    <input type="number" name="ranger" id="ranger" class="form-control" min="1" max="100" value="10" required>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="ranger" class="form-label fw-bold">Rangées <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-bars"></i></span>
+                            <input type="number" name="ranger" id="ranger" class="form-control" 
+                                   min="1" max="100" value="10" required
+                                   oninput="validateRowCount(this)"
+                                   aria-label="Nombre de rangées">
+                        </div>
+                        <small class="form-text text-muted">Max: 100 rangées</small>
+                        <div id="rangerError" class="invalid-feedback">
+                            Le nombre de rangées ne peut pas dépasser 100.
+                        </div>
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Places côté chauffeur <span class="text-danger">*</span></label>
-                    <select id="leftSeats" class="form-select" name="places_cote_chauffeur">
-                        <option value="1">1 place</option>
-                        <option value="2">2 places</option>
-                        <option value="3">3 places</option>
-                    </select>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="leftSeats" class="form-label fw-bold">Places côté chauffeur <span class="text-danger">*</span></label>
+                        <select id="leftSeats" class="form-select" name="places_cote_chauffeur" aria-describedby="seatsHelp">
+                            <option value="1">1 place</option>
+                            <option value="2">2 places</option>
+                            <option value="3">3 places</option>
+                        </select>
+                        <small id="seatsHelp" class="form-text text-muted">Nombre de places côté conducteur</small>
+                    </div>
                 </div>
             </div>
 
             <!-- Deuxième ligne : Description -->
-            <div class="row g-3 mt-3">
+            <div class="row g-3 mt-2">
                 <div class="col-12">
-                    <label class="form-label">Description <span class="text-danger">*</span></label>
-                    <textarea name="description" class="form-control" rows="2" placeholder="Description du bus"></textarea>
+                    <div class="form-group">
+                        <label for="description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                        <textarea name="description" id="description" class="form-control" 
+                                 rows="2" placeholder="Décrivez cette configuration de bus..."
+                                 aria-describedby="descHelp"></textarea>
+                        <small id="descHelp" class="form-text text-muted">Détails sur la disposition des sièges</small>
+                    </div>
                 </div>
             </div>
 
             <!-- Champ caché -->
-            <input type="hidden" name="info_user_id" id="info_user_id" value="1" required>
+            {{-- <input type="hidden" name="info_user_id" id="info_user_id" value="" required> --}}
 
 
             <div class="text-center my-3">
@@ -94,7 +143,7 @@
             <input type="hidden" name="sieges" id="siegesInput">
 
             <div class="text-center">
-                <button type="submit" id="submitBtn" class="btn btn-success btn-lg">
+                <button type="submit" id="submitBtn" class="btn btn-warning btn-lg">
                     <span class="d-flex align-items-center justify-content-center">
                         <span id="submitText">
                             <i class="fa fa-save me-2"></i> Enregistrer la configuration
@@ -121,6 +170,36 @@
 
     <!-- Jquery Page Js -->
   <script src="../assets/js/theme.js"></script>
+  
+  <script>
+    function validateColumnCount(input) {
+        const maxColumns = 7;
+        const errorElement = document.getElementById('colonneError');
+        
+        if (parseInt(input.value) > maxColumns) {
+            input.classList.add('is-invalid');
+            errorElement.style.display = 'block';
+            input.value = maxColumns; // Réinitialiser à la valeur maximale
+        } else {
+            input.classList.remove('is-invalid');
+            errorElement.style.display = 'none';
+        }
+    }
+    
+    function validateRowCount(input) {
+        const maxRows = 100;
+        const errorElement = document.getElementById('rangerError');
+        
+        if (parseInt(input.value) > maxRows) {
+            input.classList.add('is-invalid');
+            errorElement.style.display = 'block';
+            input.value = maxRows; // Réinitialiser à la valeur maximale
+        } else {
+            input.classList.remove('invalid');
+            errorElement.style.display = 'none';
+        }
+    }
+  </script>
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Plugin Js -->

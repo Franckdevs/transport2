@@ -2,6 +2,7 @@
     use App\Helpers\GlobalHelper;
 @endphp
 <link rel="stylesheet" href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 @include('compagnie.all_element.header')
 
@@ -76,24 +77,53 @@
                                             <i class="fa fa-filter me-2 text-primary"></i>Filtrer par période
                                         </h6>
                                         <form method="GET" action="{{ route('liste_reservation') }}" class="row g-3 align-items-end">
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label for="date_debut" class="form-label small fw-semibold text-muted">Date début</label>
                                                 <input type="date" name="date_debut" id="date_debut" 
                                                        class="form-control form-control-sm" 
                                                        value="{{ request('date_debut') }}">
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label for="date_fin" class="form-label small fw-semibold text-muted">Date fin</label>
                                                 <input type="date" name="date_fin" id="date_fin" 
                                                        class="form-control form-control-sm" 
                                                        value="{{ request('date_fin') }}">
                                             </div>
-                                            <div class="col-md-6">
-                                                <button type="submit" class="btn btn-primary btn-sm me-2">
-                                                    <i class="fa fa-filter me-1"></i>Appliquer
+                                            <div class="col-md-2">
+                                                <label for="ville_depart_id" class="form-label small fw-semibold text-muted">Ville de départ</label>
+                                                <select name="ville_depart_id" id="ville_depart_id" class="form-select form-select-sm select2">
+                                                    <option value="">Toutes les villes</option>
+                                                    @foreach($villes as $ville)
+                                                        <option value="{{ $ville->id }}" {{ request('ville_depart_id') == $ville->id ? 'selected' : '' }}>
+                                                            {{ $ville->nom_ville }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="col-md-2">
+                                                <label for="statut" class="form-label small fw-semibold text-muted">Statut</label>
+                                                <select name="statut" id="statut" class="form-select form-select-sm">
+                                                    <option value="">Tous les statuts</option>
+                                                    <option value="1" {{ request('statut') === '1' ? 'selected' : '' }}>Actif</option>
+                                                    <option value="3" {{ request('statut') === '3' ? 'selected' : '' }}>Inactif</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <button type="submit" class="btn btn-primary btn-lg me-2" id="applyFilterBtn">
+                                                    <i class="fa fa-filter me-1"></i>
+                                                    <span id="applyFilterText">Appliquer filtre</span>
+                                                    <span id="applyFilterSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
+                                                        <span class="visually-hidden">Chargement...</span>
+                                                    </span>
                                                 </button>
-                                                <a href="{{ route('liste_reservation') }}" class="btn btn-outline-secondary btn-sm">
-                                                    <i class="fa fa-refresh me-1"></i>Réinitialiser
+                                                <a href="{{ route('liste_reservation') }}" class="btn btn-outline-secondary btn-lg" id="resetFilterBtn">
+                                                    <i class="fa fa-refresh me-1"></i>
+                                                    <span id="resetFilterText">Réinitialiser</span>
+                                                    <span id="resetFilterSpinner" class="spinner-border spinner-border-sm ms-2" style="display: none;" role="status">
+                                                        <span class="visually-hidden">Chargement...</span>
+                                                    </span>
                                                 </a>
                                             </div>
                                         </form>
@@ -102,50 +132,96 @@
                             </div>
                         </div>
 
+                        {{-- <div class="container">
+    <h3 class="mb-4">Liste des réservations</h3>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom du voyage</th>
+                <th>Date départ</th>
+                <th>Ville de départ</th>
+                <th>Ville d'arrivée</th>
+                <th>Montant payé</th>
+                <th>Statut</th>
+                <th>Utilisateur</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($liste_reservation as $index => $reservation)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $reservation->voyage->nom ?? 'Non défini' }}</td>
+                    <td>{{ $reservation->voyage->date_depart ?? 'Non défini' }}</td>
+                    
+                    <td>
+                        {{ $reservation->voyage->itineraire->arrets->first()->tarification->villeDepart->nom_ville ?? 'Non défini' }}
+                    </td>
+
+                    <td>
+                        {{ $reservation->voyage->itineraire->arrets->last()->tarification->villeArrivee->nom_ville ?? 'Non défini' }}
+                    </td>
+
+                    <td>{{ $reservation->paiement->montant ?? 0 }} FCFA</td>
+                    <td>{{ $reservation->status ?? 'Non défini' }}</td>
+                    <td>{{ $reservation->utilisateur->name ?? 'Non défini' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" class="text-end"><strong>Total Montant :</strong></td>
+                <td colspan="3"><strong>{{ $total_montant }} FCFA</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div> --}}
                         <!-- Tableau responsive -->
                         <div class="table-responsive">
                             <table id="myTable" class="table table-hover align-middle mb-0" style="width:100%">
                                 <thead class="table-light">
                                     <tr>
                                         <th class="ps-4">
-                                            <i class="fa fa-map-marker-alt me-2 text-muted"></i>Ville de départ
+                                            Ville de départ
                                         </th>
                                         <th>
-                                            <i class="fa fa-flag me-2 text-muted"></i>Dernier arrêt
+                                            Ville d'arrivée
                                         </th>
                                         <th>
-                                            <i class="fa fa-money-bill-wave me-2 text-muted"></i>Montant
+                                            Montant
                                         </th>
                                         <th>
-                                            <i class="fa fa-clock me-2 text-muted"></i>Durée estimée
+                                            Durée estimée
                                         </th>
                                         <th>
-                                            <i class="fa fa-calendar me-2 text-muted"></i>Date départ
+                                            Date départ
                                         </th>
+                                       
                                         <th>
-                                            <i class="fa fa-route me-2 text-muted"></i>Trajet
-                                        </th>
-                                        <th>
-                                            <i class="fa fa-check-circle me-2 text-muted"></i>Statut
+                                            Statut
                                         </th>
                                         <th class="text-center pe-4">
-                                            <i class="fa fa-cogs me-2 text-muted"></i>Actions
+                                            Actions
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    
                                     @foreach ($liste_reservation as $reservation)
                                         <tr class="border-bottom">
                                             <td class="ps-4 fw-semibold text-dark">
-                                                {{ $reservation->voyage->itineraire->ville->nom_ville ?? 'Non défini' }}
+                                                {{-- {{ $reservation->voyage->itineraire->ville->nom_ville ?? 'Non défini' }} --}}
+                                                {{ $reservation->voyage->itineraire->arrets->first()->tarification->villeDepart->nom_ville ?? 'Non défini' }}
                                             </td>
                                             <td>
                                                 <span class="text-truncate" style="max-width: 150px;">
-                                                    {{ $reservation->voyage->itineraire->arrets->last()->nom ?? 'Non défini' }}
+                                                    {{-- {{ $reservation->arretvoyage->arret->gare->ville->nom_ville ?? 'Non défini' }} --}}
+                                                    {{ $reservation->voyage->itineraire->arrets->last()->tarification->villeArrivee->nom_ville ?? 'Non défini' }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-light text-dark border px-3 py-2">
+                                                <span class="">
                                                     {{ number_format($reservation->paiement->montant ?? 0, 0, ',', ' ') }} FCFA
                                                 </span>
                                             </td>
@@ -155,18 +231,25 @@
                                                     {{ $reservation->voyage->itineraire->estimation ?? 'Non défini' }}
                                                 </small>
                                             </td>
-                                            <td class="text-muted">
+                                            {{-- <td class="text-muted">
                                                 <small>
                                                     <i class="fa fa-calendar me-1"></i>
-                                                    {{ GlobalHelper::formatCreatedAt($reservation->voyage->date_depart) }}
+                                                    {{ $reservation->voyage->date_depart 
+                                                        ? \Carbon\Carbon::parse($reservation->voyage->date_depart)->format('d/m/Y') 
+                                                        : 'Non défini' }}
                                                 </small>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-info bg-opacity-10 text-info border" 
-                                                      title="{{ $reservation->voyage->itineraire->titre ?? 'Non défini' }}">
-                                                    {{ \Illuminate\Support\Str::limit($reservation->voyage->itineraire->titre ?? 'Non défini', 15) }}
-                                                </span>
-                                            </td>
+                                            </td> --}}
+                                            <td class="text-muted">
+    <small>
+        <i class="fa fa-calendar me-1"></i>
+        {{ $reservation->voyage->date_depart
+            ? \Carbon\Carbon::parse($reservation->voyage->date_depart)->format('d/m/Y')
+            : \Carbon\Carbon::parse($reservation->created_at)->format('d/m/Y')
+             }}
+    </small>
+</td>
+
+                                          
                                             <td>
                                                 @if($reservation->paiement->status == 1)
                                                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">
@@ -181,9 +264,7 @@
                                             <td>
                                                 <div class="d-flex justify-content-center gap-2">
                                                     <a href="{{ route('voir_detail_reservation.show', $reservation->id) }}" 
-                                                       class="btn btn-outline-info btn-sm rounded-circle" 
-                                                       title="Voir les détails"
-                                                       data-bs-toggle="tooltip">
+                                                       class="btn btn-warning btn-sm" >
                                                         <i class="fa fa-eye"></i>
                                                     </a>
                                                 </div>
@@ -204,11 +285,19 @@
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Initialiser Select2
+            $('.select2').select2({
+                placeholder: "Sélectionner une ville",
+                allowClear: true,
+                width: '100%'
+            });
+
             // Initialisation de DataTable
             const table = new DataTable('#myTable', {
                 language: {
@@ -243,6 +332,42 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
+
+            // Gestionnaire d'événement pour le bouton Appliquer filtre
+            const applyFilterBtn = document.getElementById('applyFilterBtn');
+            const applyFilterText = document.getElementById('applyFilterText');
+            const applyFilterSpinner = document.getElementById('applyFilterSpinner');
+
+            if (applyFilterBtn) {
+                applyFilterBtn.addEventListener('click', function(e) {
+                    // Laisser le formulaire se soumettre normalement
+                    // mais ajouter un feedback visuel après un court délai
+                    setTimeout(() => {
+                        applyFilterBtn.disabled = true;
+                        applyFilterText.textContent = 'Appliquer filtre';
+                        applyFilterSpinner.style.display = 'inline-block';
+                    }, 100);
+                });
+            }
+
+            // Gestionnaire d'événement pour le bouton Réinitialiser
+            const resetFilterBtn = document.getElementById('resetFilterBtn');
+            const resetFilterText = document.getElementById('resetFilterText');
+            const resetFilterSpinner = document.getElementById('resetFilterSpinner');
+
+            if (resetFilterBtn) {
+                resetFilterBtn.addEventListener('click', function(e) {
+                    // Désactiver le bouton et montrer le spinner
+                    resetFilterBtn.disabled = true;
+                    resetFilterText.textContent = 'Réinitialiser';
+                    resetFilterSpinner.style.display = 'inline-block';
+                    
+                    // Simuler un léger délai pour montrer le spinner avant la redirection
+                    setTimeout(() => {
+                        window.location.href = resetFilterBtn.href;
+                    }, 300);
+                });
+            }
         });
     </script>
 

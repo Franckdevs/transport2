@@ -15,29 +15,35 @@
     </header>
 
     <!-- start: page toolbar -->
-    {{-- @include('compagnie.all_element.cadre') --}}
+    @include('compagnie.all_element.cadre')
 
     <!-- start: page body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
+        <!-- En-tête avec bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          {{-- <h1 class="page-title mb-0">
+            <i class="fas fa-bus me-2"></i>Détails du bus
+          </h1> --}}
+          <div class="ms-auto">
+            <a href="{{ route('liste.bus') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+          </div>
+        </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-1">
-    <h5 class="mb-0">
-
-    </h5>
-    {{-- <a href="{{ route('liste.bus') }}" class="btn btn-light" title="Retour">
-        <i class="fa fa-arrow-left"></i> Retour
-    </a> --}}
-
-           {{-- <div class="page-header-custom">
-          <a href="{{ route('liste.bus') }}" class="btn btn-light">
-            ← Retour à la liste
-          </a>
-        </div> --}}
-</div>
-
-            <div class="card-body">
+        </div>
+            
+            <style>
+                .reduced-margin {
+                    margin-top: -1.5rem !important; /* Réduit davantage la marge supérieure */
+                }
+            </style>
+            
+            <div class="card-body reduced-margin">
     <div class="row">
+
+        
         <!-- En-tête avec bouton retour -->
     
 
@@ -63,7 +69,7 @@
     background: #f8f9fa;
     border-radius: 8px;
     padding: 1rem;
-    border-left: 4px solid #4facfe;
+    /* border-left: 4px solid #4facfe; */
     transition: all 0.3s ease;
     height: 100%;
     min-height: 80px;
@@ -75,7 +81,7 @@
 }
 
 .info-icon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    /* background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); */
     color: white;
     width: 40px;
     height: 40px;
@@ -232,9 +238,9 @@
           <h1 class="page-title">
             {{-- Ajouter un nouveau bus --}}
           </h1>
-          <a href="{{ route('liste.bus') }}" class="btn">
+          {{-- <a href="{{ route('liste.bus') }}" class="btn">
             ← Retour à la liste
-          </a>
+          </a> --}}
         </div>
 
 <div class="col-md-7">
@@ -260,7 +266,7 @@
             <div class="col-md-6 mb-3">
                 <div class="info-card">
                     <div class="info-icon">
-                        <i class="fas fa-copyright"></i>
+                        <i class="fas fa-industry"></i>
                     </div>
                     <div class="info-content">
                         <label class="info-label">Marque</label>
@@ -273,7 +279,7 @@
             <div class="col-md-6 mb-3">
                 <div class="info-card">
                     <div class="info-icon">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-cogs"></i>
                     </div>
                     <div class="info-content">
                         <label class="info-label">Modèle</label>
@@ -285,7 +291,7 @@
             <div class="col-md-6 mb-3">
                 <div class="info-card">
                     <div class="info-icon">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-id-card-alt"></i>
                     </div>
                     <div class="info-content">
                         <label class="info-label">Immatriculation</label>
@@ -310,7 +316,7 @@
             <div class="col-md-6 mb-3">
                 <div class="info-card">
                     <div class="info-icon">
-                        <i class="fas fa-cog"></i>
+                        <i class="fas fa-th-large"></i>
                     </div>
                     <div class="info-content">
                         <label class="info-label">Configuration</label>
@@ -336,40 +342,83 @@
             </div>
 
             <!-- Statut et métadonnées -->
-            <div class="col-12">
-                <div class="metadata-section">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="metadata-item">
-                                <span class="metadata-label">Statut</span>
-                                <span class="status-badge {{ $bus->status ? 'status-active' : 'status-inactive' }}">
-                                    {{ $bus->status ? 'Actif' : 'Inactif' }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="metadata-item">
-                                <span class="metadata-label">Créé le</span>
-                                <span class="metadata-value">{{ $bus->created_at->format('d/m/Y') }}</span>
-                            </div>
-                        </div>
-                    </div>
+            @if($bus->status == 1 || $bus->status == 3)
+<div class="col-12">
+    <div class="metadata-section">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="metadata-item">
+                    <span class="metadata-label">Statut</span>
+                    @if($bus->status == 1)
+                        <span class="badge bg-success">Actif</span>
+                    @elseif($bus->status == 3)
+                        <span class="badge bg-danger">Inactif</span>
+                    @endif
+                </div>
+            </div>
+            <div class="col-md-6 border-start border-2 border-dark">
+                <div class="metadata-item ps-3">
+                    <span class="metadata-label">Créé le</span>
+                    <span class="metadata-value">{{ $bus->created_at->format('d/m/Y') }}</span>
+                </div>
+            </div>
+            
+            <!-- Boutons d'activation/désactivation -->
+            <div class="col-12 mt-3">
+                <div class="d-flex gap-2">
+                    {{-- @if($bus->status == 3)
+                        <form action="{{ route('activation.bus', $bus->id) }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle me-2"></i>Activer le bus
+                            </button>
+                        </form>
+                    @else
+                        <form action="{{ route('bus.destroy', $bus) }}" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir désactiver ce bus ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times-circle me-2"></i>Désactiver le bus
+                            </button>
+                        </form>
+                    @endif --}}
+
+
+                        {{-- @if($bus->status == 1)
+    <!-- Bouton Blocage avec SweetAlert2 -->
+    <form action="{{ route('bus.destroy', $bus->id) }}" method="POST" class="status-change-form" style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-warning btn-sm block-bus" 
+                data-bus-name="{{ $bus->nom_bus }}"
+                data-action="bloquer">
+            <i class="fas fa-ban"></i> Bloqué
+        </button>
+    </form>
+@else
+    <!-- Bouton Débloquer avec SweetAlert2 -->
+    <form action="{{ route('activation.bus', $bus->id) }}" method="POST" class="status-change-form" style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-success btn-sm unblock-bus" 
+                data-bus-name="{{ $bus->nom_bus }}"
+                data-action="débloquer">
+            <i class="fas fa-check-circle"></i> Débloqué
+        </button>
+    </form>
+@endif --}}
                 </div>
             </div>
         </div>
     </div>
+@endif
+            </div> 
+        </div>
+    </div>
+
+
 </div>
 
-<script>
-// Optionnel : Ajouter une classe scrollable automatiquement pour les textes très longs
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.info-value').forEach(function(element) {
-        if (element.scrollHeight > element.clientHeight) {
-            element.closest('.info-card').classList.add('scrollable');
-        }
-    });
-});
-</script>
+
+
 
         <!-- Section photo -->
         <div class="col-md-5">
@@ -399,14 +448,108 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <!-- Actions rapides -->
                 <div class="quick-actions mt-4">
-                    {{-- <div class="d-grid gap-2">
-                        <a href="{{ route('bus.edit', $bus->id) }}" class="btn btn-primary">
-                            <i class="fas fa-edit me-2"></i>Modifier les informations
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('bus.edit', $bus->id) }}" class="btn btn-warning btn-sm px-5">
+                            <i class="fa fa-edit"></i> Modifier
                         </a>
-                        <a href="{{ route('liste.bus') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-list me-2"></i>Retour à la liste des bus
+                        {{-- <a href="{{ route('bus.show', $bus->id) }}" class="btn btn-info btn-sm">
+                            <i class="fa fa-eye"></i>
                         </a>
-                    </div> --}}
+                        @if($bus->status == 1)
+                            <form action="{{ route('bus.destroy', $bus->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-warning btn-sm block-bus" 
+                                        data-bus-name="{{ $bus->nom_bus }}"
+                                        data-action="bloquer">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </form>
+                        @else
+                            <form action="{{ route('activation.bus', $bus->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="button" class="btn btn-success btn-sm unblock-bus" 
+                                        data-bus-name="{{ $bus->nom_bus }}"
+                                        data-action="débloquer">
+                                    <i class="fas fa-check-circle"></i>
+                                </button>
+                            </form>
+                        @endif --}}
+    @if($bus->status == 1)
+    <!-- Bouton Blocage avec SweetAlert2 -->
+    <form action="{{ route('bus.destroy', $bus->id) }}" method="POST" class="status-change-form" style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-warning btn-sm block-bus px-5" 
+                data-bus-name="{{ $bus->nom_bus }}"
+                data-action="bloquer">
+            <i class="fas fa-ban"></i> Bloqué
+        </button>
+    </form>
+@else
+    <!-- Bouton Débloquer avec SweetAlert2 -->
+    <form action="{{ route('activation.bus', $bus->id) }}" method="POST" class="status-change-form" style="display:inline;">
+        @csrf
+        <button type="button" class="btn btn-success btn-sm unblock-bus px-5" 
+                data-bus-name="{{ $bus->nom_bus }}"
+                data-action="débloquer">
+            <i class="fas fa-check-circle"></i> Débloqué
+        </button>
+    </form>
+@endif
+
+<script>
+// Optionnel : Ajouter une classe scrollable automatiquement pour les textes très longs
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.info-value').forEach(function(element) {
+        if (element.scrollHeight > element.clientHeight) {
+            element.closest('.info-card').classList.add('scrollable');
+        }
+    });
+});
+</script>
+
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log('JS OK');
+
+    function handleStatusChange(button, action) {
+        const form = button.closest('form');
+        const busName = button.dataset.busName || 'ce bus';
+
+        Swal.fire({
+            title: action === 'bloquer' ? 'Bloquer le bus ?' : 'Débloquer le bus ?',
+            text: `Voulez-vous vraiment ${action} le bus ${busName} ?`,
+            icon: action === 'bloquer' ? 'warning' : 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Oui',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+
+    document.body.addEventListener('click', function (e) {
+        const blockBtn = e.target.closest('.block-bus');
+        const unblockBtn = e.target.closest('.unblock-bus');
+
+        if (blockBtn) {
+            e.preventDefault();
+            handleStatusChange(blockBtn, 'bloquer');
+        }
+
+        if (unblockBtn) {
+            e.preventDefault();
+            handleStatusChange(unblockBtn, 'débloquer');
+        }
+    });
+});
+</script>
+                    </div>
                 </div>
             </div>
         </div>
@@ -424,11 +567,24 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .section-title {
-    color: #2c3e50;
+    color: #333;
     font-weight: 600;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #ffc107;
+    display: inline-block;
+    padding-right: 1.5rem;
+    position: relative;
+}
+
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #ffc107;
 }
 
 /* Cartes d'information */
@@ -438,7 +594,7 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #3498db;
+    /* border-left: 4px solid #3498db; */
     transition: all 0.3s ease;
 }
 
@@ -450,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
 .info-icon {
     width: 40px;
     height: 40px;
-    background: #3498db;
+    background: #FFC107; /* jaune */
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -459,6 +615,7 @@ document.addEventListener('DOMContentLoaded', function() {
     color: white;
     flex-shrink: 0;
 }
+
 
 .info-content {
     flex: 1;

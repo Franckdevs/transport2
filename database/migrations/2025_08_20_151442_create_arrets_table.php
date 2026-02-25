@@ -14,6 +14,10 @@ class CreateArretsTable extends Migration
             $table->foreignId('itineraire_id')->nullable()->constrained('itineraires')->nullOnDelete();
             $table->foreignId('info_user_id')->nullable()->constrained('info_users')->nullOnDelete();
             // Colonne info_user_id
+            $table->foreignId('id_tarrification_voyage')->nullable()->constrained('tarification_montant_voyages')->nullOnDelete();
+
+            // $table->string('montant')->nullable();
+            $table->integer('montant')->nullable();
             $table->string('nom')->nullable();
             $table->timestamps();
 

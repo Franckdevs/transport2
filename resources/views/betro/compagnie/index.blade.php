@@ -1,6 +1,6 @@
 @php
 use App\Helpers\GlobalHelper;
-$nombre = 20;
+$nombre = 15;
 @endphp
 
 @include('betro.all_element.header')
@@ -48,15 +48,25 @@ $nombre = 20;
 
            <!-- Filtre par date -->
           <form id="filterForm" class="row g-3 mb-2" method="GET" action="{{ route('compagnies') }}">
-    <div class="col-md-3">
+    <div class="col-md-2">
         <label for="start_date" class="form-label">Date début</label>
         <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date') }}">
     </div>
-    <div class="col-md-3">
+    <div class="col-md-2">
         <label for="end_date" class="form-label">Date fin</label>
         <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date') }}">
     </div>
-    <div class="col-md-4 align-self-end">
+    <div class="col-md-3">
+        <label for="status" class="form-label">Statut</label>
+        <select class="form-select" id="status" name="status">
+            <option value="">Tous les statuts</option>
+            <option value="1" {{ request('status') == '1' ? 'selected' : '' }}>Validé en activité</option>
+            <option value="2" {{ request('status') == '2' ? 'selected' : '' }}>En attente</option>
+            <option value="3" {{ request('status') == '3' ? 'selected' : '' }}>Désactivation</option>
+            <option value="demande_refuse" {{ request('status') == 'demande_refuse' ? 'selected' : '' }}>Demande refusée</option>
+        </select>
+    </div>
+    <div class="col-md-5 align-self-end">
         <button type="submit" id="filterButton" class="btn btn-primary mt-2">
             <span id="filterText">
                 <i class="fa fa-filter"></i> Filtrer
@@ -180,21 +190,28 @@ $nombre = 20;
                       <td>{{ \Illuminate\Support\Str::limit($compagnie->adresse_compagnies, $nombre) }}</td>
 
                       <td>{{ GlobalHelper::formatCreatedAt($compagnie->created_at) }}</td>
+                    
                       <td>
                         @if($compagnie->status == 1)
                           <span class="badge bg-success">Validé en activité</span>
                         @elseif($compagnie->status == 2)
-                          <span class="badge bg-warning text-dark">En attente de validation</span>
+                          <span class="badge bg-warning text-dark">En attente</span>
                         @elseif($compagnie->status == 3)
                           <span class="badge bg-danger">Désactivation</span>
+                        @elseif($compagnie->status == 'demande_refuse')
+                          <span class="badge bg-danger">Demande refusée</span>
                         @else
                           <span class="badge bg-secondary">Inconnu</span>
                         @endif
                       </td>
+
                       <td>
                         @if($compagnie->status == 2)
                           <!-- Actions validation / refus -->
-                          <form action="{{ route('compagnies.approve', $compagnie->id) }}" method="POST" style="display:inline;" class="approve-form">
+                          <a href="{{ route('compagnies.show', $compagnie->id) }}" class="btn btn-info btn-sm" title="Voir les détails">
+                            <i class="fas fa-eye"></i> 
+                          </a>
+                          {{-- <form action="{{ route('compagnies.approve', $compagnie->id) }}" method="POST" style="display:inline;" class="approve-form">
                             @csrf
                             <button type="submit" class="btn btn-success btn-approve" title="Valider la demande">
                               <i class="fa fa-check"></i>
@@ -202,23 +219,29 @@ $nombre = 20;
                           </form>
                           <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#refuseModal{{ $compagnie->id }}" title="Refuser la demande">
                             <i class="fa fa-times"></i>
-                          </button>
+                          </button> --}}
 
                         @else
+                         @if ($compagnie->status != 'demande_refuse' )
                           <a href="{{ route('compagnies.edit', $compagnie->id) }}" class="btn btn-primary">
                             <i class="fa fa-edit"></i>
                           </a>
+                         @endif
+
                           <a href="{{ route('compagnies.show', $compagnie->id) }}" class="btn btn-info">
                             <i class="fa fa-eye"></i>
                           </a>
 
                           <!-- Bouton de suppression / réactivation -->
-                          @if($compagnie->status == 1)
+                          @if ($compagnie->status != 'demande_refuse')
+                            
+                         
+                          {{-- @if($compagnie->status == 1)
                             <form id="deleteForm{{ $compagnie->id }}" action="{{ route('compagnies.destroy', $compagnie->id) }}" method="POST" style="display:inline;">
                               @csrf
                               @method('DELETE')
-                              <button type="button" class="btn btn-danger" onclick="confirmDelete({{ $compagnie->id }}, '{{ addslashes($compagnie->nom_complet_compagnies) }}')">
-                                <i class="fa fa-trash"></i>
+                              <button type="button" class="btn btn-warning" onclick="confirmDelete({{ $compagnie->id }}, '{{ addslashes($compagnie->nom_complet_compagnies) }}')" title="Bloquer cette compagnie">
+                                <i class="fas fa-ban"></i>
                               </button>
                             </form>
                           @else
@@ -228,11 +251,12 @@ $nombre = 20;
                                 <i class="fa fa-refresh"></i>
                               </button>
                             </form>
-                          @endif
+                          @endif --}}
+
+                           @endif
+
                         @endif
                       </td>
-
-
                     @endforeach
 
 
@@ -272,56 +296,67 @@ $nombre = 20;
 
 
             <!-- SweetAlert2 JS -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     $(document).ready(function() {
-      $('#myTable').addClass('nowrap').dataTable({
-        responsive: true,
-        language: {
-          url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json'
-        }
-      });
-
-      // Confirmation SweetAlert2 pour validation
-      document.querySelectorAll('.approve-form').forEach(function(form){
-        form.addEventListener('submit', function(e){
-          e.preventDefault();
-          Swal.fire({
-            title: 'Confirmer la validation',
-            text: 'Valider cette demande ? Un email de confirmation sera envoyé.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#198754',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Oui, valider',
-            cancelButtonText: 'Annuler'
-          }).then((result)=>{ if(result.isConfirmed){ form.submit(); } });
+        // Gestionnaire pour le formulaire d'approbation
+        $(document).on('submit', '.approve-form', function(e) {
+            e.preventDefault();
+            const form = this;
+            
+            Swal.fire({
+                title: 'Confirmer la validation',
+                text: 'Valider cette demande ? Un email de confirmation sera envoyé.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, valider',
+                cancelButtonText: 'Annuler',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
-      });
 
-      // Confirmation SweetAlert2 pour refus
-      document.querySelectorAll('.refuse-form').forEach(function(form){
-        form.addEventListener('submit', function(e){
-          e.preventDefault();
-          Swal.fire({
-            title: 'Confirmer le refus',
-            text: 'Envoyer le motif de refus à la compagnie ?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Oui, refuser',
-            cancelButtonText: 'Annuler'
-          }).then((result)=>{ if(result.isConfirmed){ form.submit(); } });
+        // Gestionnaire pour le formulaire de refus
+        $(document).on('submit', '.refuse-form', function(e) {
+            e.preventDefault();
+            const form = this;
+            
+            Swal.fire({
+                title: 'Confirmer le refus',
+                text: 'Envoyer le motif de refus à la compagnie ?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, refuser',
+                cancelButtonText: 'Annuler',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
-      });
+
+        // Initialisation de DataTable
+        $('#myTable').addClass('nowrap').dataTable({
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json'
+            }
+        });
     });
 
-    // Fonction pour confirmer la suppression
+    // Fonction pour confirmer le blocage
     function confirmDelete(id, companyName) {
       Swal.fire({
-        title: 'Confirmer la désactivation',
+        title: 'Confirmer le blocage',
         html: `
           <p>Attention ! En bloquant <strong>${companyName}</strong> :</p>
           <ul style="text-align: left; padding-left: 20px;">
@@ -335,7 +370,7 @@ $nombre = 20;
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, désactiver',
+        confirmButtonText: 'Oui, bloquer',
         cancelButtonText: 'Annuler'
       }).then((result) => {
         if (result.isConfirmed) {

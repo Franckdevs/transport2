@@ -10,10 +10,7 @@
         --border: #e9ecef;
     }
     
-    body {
-        background: #f8f9fa;
-        font-family: 'Segoe UI', system-ui, sans-serif;
-    }
+
 
     .page-header {
         background: #ffffff;
@@ -59,7 +56,6 @@
     }
 
     .btn {
-        border: none;
         border-radius: 6px;
         padding: 10px 20px;
         font-weight: 500;
@@ -179,28 +175,40 @@
 
     <!-- start: page body -->
     <div class="page-body">
-    <div class="container">
+    <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
+      <div class="container-fluid">
+        <!-- En-tête avec bouton à droite -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="mb-0"></h4>
+          {{-- <h1 class="page-title mb-0">
+            <i class="fas fa-user-plus me-2"></i>Nouveau chauffeur
+          </h1> --}}
+          {{-- <div class="ms-auto">
             <a href="{{ route('chauffeur.index') }}" class="btn btn-light">
-                Retour à la liste
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
             </a>
+          </div> --}}
+          <div class="ms-auto">
+            <a href="{{ route('chauffeur.index') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+          </div>
         </div>
-        
-        <div class="card form-card">
-            <div class="card-header">
-              <h5 class="card-title mb-0">Création d'un nouveau chauffeur</h5>
-            </div>
+
+        <div class="card shadow-sm">
+          {{-- <div class="card-header bg-light">
+            <h5 class="mb-0">
+              <i class="fas fa-id-card me-2"></i>Informations du chauffeur
+            </h5>
+          </div> --}}
           <div class="card-body">
             <form action="{{ route('chauffeur.store') }}" method="POST" enctype="multipart/form-data" id="chauffeurForm">
               @csrf
 
               <div class="form-section">
-                <h6 class="section-title">Informations personnelles</h6>
                 <div class="row">
                   <!-- Nom -->
                   <div class="col-md-6 col-lg-4 mb-3">
-                    <label for="nom" class="form-label">Nom</label>
+                    <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
                     <input type="text" name="nom" id="nom" class="form-control"
                            value="{{ old('nom') }}" placeholder="Entrez le nom" required>
                     @error('nom')
@@ -210,7 +218,7 @@
 
                   <!-- Prénom -->
                   <div class="col-md-6 col-lg-4 mb-3">
-                    <label for="prenom" class="form-label">Prénom</label>
+                    <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
                     <input type="text" name="prenom" id="prenom" class="form-control"
                            value="{{ old('prenom') }}" placeholder="Entrez le prénom" required>
                     @error('prenom')
@@ -220,7 +228,7 @@
 
                   <!-- Date de naissance -->
                   <div class="col-md-6 col-lg-4 mb-3">
-                    <label for="date_naissance" class="form-label">Date de naissance</label>
+                    <label for="date_naissance" class="form-label">Date de naissance <span class="text-danger">*</span></label>
                     <input type="date" name="date_naissance" id="date_naissance" class="form-control"
                            value="{{ old('date_naissance') }}">
                     @error('date_naissance')
@@ -232,7 +240,7 @@
                 <div class="row">
                   <!-- Téléphone -->
                   <div class="col-12 col-md-6 mb-3">
-                    <label for="telephone" class="form-label">Téléphone</label>
+                    <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <span class="input-group-text" style="background: #f8f9fa;height: 42px;">+225</span>
                       <input type="tel" name="telephone" id="telephone" class="form-control"
@@ -246,7 +254,7 @@
 
                   <!-- Numéro de permis -->
                   <div class="col-12 col-md-6 mb-3">
-                    <label for="numeros_permis" class="form-label">Numéro de permis</label>
+                    <label for="numeros_permis" class="form-label">Numéro de permis <span class="text-danger">*</span></label>
                     <input type="text" name="numeros_permis" id="numeros_permis" class="form-control"
                           value="{{ old('numeros_permis') }}" placeholder="Entrez le numéro de permis">
                     @error('numeros_permis')
@@ -254,14 +262,15 @@
                     @enderror
                   </div>
                 </div>
-                </div>
+                <!-- Fin du row -->
               </div>
+              <!-- Fin du form-section -->
 
               <!-- Section Photo -->
               <div class="form-section mt-4">
                 <div class="row justify-content-center">
                   <div class="col-12 col-md-8 col-lg-6 text-center">
-                    <h6 class="section-title mb-4">Photo du chauffeur</h6>
+                    <h6 class="section-title mb-4">Photo du chauffeur <span class="text-danger">*</span></h6>
                     <div class="d-flex flex-column align-items-center">
                       <input type="file" name="photo" id="photo" class="form-control d-none" accept="image/*">
                       <div class="photo-upload-container w-100" style="max-width: 400px;">
@@ -284,22 +293,21 @@
               </div>
 
               <!-- Bouton de soumission -->
-              <div class="form-section mt-4 pt-3 border-top">
+              
+              <div class="form-section mt-4 pt-3">
                 <div class="row">
                   <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-primary px-4" id="submitBtn">
+                    <button type="submit" class="btn btn-warning px-4" id="submitBtn">
                       <i class="fas fa-save me-2"></i>Enregistrer
                     </button>
                   </div>
                 </div>
               </div>
-                </div>
-              </div>
             </form>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div> <!-- Fin du card-body -->
+        </div> <!-- Fin du card -->
+      </div> <!-- Fin du container-fluid -->
+    </div> <!-- Fin du page-body -->
 
     @include('compagnie.all_element.footer')
   </div>
@@ -334,6 +342,7 @@
 
     // Gestion du champ téléphone
     const phoneInput = document.querySelector("#telephone");
+    const form = document.getElementById('chauffeurForm');
     
     // Empêcher la saisie de caractères non numériques
     phoneInput.addEventListener('input', function(e) {
@@ -341,32 +350,28 @@
       document.getElementById('telephone_full').value = '+225' + this.value;
     });
     
-    // S'assurer que le numéro est correctement formaté avant la soumission
-    document.getElementById('chauffeurForm').addEventListener('submit', function(e) {
+    // Gestionnaire de soumission unique
+    form.addEventListener('submit', function(e) {
+      const submitBtn = document.getElementById('submitBtn');
       const phoneNumber = phoneInput.value;
+      
+      // Mise à jour de la valeur complète du téléphone
       document.getElementById('telephone_full').value = '+225' + phoneNumber.replace(/\D/g, '');
       
-      if (!phoneNumber) {
+      // Validation du numéro de téléphone
+      if (!phoneNumber || phoneNumber.length !== 10) {
         e.preventDefault();
-        alert('Veuillez entrer un numéro de téléphone valide');
-        return false;
-      }
-    });
-
-    // Mettre à jour la valeur avec le code pays avant la soumission
-    document.getElementById('chauffeurForm').addEventListener('submit', function(e) {
-      const submitBtn = document.getElementById('submitBtn');
-      const phoneNumber = iti.getNumber();
-      phoneInput.value = phoneNumber;
-      
-      if (!phoneNumber) {
-        e.preventDefault();
-        alert('Veuillez entrer un numéro de téléphone valide');
+        alert('Veuillez entrer un numéro de téléphone valide (10 chiffres)');
+        phoneInput.focus();
         return false;
       }
       
+      // Désactiver le bouton et afficher le spinner
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Enregistrement...';
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Enregistrement...';
+      
+      // Soumettre le formulaire
+      return true;
     });
 
     // Retirer la validation quand l'utilisateur commence à taper
@@ -395,6 +400,15 @@
         }
       }
     });
+
+      // @if($errors->any())
+      //       Swal.fire({
+      //           title: 'Erreur !',
+      //           html: '{!! implode('<br>', $errors->all()) !!}',
+      //           icon: 'error',
+      //           confirmButtonText: 'OK'
+      //       });
+      //   @endif
   </script>
 </body>
 </html>

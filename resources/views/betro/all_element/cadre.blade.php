@@ -11,7 +11,19 @@
 
 @switch($routeName)
     @case('dashboard')
+    @case('dashboard')
         <span>TABLEAU DE BORD</span>
+        @break
+    
+    @case('admin.parametres.index')
+        <span>PARAMETRE</span>
+        @break
+        
+    @case('admin.utilisateurs.index')
+    @case('admin.utilisateurs.create')
+    @case('admin.utilisateurs.edit')
+    @case('admin.utilisateurs.show')
+        <span>UTILISATEURS</span>
         @break
 
     @case('compagnies')
@@ -25,13 +37,24 @@
         <span>DETAILS COMPAGNIE</span>
         @break
 
+    @case('paiement.show')
+        <span>DÉTAILS DE PAIEMENT</span>
+        @break
+
     @case('paiement.index')
     <span>LISTE PAIEMENT</span>
     @break
+    
+     @case('compagnies.edit')
+    <span>MODIFIER INFORMATION COMPAGNIE</span>
+    @break
+    
 
     @default
         <span></span> {{-- ou tu peux mettre "Titre inconnu" --}}
 @endswitch
+
+
 
 
               </li>

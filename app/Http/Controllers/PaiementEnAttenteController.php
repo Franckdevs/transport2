@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Arret;
 use App\Models\ArretVoyage;
 use App\Models\Paiement;
 use App\Models\PaiementEnAttente;
+use App\Models\Reservation;
 use App\Models\Utilisateur;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
@@ -90,23 +92,34 @@ class PaiementEnAttenteController extends Controller
     $request->validate([
     'token' => 'required|string', // correction de 'requried' -> 'required' et on précise le type
     'voyage_id' => 'nullable|integer', // on précise que c'est facultatif et que c'est un entier
-    'id_arret_voayage' => 'required|integer|min:1',
+    'id_arret_voayage' => 'nullable|integer|min:1',
+    'numero_place' => 'required|integer|min:1',
+
+    'nom_complet'=>'nullable|string',
+    'telephone_proprietaire'=>'nullable|string'
     ]);
-
-   $utilisateur = Utilisateur ::where('token', $request->token)->first();
-
+    $reservation = Reservation::where('voyages_id', $request->voyage_id)->where('id_arret_voayage', $request->id_arret_voayage)->where('numero_place', $request->numero_place)->first();
+    if ($reservation) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Place deja occupe'
+        ], 409);
+    }
+    
+    $utilisateur = Utilisateur ::where('token', $request->token)->first();
+    
     $voyage = Voyage::where('id', $request->voyage_id)->first();
-// return response()->json([
-//                 'success' => false,
-//                 'voyage' => $voyage
-//             ], 404);
-            if (!$utilisateur) {
+    // return response()->json([
+        //                 'success' => false,
+        //                 'voyage' => $voyage
+        //             ], 404);
+        if (!$utilisateur) {
             return response()->json([
                 'success' => false,
                 'message' => 'Utilisateur non trouvé pour ce token.'
             ], 404);
         }
-
+        
         $voyage = Voyage::where('id', $request->voyage_id)->first();
         if (!$voyage) {
             return response()->json([
@@ -114,37 +127,47 @@ class PaiementEnAttenteController extends Controller
                 'message' => 'Voyage non trouvé pour cet ID.'
             ], 404);
         }
+        
+        $id_arret_voayage = $request->input('id_arret_voayage');
+        // // $arret_voyages = ArretVoyage::find($id_arret_voayage);
+        $arret_voyages = Arret::find($id_arret_voayage);
+        if (!$arret_voyages) {
+                return response()->json([
+                        'message'=> 'Arret voyage non trouvé',
+                        ], 404);
+                }
+                // Récupérer l'installation associée à la taxe
+                // $installation = Installation::where('user_id', $taxe->id_installation)->first();
+                $codePaiement = $this->generateRandomString();
+                
+                $verifier = PaiementEnAttente::where('code', $codePaiement)->first();
+                if ($verifier) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Cette demande de paiement existe déjà.'
+                    ], 409); // 409 = conflit
+                }else {
+                    $verifier = new PaiementEnAttente();
+                    $verifier->code = $codePaiement;
+                    $verifier->codePaiement = $codePaiement;
+                    $verifier->utilisateur_id = $utilisateur->id;
+                    $verifier->voyages_id = $voyage->id;
+                    
+                    $verifier->nom_complet = $request->nom_complet;
+                    $verifier->telephone_proprietaire = $request->telephone_proprietaire;
 
-    $id_arret_voayage = $request->input('id_arret_voayage');
-    $arret_voyages = ArretVoyage::find($id_arret_voayage);
-    if (!$arret_voyages) {
-        return response()->json([
-            'message'=> 'Arret voyage non trouvé',
-            ], 404);
-    }
-        // Récupérer l'installation associée à la taxe
-        // $installation = Installation::where('user_id', $taxe->id_installation)->first();
-        $codePaiement = $this->generateRandomString();
-
-        $verifier = PaiementEnAttente::where('code', $codePaiement)->first();
-        if ($verifier) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cette demande de paiement existe déjà.'
-            ], 409); // 409 = conflit
-        }else {
-            $verifier = new PaiementEnAttente();
-            $verifier->code = $codePaiement;
-            $verifier->codePaiement = $codePaiement;
-            $verifier->utilisateur_id = $utilisateur->id;
-            $verifier->voyages_id = $voyage->id;
-            $verifier->id_arret_voayage = $arret_voyages->id;
-            $verifier->montant = $arret_voyages->montant;
-            $verifier->status = '1'; // Statut initial, par exemple '1' pour 'en attente'
-            $verifier->save();
+                    $verifier->id_arret_voayage = $arret_voyages->id ?? 1;
+                    $verifier->montant = $arret_voyages->montant ?? 1;
+                    $verifier->itineraire_id = $voyage->itineraire_id;
+                    $verifier->numero_place = $request->numero_place;
+                    $verifier->gares_id = $voyage->gare_id;
+                    $verifier->status = '1'; // Statut initial, par exemple '1' pour 'en attente'
+                    $verifier->save();
         }
 
-         $data = [
+        // $montant = 1000;
+        
+        $data = [
             'code_paiement' => $codePaiement,
             //  'credential_id' => "llnal6ched", // code unique donnee pour mes acces a la plateforme
              'nom_usager' => $utilisateur->nom,
@@ -157,11 +180,14 @@ class PaiementEnAttenteController extends Controller
              'lib_order' => "test efzef edfzef efezf",
             'Url_Logo' =>  asset('photo_personnel/1758024064_logo_bus.png'),
             'pay_fees' => 1,
-            'Url_Retour' => 'https://127.0.0.1:8000/login_connexion',
-            'Url_Callback' => 'https://127.0.0.1:8000/api/retour_du_paiement',
-            // 'Url_Retour' => 'https://127.0.0.1:8000/',
-            // 'Url_Callback' => route('retour_du_paiement'),
+            'Url_Retour' => 'https://88bcaffe1149.ngrok-free.app/status-paiement/' . $codePaiement,
+            'Url_Callback' => 'https://88bcaffe1149.ngrok-free.app/api/callback',
+            //'Url_Retour' => 'https://127.0.0.1:8000/',
+            //'Url_Callback' => route('retour_du_paiement'),
         ];
+        // return response()->json([
+        //  'success' => true,
+        //  ], 200);
     
         // $reponse = Http::post('https://rest-airtime.paysecurehub.com/api/payhub-ws/build-away', $data);
         $reponse = Http::withHeaders(['MerchantId' => 'llnal6ched', 'ApiKey' => 'shk_nDgSnvDpGa9ZEvtruZzxpO7gaSfP9qOJCfyh'])

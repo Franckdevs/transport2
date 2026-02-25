@@ -25,16 +25,27 @@ use App\Helpers\GlobalHelper;
 
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
-
-        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
-          <h5 class="mb-0">Liste des utilisateurs</h5>
-          <a href="{{ route('personnel.create') }}" class="btn btn-success">
-            <i class="fa fa-plus"></i> Ajouter un utilisateur
-          </a>
+        <!-- En-tête avec bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="page-title mb-0">
+            <i class="fas fa-users me-2"></i>Gestion du personnel
+          </h1>
+          <div class="ms-auto">
+            <a href="{{ route('personnel.create') }}" class="btn btn-success">
+              <i class="fas fa-plus me-2"></i>Ajouter un utilisateur
+            </a>
+          </div>
         </div>
 
-        <div class="card">
-          <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0">
+                  <i class="fas fa-table me-2"></i>Liste des utilisateurs
+                </h5>
+              </div>
+              <div class="card-body">
 
 <table id="myTable" class="table display nowrap table-hover" style="width:100%">
   <thead>
@@ -120,15 +131,15 @@ use App\Helpers\GlobalHelper;
 
 
 
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
 
     @include('compagnie.all_element.footer')
   </div>
-
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>

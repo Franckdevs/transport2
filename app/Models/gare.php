@@ -51,6 +51,11 @@ class gare extends Model
     {
         return $this->belongsTo(Ville::class, 'ville_id');
     }
+public function villes()
+{
+    return $this->belongsTo(Ville::class);
+}
+
 
     public function jourOuvert()
     {
@@ -71,5 +76,9 @@ public function itineraires()
     return $this->hasMany(Itineraire::class, 'gare_id');
 }
 
+public function historiqueAdmins()
+{
+    return $this->hasMany(HistoriqueAdminGare::class, 'gare_id')->orderBy('date_modification', 'desc');
+}
 
 }

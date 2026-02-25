@@ -14,21 +14,48 @@
     <!-- Page Body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
+        
         <!-- En-tête avec bouton retour et titre -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h2 class="mb-0">Détails de la gare</h2>
-          <a href="{{ route('gares.index.2') }}" class="btn btn-outline-secondary btn-sm">
-            Retour à la liste
-          </a>
-        </div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+              @if($gare->status == 1)
+                <!-- Bouton désactiver avec SweetAlert2 -->
+                <button type="button" class="btn btn-warning btn-sm" onclick="confirmDesactivation({{ $gare->id }})" style="width: 110px">
+                  <i class="fa fa-times"></i>Désactiver
+                </button>
+
+                <!-- Formulaire caché pour la désactivation -->
+                <form id="desactiverForm{{ $gare->id }}" action="{{ route('gares.destroy_desactiver', $gare->id) }}" method="POST" style="display: none;">
+                  @csrf
+                </form>
+              @elseif($gare->status == 3) 
+                <!-- Bouton activer avec SweetAlert2 -->
+                <button type="button" class="btn btn-success btn-sm" onclick="confirmActivation({{ $gare->id }})" style="width: 110px">
+                  <i class="fa fa-check"></i>Activer
+                </button>
+
+                <!-- Formulaire caché pour l'activation -->
+                <form id="activerForm{{ $gare->id }}" action="{{ route('gares.destroy_reactivation', $gare->id) }}" method="POST" style="display: none;">
+                  @csrf
+                </form>
+              @endif
+
+                <h5 class="mb-0">
+                </h5>
+                <a href="{{ route('gares.index.2') }}" class="btn btn-light" title="Retour">
+                    <i class="fa fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
 
         <!-- Carte principale -->
         <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0">{{ $gare->nom_gare ?? 'Gare sans nom' }}</h4>
-            <span class="badge status-badge bg-{{ $gare->status == 1 ? 'success' : ($gare->status == 2 ? 'danger' : 'warning') }}">
-              {{ $gare->status == 1 ? 'Actif' : ($gare->status == 2 ? 'Inactif' : 'En attente') }}
-            </span>
+            <div class="d-flex align-items-center">
+              <span class="badge status-badge bg-{{ $gare->status == 1 ? 'success' : ($gare->status == 2 ? 'danger' : 'warning') }} me-2">
+                {{ $gare->status == 1 ? 'Actif' : ($gare->status == 3 ? 'Désactivé' : 'En attente') }}
+              </span>
+            
+            </div>
           </div>
           <div class="card-body">
             <div class="row">
@@ -49,7 +76,7 @@
                       <p class="info-label">Email</p>
                       <p class="info-value">{{ $gare->email ?? 'Non renseigné' }}</p>
                     </div>
-                    <div class="col-12 mb-2">
+                    {{-- <div class="col-12 mb-2">
                       <p class="info-label">Site web</p>
                       <p class="info-value">
                         @if($gare->site_web)
@@ -60,7 +87,7 @@
                           Non renseigné
                         @endif
                       </p>
-                    </div>
+                    </div> --}}
                     @if($gare->description)
                     <div class="col-12">
                       <p class="info-label">Description</p>
@@ -122,7 +149,7 @@
                       <div class="col-md-6">
                         <p class="info-label">Parking</p>
                         <p class="info-value">
-                          <span class="badge bg-{{ $gare->parking_disponible ? 'success' : 'secondary' }}">
+                          <span class="badge bg-{{ $gare->parking_disponible ? 'success' : 'black' }}">
                             {{ $gare->parking_disponible ? 'Disponible' : 'Non disponible' }}
                           </span>
                         </p>
@@ -130,7 +157,7 @@
                       <div class="col-md-6">
                         <p class="info-label">Wi-Fi</p>
                         <p class="info-value">
-                          <span class="badge bg-{{ $gare->wifi_disponible ? 'success' : 'secondary' }}">
+                          <span class="badge bg-{{ $gare->wifi_disponible ? 'success' : 'black' }}">
                             {{ $gare->wifi_disponible ? 'Disponible' : 'Non disponible' }}
                           </span>
                         </p>
@@ -165,7 +192,7 @@
                         </p>
                       </div>
                       <div class="ms-auto">
-                        <a href="mailto:{{ $gare->compagnie->info_user->email ?? '' }}" class="btn btn-outline-secondary btn-sm">
+                        <a href="mailto:{{ $gare->compagnie->info_user->email ?? '' }}" class="btn btn-outline-secondary btn-sm" style="width: 100px">
                           Contacter
                         </a>
                       </div>
@@ -187,6 +214,7 @@
 
   <!-- Google Maps API -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&callback=initMap" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
     .card {
@@ -221,6 +249,40 @@
   </style>
 
   <script>
+    function confirmDesactivation(gareId) {
+        Swal.fire({
+            title: 'Confirmation',
+            text: 'Voulez-vous vraiment désactiver cette gare ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Oui, désactiver',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('desactiverForm' + gareId).submit();
+            }
+        });
+    }
+
+    function confirmActivation(gareId) {
+        Swal.fire({
+            title: 'Confirmation',
+            text: 'Voulez-vous vraiment réactiver cette gare ?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Oui, activer',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('activerForm' + gareId).submit();
+            }
+        });
+    }
+
     function initMap() {
       var lat = parseFloat("{{ $gare->latitude ?? 0 }}");
       var lng = parseFloat("{{ $gare->longitude ?? 0 }}");

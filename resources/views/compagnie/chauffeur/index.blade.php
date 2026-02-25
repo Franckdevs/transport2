@@ -1,3 +1,4 @@
+
 @php
     use Carbon\Carbon;
 @endphp
@@ -16,7 +17,37 @@
           <!-- start: search area -->
         @include('compagnie.all_element.navbar')
           <!-- start: link -->
-
+                  <style>
+        /* Styles pour les boutons de la DataTable */
+        .btn-sm {
+            min-width: 50px;
+            width: 50px;
+            height: 50px;
+            padding: 0.25rem 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Assure que les icônes sont centrées */
+        .btn-sm i {
+            margin: 0;
+            padding: 0;
+            font-size: 0.875rem;
+            line-height: 1;
+        }
+        
+        /* Empêche le débordement des boutons dans les cellules */
+        td {
+            white-space: nowrap;
+        }
+        
+        /* Style pour la colonne d'actions */
+        .actions-cell {
+            white-space: nowrap;
+            width: 90px; /* Largeur fixe pour la colonne d'actions */
+        }
+    </style>
         </nav>
       </div>
     </header>
@@ -25,24 +56,40 @@
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
-                <div class="row g-3 row-deck">
-                    <!-- 🔹 Titre + bouton -->
-                    <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                        <h5 class="mb-0">Liste des chauffeurs</h5>
-                        <a href="{{ route('chauffeur.create') }}" class="btn btn-success">
-                            <i class="fa fa-plus"></i> Ajouter un chauffeur
+                <!-- En-tête avec bouton à droite -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  
+                    <div class="ms-auto">
+                        <a href="{{ route('chauffeur.create') }}" class="btn btn-warning">
+                            <i class="fas fa-plus me-2"></i>Ajouter un chauffeur
                         </a>
                     </div>
-                    <div class="col-md-12 mt-4">
-                        <div class="card">
+                </div>
+
+                <div class="row g-3 row-deck">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm">
+ 
                             <div class="card-body">
+                                <!-- Barre de recherche -->
 
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="filter-group">
+    <label for="statusFilter" class="form-label mb-0">
+        Filtrer par statut :
+    </label>
 
-                                <!-- 🔹 Barre de recherche -->
-
-
+    <select id="statusFilter"
+            class="form-select"
+            style="width: 150px; height: 38px;">
+        <option value="">Tous</option>
+        <option value="Actif">Actif</option>
+        <option value="Inactif">Inactif</option>
+    </select>
+</div>
+                    </div>
                                 <!-- 🔹 Tableau -->
-                                <table id="myTable" class="table display nowrap table-hover" style="width:100%">
+                                <table id="myTable" class="table responsive display nowrap table-hover" style="width:100%">
                                     <thead>
                                         <tr>
                                             <th>Photo</th>
@@ -52,6 +99,7 @@
                                             <th>Adresse</th>
                                             <th>Numéro permis</th>
                                             <th>Date de naissance</th>
+                                            <th>Statut</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -63,23 +111,32 @@
                                                 <img src="{{ ($chauffeur->photo) }}" alt="Photo"
                                                     width="50" height="50" style="object-fit: cover; border-radius: 50%;">
                                                 @else
-                                                Aucune photo
+                                                photo vide
                                                 @endif
                                             </td>
-                                            <td>{{ $chauffeur->nom ?? 'Aucun nom' }}</td>
-                                            <td>{{ $chauffeur->prenom ?? 'Aucun prénom' }}</td>
-                                            <td>{{ $chauffeur->telephone ?? 'Aucun téléphone' }}</td>
-                                            <td>{{ $chauffeur->adresse ?? 'Aucune adresse' }}</td>
-                                            <td>{{ $chauffeur->numeros_permis ?? 'Non renseigné' }}</td>
+                                          <td>{{ Str::limit($chauffeur->nom ?? 'Aucun nom', 9) }}</td>
+                                            <td>{{ Str::limit($chauffeur->prenom ?? 'Aucun prénom', 9) }}</td>
+                                            <td>{{ Str::limit($chauffeur->telephone ?? 'Aucun téléphone', 9) }}</td>
+                                            <td>{{ Str::limit($chauffeur->adresse ?? 'Aucune adresse',9 ) }}</td>
+                                            <td>{{ Str::limit($chauffeur->numeros_permis ?? 'Non renseigné', 9) }}</td>
                                             <td>
                                                 {{ $chauffeur->date_naissance ? Carbon::parse($chauffeur->date_naissance)->format('d/m/Y') : 'Non renseignée' }}
+                                            </td>
+                                            <td>
+                                                @if($chauffeur->status == 1)
+                                                    <span class="badge bg-success">Actif</span>
+                                                @elseif($chauffeur->status == 3)
+                                                    <span class="badge bg-danger">Inactif</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Inconnu</span>
+                                                @endif
                                             </td>
                                             <td>
 
                                           <!-- Actions Chauffeur -->
 <div class="gap-1">
     <!-- Bouton Modifier -->
-    <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-primary btn-sm">
+    <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-warning btn-sm">
         <i class="fa fa-edit"></i>
     </a>
 
@@ -88,7 +145,9 @@
         <i class="fa fa-eye"></i>
     </a>
 
-    @if($chauffeur->status == 3)
+</div>
+
+ {{-- @if($chauffeur->status == 3)
         <!-- Bouton Réactiver avec SweetAlert2 -->
         <form id="reactivateForm{{ $chauffeur->id }}" action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
             @csrf
@@ -98,16 +157,14 @@
         </form>
 
     @else
-        <!-- Bouton Supprimer avec SweetAlert2 -->
+        <!-- Bouton Désactiver avec SweetAlert2 -->
         <form id="deleteForm{{ $chauffeur->id }}" action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
             @csrf
-            <button type="button" onclick="confirmDelete(event, {{ $chauffeur->id }}, '{{ addslashes($chauffeur->nom) }} {{ addslashes($chauffeur->prenom) }}')" class="btn btn-danger btn-sm">
-                <i class="fa fa-trash"></i>
+            <button type="button" onclick="confirmDelete(event, {{ $chauffeur->id }}, '{{ addslashes($chauffeur->nom) }} {{ addslashes($chauffeur->prenom) }}')" class="btn btn-warning btn-sm" title="Désactiver le chauffeur">
+                <i class="fas fa-user-slash"></i>
             </button>
         </form>
-    @endif
-</div>
-
+    @endif --}}
 
 
                                             </td>
@@ -128,17 +185,50 @@
     </div>
 
     <!-- Jquery + DataTables 2.x + SweetAlert2 -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+            <script src="https://cdn.datatables.net/responsive/3.0.7/js/dataTables.responsive.js"></script>
+    <script src='https://cdn.datatables.net/responsive/3.0.7/js/dataTables.responsive.js'></script>
+    <script>
+        $(document).ready(function() {
+            // Vérifier si la DataTable est déjà initialisée
+            if (!$.fn.DataTable.isDataTable('#myTable')) {
+                var table = $('#myTable').DataTable({
+                    responsive: true,
+                    order: [[1, 'desc']],
+                    language: {
+                        // url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json'
+                    },
+                    columnDefs: [
+                        { orderable: false, targets: [0, 7, 8] } // Désactiver le tri sur les colonnes Photo, Statut et Actions
+                    ]
+                });
+            }
+
+            // Gestion du filtre de statut
+           $('#statusFilter').on('change', function () {
+    var status = $(this).val();
+    var table = $('#myTable').DataTable();
+
+    if (status === '') {
+        table.column(7).search('').draw();
+    } else {
+        table.column(7).search('^' + status + '$', true, false).draw();
+    }
+});
+
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
 
-    <!-- 🔹 DataTable + recherche personnalisée -->
+    <!-- 🔹 Recherche personnalisée -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const table = new DataTable('#myTable');
-
+            // La DataTable est déjà initialisée plus haut dans le code
+            const table = $('#myTable').DataTable();
+            
             const searchInput = document.getElementById('customSearchChauffeurs');
             if (searchInput) {
                 searchInput.addEventListener('input', function() {
@@ -202,23 +292,33 @@
         }
 
         // Gestion des messages de session (succès/erreur)
-        @if(session('success'))
-            Swal.fire({
-                title: 'Succès !',
-                text: '{{ session('success') }}',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-        @endif
+        // @if(session('success'))
+        //     Swal.fire({
+        //         title: 'Succès !',
+        //         text: '{{ session('success') }}',
+        //         icon: 'success',
+        //         confirmButtonText: 'OK'
+        //     });
+        // @endif
 
-        @if(session('error'))
-            Swal.fire({
-                title: 'Erreur !',
-                text: '{{ session('error') }}',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        @endif
+        //   @if(session('success'))
+        //     Swal.fire({
+        //         title: 'Succès !',
+        //         text: '{{ session('success') }}',
+        //         icon: 'success',
+        //         timer: 3000,
+        //         showConfirmButton: false
+        //     });
+        // @endif
+
+        // @if(session('error'))
+        //     Swal.fire({
+        //         title: 'Erreur !',
+        //         text: '{{ session('error') }}',
+        //         icon: 'error',
+        //         confirmButtonText: 'OK'
+        //     });
+        // @endif
     </script>
 </body>
 </html>

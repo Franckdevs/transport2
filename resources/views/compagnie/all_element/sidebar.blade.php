@@ -1,27 +1,28 @@
-<div class="sidebar p-2 py-md-3 @@cardClass">
+<div class="sidebar p-2 py-md-3 @@cardClass" id="sidebar">
     <div class="container-fluid">
         <!-- Logo de la compagnie -->
         <div class="text-center mb-4 mt-2">
             @if(Auth::user()->info_user && Auth::user()->info_user->compagnie && Auth::user()->info_user->compagnie->logo_compagnies)
+
                 <img src="{{ asset(Auth::user()->info_user->compagnie->logo_compagnies) }}" 
                      alt="Logo {{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}" 
-                     class="img-fluid rounded-circle" 
-                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                <h6 class="text-dark mt-2 mb-0 fw-bold">{{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}</h6>
-                <small class="text-white-50">{{ Auth::user()->info_user->compagnie->type_compagnie }}</small>
+                     class="sidebar-logo">
+
+                <h6 class="text-dark mt-2 mb-0 fw-bold sidebar-title-text">{{ Auth::user()->info_user->compagnie->nom_complet_compagnies }}</h6>
+
+                <small class="text-white-50 sidebar-subtitle">{{ Auth::user()->info_user->compagnie->type_compagnie }}</small>
+
             @elseif(Auth::user()->info_user && Auth::user()->info_user->gare && Auth::user()->info_user->gare->compagnie && Auth::user()->info_user->gare->compagnie->logo_compagnies)
                 <img src="{{ asset(Auth::user()->info_user->gare->compagnie->logo_compagnies) }}" 
                      alt="Logo {{ Auth::user()->info_user->gare->compagnie->nom_complet_compagnies }}" 
-                     class="img-fluid rounded-circle" 
-                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                <h6 class="text-dark mt-2 mb-0 fw-bold">{{ Auth::user()->info_user->gare->compagnie->nom_complet_compagnies }}</h6>
-                <small class="text-white-50">{{ Auth::user()->info_user->gare->compagnie->type_compagnie }}</small>
+                     class="sidebar-logo">
+                <h6 class="text-dark mt-2 mb-0 fw-bold sidebar-title-text">{{ Auth::user()->info_user->gare->compagnie->nom_complet_compagnies }}</h6>
+                <small class="text-white-50 sidebar-subtitle">{{ Auth::user()->info_user->gare->compagnie->type_compagnie }}</small>
             @else
-                <div class="d-flex align-items-center justify-content-center mx-auto rounded-circle bg-white" 
-                     style="width: 80px; height: 80px; border: 3px solid #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                    <i class="fas fa-building text-primary" style="font-size: 2.5rem;"></i>
+                <div class="sidebar-logo-placeholder">
+                    <i class="fas fa-building text-primary"></i>
                 </div>
-                <h6 class="text-dark mt-2 mb-0 fw-bold">
+                <h6 class="text-dark mt-2 mb-0 fw-bold sidebar-title-text">
                     {{ Auth::user()->info_user->compagnie->nom_complet_compagnies ?? (Auth::user()->info_user->gare->compagnie->nom_complet_compagnies ?? 'Compagnie') }}
                 </h6>
             @endif
@@ -40,6 +41,8 @@
                 </span>
             </h4>
         </div> --}}
+
+        <hr>
         
         <!-- sidebar: menu list -->
         <div class="main-menu flex-grow-1">
@@ -65,33 +68,14 @@
                     </li>
                 @endcan
 
-                <!-- BUS / CARS -->
-                @if (Auth::user()->can('bus-cars') || Auth::user()->can('tout-les-permissions'))
-                    <li class="menu-item {{ request()->routeIs('compagnie.bus') || request()->routeIs('bus.*') ? 'active' : '' }}">
-                        <a class="m-link" href="{{ route('compagnie.bus') }}">
-                            <div class="menu-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M3 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H3Zm4 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H7Zm4 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H11Z"/>
-                                    <path d="M2 6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6Zm1 0v6h10V6H3Z"/>
-                                    <path d="M4.5 12.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Zm7 0a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/>
-                                </svg>
-                            </div>
-                            <span class="menu-text">Bus / Cars</span>
-                            <span class="menu-badge"></span>
-                        </a>
-                    </li>
-                @endcan
+              
 
                 <!-- BUS / CARS -->
                 @if (Auth::user()->can('bus-cars') || Auth::user()->can('tout-les-permissions'))
-                    <li class="menu-item {{ request()->routeIs('listeconfig.index') || request()->routeIs('activation.bus') ? 'active' : '' }}">
+                    <li class="menu-item {{ request()->routeIs('listeconfig.*') || request()->routeIs('creationConfig.*') || request()->routeIs('config.edit') || request()->routeIs('config.update') || request()->routeIs('config.show') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('listeconfig.index') }}">
                             <div class="menu-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M3 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H3Zm4 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H7Zm4 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5a.5.5 0 0 0 .5-.5V2a.5.5 0 0 0-.5-.5H11Z"/>
-                                    <path d="M2 6a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6Zm1 0v6h10V6H3Z"/>
-                                    <path d="M4.5 12.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Zm7 0a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1Z"/>
-                                </svg>
+                                <i class="fas fa-cogs"></i>
                             </div>
                             <span class="menu-text">Configuration bus</span>
                             <span class="menu-badge"></span>
@@ -99,9 +83,24 @@
                     </li>
                 @endcan
                 
+                  <!-- GESTION DES BUS -->
+                @if (Auth::user()->can('bus-cars') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('liste.bus') 
+                    || request()->has('bus')
+                    || request()->routeIs('bus.*') ? 'active' : '' }}">
+                    
+                        <a class="m-link" href="{{ route('liste.bus') }}">
+                            <div class="menu-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <span class="menu-text">Gestion des bus</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
+                @endcan
                 <!-- CHAUFFEURS -->
                 @if (Auth::user()->can('chauffeurs') || Auth::user()->can('tout-les-permissions'))
-                    <li class="menu-item {{ request()->routeIs('chauffeur.*') ? 'active' : '' }}">
+                <li class="menu-item {{ request()->routeIs('chauffeur.*') ||request()->routeIs('voir.show') || request()->routeIs('modifier.edit') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('chauffeur.index') }}">
                             <div class="menu-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
@@ -114,8 +113,35 @@
                     </li>
                 @endcan
 
+                <!-- CLASSES -->
+                @if (Auth::user()->can('tarification') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('classe.*') ? 'active' : '' }}">
+                        <a class="m-link" href="{{ route('classe.index') }}">
+                            <div class="menu-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5a.5.5 0 0 1-.5-.5V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z"/>
+                                </svg>
+                            </div>
+                            <span class="menu-text">Classes</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
+                @endif
+                <!-- TARIFICATION -->
+                @if (Auth::user()->can('tarification') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('tarification.*') ? 'active' : '' }}">
+                        <a class="m-link" href="{{ route('tarification.index') }}">
+                            <div class="menu-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                            <span class="menu-text">Tarification</span>
+                        </a>
+                    </li>
+                @endif
+
+
                 <!-- UTILISATEURS -->
-                @if (Auth::user()->can('utilisateurs') || Auth::user()->can('tout-les-permissions'))
+                {{-- @if (Auth::user()->can('utilisateurs') || Auth::user()->can('tout-les-permissions'))
                     <li class="menu-item {{ request()->routeIs('personnel.*') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('personnel.index') }}">
                             <div class="menu-icon">
@@ -127,6 +153,21 @@
                             <span class="menu-badge"></span>
                         </a>
                     </li>
+                @endcan --}}
+
+                <!-- AGENTS -->
+                @if (Auth::user()->can('agents') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('agents.*') ? 'active' : '' }}">
+                        <a class="m-link" href="{{ route('agents.index') }}">
+                            <div class="menu-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                                </svg>
+                            </div>
+                            <span class="menu-text">Gestion du personnel</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
                 @endcan
 
                 <!-- ITINÉRAIRE -->
@@ -134,9 +175,7 @@
                     <li class="menu-item {{ request()->routeIs('itineraire.*') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('itineraire.index') }}">
                             <div class="menu-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0ZM1 8a7 7 0 0 1 7-7 3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 0 0 7 7 7 0 0 1-7-7Zm7 4.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"/>
-                                </svg>
+                                <i class="fas fa-route"></i>
                             </div>
                             <span class="menu-text">Itinéraire</span>
                             <span class="menu-badge"></span>
@@ -149,10 +188,7 @@
                     <li class="menu-item {{ request()->routeIs('voyage.*') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('voyage.index') }}">
                             <div class="menu-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M6 1a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V1Zm3 4a1 1 0 0 0-1 1v10.5a1.5 1.5 0 1 0 3 0V6a1 1 0 0 0-1-1h-1Z"/>
-                                    <path d="M4.5 6h-1a1 1 0 0 0-1 1v8.5a1.5 1.5 0 1 0 3 0V7a1 1 0 0 0-1-1Z"/>
-                                </svg>
+                                <i class="fas fa-plane-departure"></i>
                             </div>
                             <span class="menu-text">Voyage</span>
                             <span class="menu-badge"></span>
@@ -160,9 +196,10 @@
                     </li>
                 @endcan
 
+
                 <!-- RESERVATION -->
-                @if (Auth::user()->can('voyages') || Auth::user()->can('tout-les-permissions'))
-                    <li class="menu-item {{ request()->routeIs('liste_reservation') ? 'active' : '' }}">
+                @if (Auth::user()->can('reservations') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('liste_reservation') || request()->routeIs('voir_detail_reservation.show') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('liste_reservation') }}">
                             <div class="menu-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
@@ -170,7 +207,7 @@
                                     <path d="M3 4.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z"/>
                                 </svg>
                             </div>
-                            <span class="menu-text">Réservation</span>
+                            <span class="menu-text">Réservations</span>
                             <span class="menu-badge"></span>
                         </a>
                     </li>
@@ -181,18 +218,44 @@
                     <li class="menu-item {{ request()->routeIs('gares.*') ? 'active' : '' }}">
                         <a class="m-link" href="{{ route('gares.index.2') }}">
                             <div class="menu-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-3Zm7 0a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-3Z"/>
-                                    <path d="M2.5 5a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-11Zm0 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-11Zm0 4a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1h-11Z"/>
-                                </svg>
+                                <i class="fas fa-train"></i>
                             </div>
-                            <span class="menu-text">Gares & Arrêts</span>
+                            <span class="menu-text">Gares</span>
                             <span class="menu-badge"></span>
                         </a>
                     </li>
                 @endcan
 
-                <!-- PARAMÈTRES -->
+                  {{-- @if (Auth::user()->can('ajouter-une-gars') || Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('gares.*') ? 'active' : '' }}">
+                        <a class="m-link" href="{{ route('gares.index.2') }}">
+                            <div class="menu-icon">
+                                <i class="fas fa-train"></i>
+                            </div>
+                            <span class="menu-text">Gestion admin gare</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
+                @endcan --}}
+
+              
+
+                <!-- MODIFIER ADMINISTRATEUR GARE -->
+                @if (Auth::user()->can('tout-les-permissions'))
+                    <li class="menu-item {{ request()->routeIs('modifier_admin_gare.*') ? 'active' : '' }}">
+                        <a class="m-link" href="{{ route('modifier_admin_gare.index') }}">
+                            <div class="menu-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <span class="menu-text">Modifier Admin Gare</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
+                @endcan
+
+
+                  <!-- PARAMÈTRES -->
+                @if (Auth::user()->can('paramettre') || Auth::user()->can('tout-les-permissions'))
                 <li class="menu-item {{ request()->routeIs('paramettre.*') ? 'active' : '' }}">
                     <a class="m-link" href="{{ route('paramettre.index') }}">
                         <div class="menu-icon">
@@ -205,7 +268,119 @@
                         <span class="menu-badge"></span>
                     </a>
                 </li>
+                 @endcan
+
             </ul>
+            
+            <!-- Logout Button -->
+            <div class="mt-auto pt-3 border-top border-light">
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a class="m-link" href="#" 
+                           onclick="event.preventDefault(); confirmLogout()">
+                            <div class="menu-icon">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </div>
+                            <span class="menu-text">Déconnexion</span>
+                            <span class="menu-badge"></span>
+                        </a>
+                    </li>
+                </ul>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
+            </div>
+            
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
+            window.confirmLogout = function() {
+                Swal.fire({
+                    title: 'Déconnexion',
+                    text: 'Êtes-vous sûr de vouloir vous déconnecter ?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ff0000',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Oui, se déconnecter',
+                    cancelButtonText: 'Annuler',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('logout-form').submit();
+                    }
+                });
+            }
+
+            // Script pour gérer le toggle du sidebar
+            document.addEventListener('DOMContentLoaded', function() {
+                // Chercher les boutons de toggle du sidebar spécifiques à votre projet
+                const toggleBtnDesktop = document.querySelector('.sidebar-mini-btn');
+                const toggleBtnMobile = document.querySelector('.menu-toggle');
+                const sidebar = document.getElementById('sidebar');
+                
+                if (sidebar) {
+                    // Restaurer l'état du sidebar AVANT que la page ne soit visible
+                    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                    if (isCollapsed) {
+                        sidebar.classList.add('collapsed');
+                    }
+                    
+                    // Fonction pour toggle le sidebar
+                    function toggleSidebar() {
+                        sidebar.classList.toggle('collapsed');
+                        
+                        // Sauvegarder l'état dans localStorage
+                        if (sidebar.classList.contains('collapsed')) {
+                            localStorage.setItem('sidebarCollapsed', 'true');
+                        } else {
+                            localStorage.setItem('sidebarCollapsed', 'false');
+                        }
+                    }
+                    
+                    // Attacher l'événement au bouton desktop
+                    if (toggleBtnDesktop) {
+                        toggleBtnDesktop.addEventListener('click', toggleSidebar);
+                    }
+                    
+                    // Attacher l'événement au bouton mobile
+                    if (toggleBtnMobile) {
+                        toggleBtnMobile.addEventListener('click', toggleSidebar);
+                    }
+                    
+                    // Forcer l'application des styles au cas où
+                    setTimeout(() => {
+                        if (isCollapsed) {
+                            sidebar.classList.add('collapsed');
+                        }
+                    }, 100);
+                }
+                
+                // Gérer aussi les clics sur les liens qui pourraient fermer le sidebar
+                const menuLinks = document.querySelectorAll('.m-link');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        // Sur mobile, fermer le sidebar après avoir cliqué sur un lien
+                        if (window.innerWidth <= 768) {
+                            const sidebar = document.getElementById('sidebar');
+                            if (sidebar) {
+                                sidebar.classList.add('collapsed');
+                                localStorage.setItem('sidebarCollapsed', 'true');
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Script qui s'exécute immédiatement pour éviter le flash de déformation
+            (function() {
+                const sidebar = document.getElementById('sidebar');
+                const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                
+                if (sidebar && isCollapsed) {
+                    sidebar.classList.add('collapsed');
+                }
+            })();
+            </script>
         </div>
     </div>
 </div>
@@ -218,18 +393,79 @@
     margin: 1rem 0;
 }
 
-/* Style pour le texte du nom de la compagnie */
-.sidebar h6 {
+/* Styles pour le logo adaptatif */
+.sidebar-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.sidebar-logo-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.sidebar-logo-placeholder i {
+    font-size: 2.5rem;
+    transition: all 0.3s ease;
+}
+
+/* Styles pour les textes du sidebar */
+.sidebar-title-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 200px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-subtitle {
+    display: block;
+    transition: all 0.3s ease;
+}
+
+/* Quand le sidebar est réduit (collapsed) */
+.sidebar.collapsed .sidebar-logo {
+    width: 50px;
+    height: 50px;
+}
+
+.sidebar.collapsed .sidebar-logo-placeholder {
+    width: 50px;
+    height: 50px;
+}
+
+.sidebar.collapsed .sidebar-logo-placeholder i {
+    font-size: 1.8rem;
+}
+
+.sidebar.collapsed .sidebar-title-text {
+    max-width: 60px;
+    font-size: 0.8rem;
+}
+
+.sidebar.collapsed .sidebar-subtitle {
+    display: none;
 }
 
 .sidebar {
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     min-height: 100vh;
     box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
 }
 
 .sidebar-title {
@@ -392,6 +628,20 @@
     
     .menu-text {
         font-size: 0.9rem;
+    }
+    
+    .sidebar-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .sidebar-logo-placeholder {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .sidebar-logo-placeholder i {
+        font-size: 2rem;
     }
 }
 </style>

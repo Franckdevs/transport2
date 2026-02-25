@@ -14,8 +14,20 @@ class Arret extends Model
         'info_user_id',
         'nom',
         'gares_id',
-        'ville_id'
+        'ville_id',
+        'montant',
+        'id_tarrification_voyage'
     ];
+
+    public function tarification()
+    {
+        return $this->belongsTo(TarificationMontantVoyage::class, 'id_tarrification_voyage');
+    }
+
+    public function TarificationMontantVoyage()
+    {
+        return $this->belongsTo(TarificationMontantVoyage::class, 'id_tarrification_voyage');
+    }
 
     // 🔁 Relation : un arrêt appartient à un voyage (Itineraire)
     public function itineraire()

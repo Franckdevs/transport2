@@ -79,38 +79,23 @@
 
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
         <div class="container-fluid">
-            {{-- <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0 text-primary fw-bold">
-                    <i class="fas fa-route me-2"></i>Créer un nouvel itinéraire
-                </h5>
-                <a href="{{ route('itineraire.index') }}" class="btn btn-outline-primary" title="Retour">
-                    <i class="fa fa-arrow-left me-2"></i> Retour
-                </a>
-            </div> --}}
-
-              <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="section-title mb-0">
-                      {{-- Modifier l'utilisateur
-                      Votre gare {{ $gares->nom_gare ?? '' }} --}}
-                    </h4>
-                    <a href="{{ route('itineraire.index') }}" class="btn" title="Retour">
-                        <i class="fa fa-arrow-left me-2"></i> Retour à la liste
+            <!-- En-tête avec bouton de retour -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                {{-- <h1 class="page-title mb-0">
+                    <i class="fas fa-plus-circle me-2"></i>Créer un nouvel itinéraire
+                </h1> --}}
+                <div class="ms-auto">
+                    <a href="{{ route('itineraire.index') }}" class="btn btn-light">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
                     </a>
                 </div>
-            
-            <div class="col-md-12 mt-4">
-                <div class="card shadow-sm border-0">
-                    {{-- <div class="card-header bg-primary text-white py-3">
-                        <h6 class="card-title mb-0">
-                            <i class="fas fa-plus-circle me-2"></i>Informations du trajet
-                        </h6>
-                    </div> --}}
-                       <div class="info-badge">
-                      <i class="fas fa-info-circle"></i>
-                      Création d'un itinéraire
-                     </div>
-                    <div class="card-body p-4">
+            </div>
 
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body p-4">
+            
                         <!-- Affichage des erreurs -->
                         @if ($errors->any())
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -136,43 +121,30 @@
                                 <input type="hidden" name="ville_id" value="{{ $villeId }}">
                                 @else
                                 <div class="col-12 mb-4">
-                                    <div class="border-start border-4 border-primary ps-3">
-                                        <span class="badge  bg-opacity-10 text-primary fs-6 px-3 py-2">
-                                            <i class="fas fa-user-shield me-2"></i>Profil Super admin
+                                    <div class="border-start border-4 border-warning ps-3">
+                                        <span class="badge  bg-opacity-10 text-black fs-6 px-3 py-2">
+                                            <i class="fas fa-user-shield me-2 text-warning"></i>Profil Super admin
                                         </span>
                                     </div>
                                 </div>
 
-                                <div class="col-md-6 mb-4">
+                                <div class="col-md-4 mb-4">
                                     <label for="gare_id" class="form-label fw-semibold">
-                                        <i class="fas fa-train me-2 text-primary"></i>Gare de départ
+                                        <i class="fas fa-train me-2 text-warning"></i>Gare de départ
                                     </label>
-                                    {{-- <select name="gare_id" id="gare_id" class="form-select form-select-lg shadow-sm">
-                                        <option value="">-- Sélectionnez une gare --</option>
-                                        @if($gars)
-                                            @foreach($gars as $gare)
-                                                <option value="{{ $gare->id }}" 
-                                                    data-ville="{{ $gare->ville_id }}"
-                                                    {{ old('gare_id') == $gare->id ? 'selected' : '' }}
-                                                    class="option-gare">
-                                                    <i class="fas fa-building me-2"></i>{{ $gare->nom_gare }}
-                                                </option>
-                                            @endforeach
-                                        @endif
-                                    </select> --}}
                                     <select name="gare_id" id="gare_id" class="form-select @error('gare_id') is-invalid @enderror" required>
-    <option value="">Sélectionnez une gare</option>
-    @foreach($gars as $gare)
-        <option value="{{ $gare->id }}" 
-                data-ville="{{ $gare->ville_id }}"
-                {{ old('gare_id') == $gare->id ? 'selected' : '' }}>
-            {{ $gare->nom_gare }}
-        </option>
-    @endforeach
-</select>
-@error('gare_id')
-    <div class="invalid-feedback">{{ $message }}</div>
-@enderror
+                                        <option value="">Sélectionnez une gare</option>
+                                        @foreach($gars as $gare)
+                                            <option value="{{ $gare->id }}" 
+                                                    data-ville="{{ $gare->ville_id }}"
+                                                    {{ old('gare_id') == $gare->id ? 'selected' : '' }}>
+                                                {{ $gare->nom_gare }} - {{ $gare->ville->nom_ville ?? 'Ville inconnue' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('gare_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                     <div class="form-text text-muted">
                                         <i class="fas fa-info-circle me-1"></i>Sélectionnez la gare de départ du trajet
                                     </div>
@@ -183,36 +155,49 @@
                                 @endif
 
                                 <script>
-                                    document.getElementById('gare_id').addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const villeId = selectedOption.getAttribute('data-ville');
-    document.getElementById('hidden-ville-id').value = villeId || '';
-    
-    // Validation visuelle
-    if (!villeId) {
-        this.classList.add('is-invalid');
-    } else {
-        this.classList.remove('is-invalid');
-    }
-});
+                                document.getElementById('gare_id').addEventListener('change', function() {
+                                const selectedOption = this.options[this.selectedIndex];
+                                const villeId = selectedOption.getAttribute('data-ville');
+                                document.getElementById('hidden-ville-id').value = villeId || '';
+                                
+                                // Validation visuelle
+                                if (!villeId) {
+                                    this.classList.add('is-invalid');
+                                } else {
+                                    this.classList.remove('is-invalid');
+                                }
+                            });
 
-// Validation côté client avant soumission
-document.querySelector('form').addEventListener('submit', function(e) {
-    const gareSelect = document.getElementById('gare_id');
-    const villeId = document.getElementById('hidden-ville-id').value;
-    
-    if (!gareSelect.value && !villeId) {
-        e.preventDefault();
-        alert('Veuillez sélectionner une gare de départ');
-        gareSelect.focus();
-    }
-});
+                            // Validation côté client avant soumission
+                            document.querySelector('form').addEventListener('submit', function(e) {
+                                const gareSelect = document.getElementById('gare_id');
+                                const villeId = document.getElementById('hidden-ville-id').value;
+                                
+                                if (!gareSelect.value && !villeId) {
+                                    e.preventDefault();
+                                    alert('Veuillez sélectionner une gare de départ');
+                                    gareSelect.focus();
+                                }
+                            });
                                 </script>
 
                                 <!-- Heure d'arrivée -->
+                                @if(Auth::user()->info_user && Auth::user()->info_user->compagnie)
+                                <div class="col-md-2 mb-4">
+                                    <label for="harriver" class="form-label fw-semibold">
+                                        <i class="fas fa-clock me-2 text-warning"></i>Estimation
+                                    </label>
+                                    <input type="time" name="estimation" id="harriver" 
+                                           class="form-control form-control-lg shadow-sm"
+                                           value="{{ old('estimation') }}" required>
+                                    <div class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>Durée estimée du trajet
+                                    </div>
+                                </div>
+                                @else
                                 <div class="col-md-6 mb-4">
                                     <label for="harriver" class="form-label fw-semibold">
-                                        <i class="fas fa-clock me-2 text-primary"></i>Estimation du voyage
+                                        <i class="fas fa-clock me-2 text-warning"></i>Estimation
                                     </label>
                                     <input type="time" name="estimation" id="harriver" 
                                            class="form-control form-control-lg shadow-sm"
@@ -221,17 +206,31 @@ document.querySelector('form').addEventListener('submit', function(e) {
                                         <i class="fas fa-info-circle me-1"></i>Durée estimée du trajet
                                     </div>
                                 </div>
+                                @endif
 
+                                @if(Auth::user()->info_user && Auth::user()->info_user->compagnie)
                                 <div class="col-md-6 mb-4">
                                     <label for="titre" class="form-label fw-semibold">
-                                        <i class="fas fa-heading me-2 text-primary"></i>Titre du trajet
+                                        <i class="fas fa-heading me-2 text-warning"></i>Titre du trajet
                                     </label>
-                                    <textarea name="titre" id="titre" class="form-control shadow-sm" rows="3" 
-                                              placeholder="Ex: Trajet Dakar - Thiès express">{{ old('titre') }}</textarea>
+                                    <textarea name="titre" id="titre" class="form-control shadow-sm" rows="8" 
+                                              placeholder="Exemple: Abidjan san pedro" required>{{ old('titre') }}</textarea>
                                     <div class="form-text text-muted">
                                         <i class="fas fa-info-circle me-1"></i>Donnez un titre descriptif à votre trajet
                                     </div>
                                 </div>
+                                @else
+                                <div class="col-md-6 mb-4">
+                                    <label for="titre" class="form-label fw-semibold">
+                                        <i class="fas fa-heading me-2 text-warning"></i>Titre du trajet
+                                    </label>
+                                    <textarea name="titre" id="titre" class="form-control shadow-sm" rows="3" 
+                                              placeholder="Ex: Trajet Dakar - Thiès express" required>{{ old('titre') }}</textarea>
+                                    <div class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>Donnez un titre descriptif à votre trajet
+                                    </div>
+                                </div>
+                                @endif
                             </div>
 
                             <hr class="my-4">
@@ -240,7 +239,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
                             <div class="mb-4">
                                 <div class="d-flex align-items-center mb-3">
                                     <label class="form-label fw-semibold mb-0">
-                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>Arrêts (gares)
+                                        <i class="fas fa-map-marker-alt me-2 text-warning"></i>Arrêts (gares)
                                     </label>
                                     <span class="badge bg-warning bg-opacity-10 text-warning ms-2">
                                         <i class="fas fa-exclamation-triangle me-1"></i>Important
@@ -257,71 +256,66 @@ document.querySelector('form').addEventListener('submit', function(e) {
                                 </div>
 
                               <div id="gares-container">
-    <div class="row gare-item mb-3 align-items-center">
-        <div class="col-md-6">
-            <!-- NOTE: class="gare-select" nécessaire pour que le JS récupère la valeur -->
-            <select name="gares[0][id]" class="form-select shadow-sm gare-select" required>
-                <option value="">-- Choisir une gare --</option>
-                @foreach($gares as $gare)
-                    <option value="{{ $gare->id }}">
-                        {{ $gare->nom_gare }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                                    <div class="row gare-item mb-3 align-items-center">
+                                        <div class="col-md-6">
+                                            <!-- NOTE: class="gare-select" nécessaire pour que le JS récupère la valeur -->
+                                            <select name="gares[0][id]" class="form-select shadow-sm gare-select" required>
+                                                <option value="">-- Choisir une gare --</option>
+                                                @foreach($gares as $gare)
+                                                    <option value="{{ $gare->id }}">
+                                                        {{ $gare->nom_gare }} - {{ $gare->ville->nom_ville ?? 'Ville inconnue' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
 
-        <div class="col-md-4 d-flex align-items-center gap-2">
-            <button type="button" class="btn btn-outline-info btn-detail-gare">
-                <i class="fas fa-info-circle me-1"></i>Détails
-            </button>
-            <button type="button" class="btn btn-outline-danger btn-remove-gare">
-                <i class="fas fa-trash me-1"></i>Supprimer
-            </button>
-        </div>
-    </div>
-</div>
+                                        <div class="col-md-4 d-flex align-items-center gap-2">
+                                            <button type="button" class="btn btn-warning text-dark btn-detail-gare">
+                                                <i class="fas fa-info-circle me-1 text-white"></i>Détails
+                                            </button>
+                                            <button type="button" class="btn btn-warning text-dark btn-remove-gare">
+                                                <i class="fas fa-trash me-1 text-white"></i>Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
 
 
-                                <button type="button" class="btn btn-success d-inline-flex align-items-center mt-2" id="add-gare">
+                                {{-- <button type="button" class="btn btn-warning d-inline-flex align-items-center mt-2 text-white" id="add-gare">
                                     <i class="fas fa-plus-circle me-2"></i>
                                     Ajouter une gare
-                                </button>
+                                </button> --}}
                             </div>
 
-                            <div class="text-end mt-4 pt-3 border-top">
-                                {{-- <button type="reset" class="btn btn-outline-secondary me-2">
-                                    <i class="fas fa-undo me-2"></i>Réinitialiser
-                                </button> --}}
-                                <button type="submit" class="btn btn-success px-4">
-                                    <i class="fas fa-save me-2"></i>Enregistrer l'itinéraire
-                                </button>
+                            <!-- Boutons d'action -->
+                            <div class="d-flex justify-content-between pt-3 border-top mt-4">
+                                <a href="{{ route('itineraire.index') }}" class="btn btn-light">
+                                    <i class="fas fa-times me-2"></i>Annuler
+                                </a>
+                                <div>
+                                    <button type="submit" class="btn btn-warning px-4 text-white" id="createItineraireBtn" style="min-width: 200px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-save me-2" id="createIcon"></i>
+                                        <span id="createText">Créer l'itinéraire</span>
+                                        <div class="spinner-border spinner-border-sm ms-2 d-none" id="createSpinner" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
                         </form>
-
-                        
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
      <!-- ✅ Modal Détails Gare -->
     <div class="modal fade" id="gareDetailModal" tabindex="-1" aria-labelledby="gareDetailLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
-          {{-- <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="gareDetailLabel">
-             Détails de la gare
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
-          </div> --}}
           <div class="modal-body">
             <div id="gare-details-content">
               <div class="text-center py-3 text-muted">Chargement des détails...</div>
             </div>
-          </div>
-          <div class="modal-footer bg-light">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
           </div>
         </div>
       </div>
@@ -351,7 +345,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-center">
-                    <button type="button" class="btn btn-outline-danger btn-remove-gare">
+                    <button type="button" class="btn btn-warning text-dark btn-remove-gare">
                         <i class="fas fa-trash me-1"></i>Supprimer
                     </button>
                 </div>
@@ -437,16 +431,16 @@ document.querySelector('form').addEventListener('submit', function(e) {
                     <select name="gares[${index}][id]" class="form-select shadow-sm gare-select" required>
                         <option value="">-- Choisir une gare --</option>
                         @foreach($gares as $gare)
-                            <option value="{{ $gare->id }}">{{ $gare->nom_gare }}</option>
+                            <option value="{{ $gare->id }}">{{ $gare->nom_gare }} - {{ $gare->ville->nom_ville ?? 'Ville inconnue' }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="col-md-4 d-flex align-items-center gap-2">
-                    <button type="button" class="btn btn-outline-info btn-detail-gare">
+                    <button type="button" class="btn btn-warning text-dark btn-detail-gare">
                         <i class="fas fa-info-circle me-1"></i>Détails
                     </button>
-                    <button type="button" class="btn btn-outline-danger btn-remove-gare">
+                    <button type="button" class="btn btn-warning text-dark btn-remove-gare">
                         <i class="fas fa-trash me-1"></i>Supprimer
                     </button>
                 </div>
@@ -477,7 +471,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     //         }
 
     //         const modalBody = document.getElementById('gare-details-content');
-    //         modalBody.innerHTML = `<div class="text-center py-3 text-muted">Chargement...</div>`;
+    //         modalBody.innerHTML = `<div class="text-center py-3 text-muted">Chargement des détails...</div>`;
 
     //         const modal = new bootstrap.Modal(document.getElementById('gareDetailModal'));
     //         modal.show();
@@ -543,10 +537,10 @@ document.querySelector('form').addEventListener('submit', function(e) {
         // Loading state
         modalBody.innerHTML = `
             <div class="loading-state text-center py-5">
-                <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+                <div class="spinner-border text-warning mb-3" style="width: 3rem; height: 3rem;" role="status">
                     <span class="visually-hidden">Chargement...</span>
                 </div>
-                <h5 class="text-primary">Chargement des détails</h5>
+                <h5 class="text-warning">Chargement des détails</h5>
             </div>
         `;
         
@@ -559,14 +553,11 @@ document.querySelector('form').addEventListener('submit', function(e) {
                     modalBody.innerHTML = `
                         <div class="gare-details-container">
                             <!-- En-tête -->
-                            <div class="gare-header bg-primary text-white rounded-top p-4 mb-4">
+                            <div class="gare-header bg-warning text-dark rounded-top p-3 mb-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h3 class="fw-bold mb-1">
-                                            <i class="fas fa-train me-2"></i>${data.nom_gare}
-                                        </h3>
-                                        <p class="mb-0 opacity-75">
-                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                        <h4 class="fw-bold mb-1">${data.nom_gare}</h4>
+                                        <p class="mb-0 opacity-75 small">
                                             ${data.ville?.nom_ville || 'Non spécifiée'}
                                         </p>
                                     </div>
@@ -576,31 +567,27 @@ document.querySelector('form').addEventListener('submit', function(e) {
                                 </div>
                             </div>
 
-                            <div class="row g-4">
+                            <div class="row g-2">
                                 <!-- Informations générales -->
                                 <div class="col-12">
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-primary mb-3">
-                                                <i class="fas fa-info-circle me-2"></i>Informations générales
-                                            </h5>
-                                            <div class="row g-3">
-                                               
+                                    <div class="card border-0 shadow-sm mb-3">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title text-dark mb-2">Informations générales</h6>
+                                            <div class="row g-2">
+                                                
                                                 <div class="col-md-6">
                                                     <div class="d-flex align-items-start">
-                                                        <i class="fas fa-city text-muted mt-1 me-3"></i>
                                                         <div>
                                                             <small class="text-muted d-block">Ville</small>
-                                                            <strong>${data.ville?.nom_ville || 'Non spécifiée'}</strong>
+                                                            <strong class="small">${data.ville?.nom_ville || 'Non spécifiée'}</strong>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="d-flex align-items-start">
-                                                        <i class="fas fa-phone text-muted mt-1 me-3"></i>
                                                         <div>
                                                             <small class="text-muted d-block">Téléphone</small>
-                                                            <strong>${data.telephone_gare || data.telephone || 'Non disponible'}</strong>
+                                                            <strong class="small">${data.telephone_gare || data.telephone || 'Non disponible'}</strong>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -611,21 +598,25 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
                                 <!-- Services -->
                                 <div class="col-md-6">
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-primary mb-3">
-                                                <i class="fas fa-concierge-bell me-2"></i>Services
-                                            </h5>
+                                    <div class="card border-0 shadow-sm mb-3">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title text-dark mb-2">Services</h6>
                                             <div class="services-list">
-                                                <div class="service-item ${data.wifi_disponible ? 'available' : 'unavailable'}">
-                                                    <i class="fas fa-wifi me-2"></i>
-                                                    <span>Wi-Fi</span>
-                                                    <span class="status-indicator ${data.wifi_disponible ? 'available' : 'unavailable'}"></span>
+                                                <div class="service-item">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="small">Wi-Fi</span>
+                                                    </div>
+                                                    <span class="small fw-bold ${data.wifi_disponible ? 'text-success' : 'text-danger'}">
+                                                        ${data.wifi_disponible ? 'Oui' : 'Non'}
+                                                    </span>
                                                 </div>
-                                                <div class="service-item ${data.parking_disponible ? 'available' : 'unavailable'}">
-                                                    <i class="fas fa-parking me-2"></i>
-                                                    <span>Parking</span>
-                                                    <span class="status-indicator ${data.parking_disponible ? 'available' : 'unavailable'}"></span>
+                                                <div class="service-item">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="small">Parking</span>
+                                                    </div>
+                                                    <span class="small fw-bold ${data.parking_disponible ? 'text-success' : 'text-danger'}">
+                                                        ${data.parking_disponible ? 'Oui' : 'Non'}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -634,40 +625,29 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
                                 <!-- Horaires d'ouverture -->
                                 <div class="col-md-6">
-                                    <div class="card border-0 shadow-sm mb-4">
-                                        <div class="card-body">
-                                            <h5 class="card-title text-primary mb-3">
-                                                <i class="fas fa-clock me-2"></i>Horaires d'ouverture
-                                            </h5>
-                                            <div class="row g-3">
-                                                <div class="col-12">
-                                                    <div class="time-slot bg-success bg-opacity-10 p-3 rounded text-center mb-2">
-                                                        <small class="text-muted d-block">Ouverture</small>
-                                                        <strong class="text-success fs-5">${data.heure_ouverture || '--:--'}</strong>
-                                                    </div>
+                                    <div class="card border-0 shadow-sm mb-3">
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title text-dark mb-2">Horaires d'ouverture</h6>
+                                            <div class="d-flex gap-2">
+                                                <div class="time-slot bg-warning bg-opacity-10 p-2 rounded text-center flex-fill">
+                                                    <small class="text-muted d-block">Ouverture</small>
+                                                    <strong class="text-dark">${data.heure_ouverture || '--:--'}</strong>
                                                 </div>
-                                                <div class="col-12">
-                                                    <div class="time-slot bg-danger bg-opacity-10 p-3 rounded text-center">
-                                                        <small class="text-muted d-block">Fermeture</small>
-                                                        <strong class="text-danger fs-5">${data.heure_fermeture || '--:--'}</strong>
-                                                    </div>
+                                                <div class="time-slot bg-warning bg-opacity-10 p-2 rounded text-center flex-fill">
+                                                    <small class="text-muted d-block">Fermeture</small>
+                                                    <strong class="text-dark">${data.heure_fermeture || '--:--'}</strong>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Description -->
-                              
-
                                 <!-- Localisation sur la carte -->
                                 ${data.latitude && data.longitude ? `
                                     <div class="col-12">
                                         <div class="card border-0 shadow-sm">
-                                            <div class="card-body">
-                                                <h5 class="card-title text-primary mb-3">
-                                                    <i class="fas fa-map me-2"></i>Localisation sur la carte
-                                                </h5>
+                                            <div class="card-body p-3">
+                                                <h6 class="card-title text-dark mb-2">Localisation sur la carte</h6>
                                                 <div id="map" class="gare-map rounded"></div>
                                             </div>
                                         </div>
@@ -738,17 +718,18 @@ const additionalStyles = `
 <style>
     .gare-details-container {
         font-family: 'Segoe UI', system-ui, sans-serif;
+        font-size: 0.9rem;
     }
     
     .gare-header {
-        margin: -1rem -1rem 2rem -1rem;
+        margin: -1rem -1rem 1rem -1rem;
     }
     
     .service-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 0;
+        padding: 8px 0;
         border-bottom: 1px solid #f0f0f0;
     }
     
@@ -757,35 +738,63 @@ const additionalStyles = `
     }
     
     .status-indicator {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
     }
     
     .status-indicator.available {
-        background-color: #28a745;
+        background-color: #ffc107;
+        border: 1px solid #ffc107;
     }
     
     .status-indicator.unavailable {
-        background-color: #dc3545;
+        background-color: #6c757d;
+        border: 1px solid #6c757d;
     }
     
     .time-slot {
-        border: 1px solid #e0e0e0;
+        border: 1px solid #ffc107;
     }
     
     .gare-map {
-        height: 300px;
-        border: 1px solid #e0e0e0;
+        height: 200px;
+        border: 1px solid #ffc107;
     }
     
     .card {
-        border-radius: 10px;
+        border-radius: 8px;
     }
+
 </style>
 `;
 
 document.head.insertAdjacentHTML('beforeend', additionalStyles);
+
+// Spinner pour le bouton "Créer l'itinéraire"
+document.addEventListener('DOMContentLoaded', function() {
+    const createBtn = document.getElementById('createItineraireBtn');
+    const createSpinner = document.getElementById('createSpinner');
+    const createIcon = document.getElementById('createIcon');
+    const createText = document.getElementById('createText');
+    
+    if (createBtn) {
+        // Écouter la soumission du formulaire à la place du clic
+        const form = createBtn.closest('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Afficher le spinner
+                createSpinner.classList.remove('d-none');
+                createBtn.disabled = true;
+                createBtn.style.opacity = '0.65';
+                
+                // Garder l'icône et le texte visibles
+                createIcon.style.display = 'inline';
+                createText.style.display = 'inline';
+            });
+        }
+    }
+});
 
 </script>
 

@@ -173,35 +173,40 @@
         </nav>
       </div>
     </header>
+    @include('compagnie.all_element.cadre')
 
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
-        <!-- En-tête simple -->
-        <div class="page-header-custom">
-          <h1 class="page-title">
-            {{-- Ajouter un nouveau bus --}}
-          </h1>
-          <a href="{{ route('liste.bus') }}" class="btn">
-            ← Retour à la liste
-          </a>
+        <!-- En-tête avec bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          {{-- <h1 class="page-title mb-0">
+            <i class="fas fa-bus me-2"></i>Création d'un nouveau bus
+          </h1> --}}
+          <div class="ms-auto">
+            <a href="{{ route('liste.bus') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+          </div>
         </div>
 
         <!-- Carte du formulaire -->
         <div class="row justify-content-center">
           <div class="col-12">
             <div class="card form-card">
-              <div class="card-header">
-                <h5>Informations du bus</h5>
+              <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                  <i class="fas fa-bus me-2"></i>Informations du bus
+                </h5>
               </div>
         <div class="card-body">
-            <form action="{{ route('bus.store') }}" method="POST" enctype="multipart/form-data" id="busForm">
+            <form action="{{ route('bus.store') }}" method="POST" enctype="multipart/form-data" id="busForm" onsubmit="showButtonLoader(event)">
               @csrf
 
               <div class="form-section">
                 <h6 class="section-title"><i class="fas fa-info-circle me-2"></i>Informations générales</h6>
                 <div class="row">
                   <div class="col-md-6 mb-3">
-                    <label for="nom_bus" class="form-label">Libellé du bus <span class="text-danger">*</span></label>
+                    <label for="nom_bus" class="form-label">Nom du bus <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('nom_bus') is-invalid @enderror" 
                            id="nom_bus" name="nom_bus" value="{{ old('nom_bus') }}" 
                            placeholder="Ex: Bus VIP 001" required>
@@ -248,8 +253,9 @@
               <div class="form-section">
                 <h6 class="section-title"><i class="fas fa-cog me-2"></i>Configuration</h6>
                 <div class="row">
+                  
                   <div class="col-md-6 mb-3">
-                    <label for="configuration_place_buses_id" class="form-label">Configuration des places <span class="text-danger">*</span></label>
+                    {{-- <label for="configuration_place_buses_id" class="form-label">Configuration des places <span class="text-danger">*</span></label>
                     <select class="form-select @error('configuration_place_buses_id') is-invalid @enderror" 
                             id="configuration_place_buses_id" name="configuration_place_buses_id" required>
                       <option value="">Sélectionner une configuration</option>
@@ -263,7 +269,60 @@
                     </select>
                     @error('configuration_place_buses_id')
                       <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    @enderror --}}
+                    {{-- <select class="form-select @error('configuration_place_buses_id') is-invalid @enderror"
+        id="configuration_place_buses_id"
+        name="configuration_place_buses_id"
+        required>
+    <option value="">Sélectionner une configuration</option>
+
+    @foreach($configurationPlaces as $config)
+        <option
+            value="{{ $config->id }}"
+            data-places="{{ $config->colonne * $config->ranger }}"
+            {{ old('configuration_place_buses_id') == $config->id ? 'selected' : '' }}>
+            {{ $config->nom }} ({{ $config->colonne }}x{{ $config->ranger }} - {{ $config->colonne * $config->ranger }} places)
+        </option>
+    @endforeach
+</select> --}}
+<select class="form-select @error('configuration_place_buses_id') is-invalid @enderror"
+        id="configuration_place_buses_id"
+        name="configuration_place_buses_id"
+        required>
+    <option value="">Sélectionner une configuration</option>
+
+   @foreach($configurationPlaces as $config)
+    <option
+        value="{{ $config->id }}"
+        data-places="{{ $config->colonne * $config->ranger }}"
+        {{ old('configuration_place_buses_id') == $config->id ? 'selected' : '' }}>
+        Titre: {{ $config->nom }}
+        (Colonne: {{ $config->colonne }} x Ranger: {{ $config->ranger }} 
+        - Total: {{ $config->colonne * $config->ranger }} places)
+    </option>
+@endforeach
+
+</select>
+<input type="hidden" name="nombre_places" id="nombre_places">
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const selectConfig = document.getElementById('configuration_place_buses_id');
+    const inputPlaces = document.getElementById('nombre_places');
+
+    selectConfig.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        inputPlaces.value = selectedOption.dataset.places || '';
+    });
+
+    // Cas de validation Laravel (old value)
+    if (selectConfig.value) {
+        const selectedOption = selectConfig.options[selectConfig.selectedIndex];
+        inputPlaces.value = selectedOption.dataset.places || '';
+    }
+});
+</script>
+
+
                   </div>
 
                   {{-- <div class="col-md-3 mb-3">
@@ -293,7 +352,7 @@
                       @error('photo_bus')
                         <div class="invalid-feedback">{{ $message }}</div>
                       @enderror
-                        <div class="form-text text-muted small">Formats acceptés: JPG, PNG, GIF. Taille max: 2MB</div>
+                        <div class="form-text text-muted small">Formats acceptés: JPG, PNG, GIF. Taille max: 25MB</div>
                       
                       <div class="mt-3">
                         <div class="image-preview bg-light rounded border p-3 text-center" id="imagePreview" style="min-height: 150px;">
@@ -326,8 +385,14 @@
                 <a href="{{ route('liste.bus') }}" class="btn btn-light">
                   <i class="fas fa-times me-2"></i>Annuler
                 </a>
-                <button type="submit" class="btn btn-primary" id="submitBtn">
-                  <i class="fas fa-save me-2"></i>Enregistrer le bus
+                <button type="submit" class="btn btn-warning" id="submitButton">
+                  <span id="buttonText">
+                    <i class="fas fa-save me-2"></i>Enregistrer
+                  </span>
+                  <span id="buttonLoader" class="d-none">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Enregistrement...
+                  </span>
                 </button>
               </div>
                 </form>
@@ -339,12 +404,31 @@
       </div>
     </div>
 
-    @include('compagnie.all_element.footer')
-  </div>
+    <style>
+    #buttonLoader {
+        display: none;
+    }
+    .btn-loading #buttonText {
+        display: none;
+    }
+    .btn-loading #buttonLoader {
+        display: inline-block;
+    }
+    </style>
 
-  <script src="../assets/js/theme.js"></script>
-
-  <script>
+    <script src="../assets/js/theme.js"></script>
+    <script>
+    function showButtonLoader(event) {
+        const button = document.getElementById('submitButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonLoader = document.getElementById('buttonLoader');
+        
+        button.classList.add('btn-loading');
+        buttonText.classList.add('d-none');
+        buttonLoader.classList.remove('d-none');
+        button.disabled = true;
+    }
+    
     // Aperçu de l'image
     function previewImage(input) {
       const preview = document.getElementById('imagePreview');
@@ -387,5 +471,6 @@
         this.classList.remove('is-invalid');
       });
     });
-  </script>
-@include('compagnie.all_element.footer')
+    </script>
+
+    @include('compagnie.all_element.footer')

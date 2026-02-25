@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('modele_bus');
             $table->string('immatriculation_bus');
             $table->string('photo_bus')->nullable();
-            $table->string('description_bus')->nullable();
+            $table->text('description_bus')->nullable();
             $table->string('place')->nullable();
             $table->string('localisation_bus')->nullable();
             $table->string('nombre_places')->nullable();

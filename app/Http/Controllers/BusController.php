@@ -12,21 +12,36 @@ use App\Models\ConfigurationBus;
 
 class BusController extends Controller
 {
+    
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-    $bus = Bus::all();
-    return view("compagnie.bus.index",compact("bus"));
-    }
+public function index()
+{ 
+    $user = Auth::user();
+
+    // Pour récupérer seulement les buses de la compagnie de l'utilisateur
+    $bus = Bus::where('compagnies_id', $user->info_user->compagnie->id)
+              ->orderBy('id', 'asc') // tri par ID croissant
+              ->get();
+
+    return view("compagnie.bus.index", compact("bus"));
+}
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-     $configurationPlaces = ConfigurationBus::all();
+        $user = Auth::user();
+    //  $configurationPlaces = ConfigurationBus::where('compagnie_id', $user->info_user->compagnie->id)->get();
+
+    $configurationPlaces = ConfigurationBus::where(function ($query) use ($user) {
+        $query->where('compagnie_id', $user->info_user->compagnie->id)
+            ->orWhere('info_user_id', $user->id);
+    })->where('status', 1)->orderBy('id', 'desc')->get();
+    //  dd($configurationPlaces);
      return view("compagnie.bus.create", compact("configurationPlaces"));
     }
 
@@ -71,6 +86,7 @@ class BusController extends Controller
 public function store(Request $request)
 {
     $user = Auth::user();
+    //   dd($request);
     // 1. Validation des données
     $validated = $request->validate([
         'nom_bus'              => 'required|string|max:255',
@@ -99,6 +115,7 @@ public function store(Request $request)
         'configuration_place_buses_id.exists' => 'La configuration sélectionnée n\'existe pas.',
     ]);
 
+  
     // Ajout de l'ID de l'utilisateur relié
     $validated['info_user_id'] = $user->info_user->id;
     $validated['compagnies_id'] = $user->info_user->compagnie->id;
@@ -155,11 +172,22 @@ public function store(Request $request)
      */
 public function edit($id)
 {
+    $user = Auth::user();
+    
+    // Récupération du bus à éditer
     $bus = Bus::find($id);
-    $configurationPlaces = ConfigurationBus::all();
-// dd($configuration , $bus);
+    
+    // Récupération des configurations actives de la compagnie de l'utilisateur, triées par id décroissant
+    $configurationPlaces = ConfigurationBus::where('compagnie_id', $user->info_user->compagnie->id)
+                                           ->where('status', 1)
+                                           ->orderBy('id', 'desc')
+                                           ->get();
+
+    // dd($configurationPlaces, $bus); // Pour déboguer si besoin
+    
     return view("compagnie.bus.edit", compact("bus", "configurationPlaces"));
 }
+
 
 
     /**
@@ -221,7 +249,7 @@ public function edit($id)
     $busupdate->immatriculation_bus = $request->immatriculation_bus;
     $busupdate->description_bus = $request->description_bus;
     $busupdate->localisation_bus = $request->localisation_bus;
-    $busupdate->configuration_place_buses_id = $request->configuration_place_id;
+    $busupdate->configuration_place_buses_id = $request->configuration_place_buses_id;
 
     $busupdate->save();
 

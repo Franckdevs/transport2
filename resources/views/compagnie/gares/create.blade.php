@@ -48,11 +48,18 @@
     ">
       <div class="container-fluid">
 
-          <div class="d-flex justify-content-between align-items-center mb-4">
+          {{-- <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="mb-0">
                 </h5>
                 <a href="{{ route('gares.index.2') }}" class="btn btn-light" title="Retour">
-                    <i class="fa fa-arrow-left"></i> Retour
+                    <i class="fa fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div> --}}
+               <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                </h5>
+                <a href="{{ route('gares.index.2') }}" class="btn btn-light" title="Retour">
+                    <i class="fa fa-arrow-left"></i> Retour à la liste
                 </a>
             </div>
 
@@ -63,7 +70,7 @@
       <p class="text-muted mb-0">Remplissez les informations ci-dessous pour créer une nouvelle gare</p>
     </div>
     <div class="card-body">
-<form action="{{ route('gares.store') }}" method="POST">
+<form action="{{ route('gares.store') }}" method="POST" id="gareForm">
 @csrf
     <style>
         /* Styles de base */
@@ -246,13 +253,13 @@
         </style>
         <div class="row mt-4">
             <div class="col-md-6">
-                <h5><i class="fas fa-info-circle me-2"></i>Détails de l'adresse:</h5>
+                {{-- <h5><i class="fas fa-info-circle me-2"></i>Détails de l'adresse:</h5> --}}
                 <div id="addressDetails" class="address-details">
                     Les détails de l'adresse s'afficheront ici...
                 </div>
             </div>
             <div class="col-md-6">
-                <h5><i class="fas fa-globe me-2"></i>Coordonnées:</h5>
+                {{-- <h5><i class="fas fa-globe me-2"></i>Coordonnées:</h5> --}}
                 <div id="coordinates" class="address-details">
                     Latitude: <span id="latValue">5.345317</span><br>
                     Longitude: <span id="lngValue">-4.024429</span>
@@ -547,41 +554,26 @@
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-md-6 mb-3">
+        </div>
+        
+        <div class="row">
+          <div class="col-md-4 mb-3">
             <label for="nom_gare" class="form-label">Nom de la gare <span class="text-danger">*</span></label>
             <div class="input-group">
               <span class="input-group-text"><i class="fas fa-train"></i></span>
               <input type="text" name="nom_gare" id="nom_gare" class="form-control" value="{{ old('nom_gare') }}" required>
             </div>
             <small class="form-text text-muted">Ex: Gare de Yopougon</small>
-  </div>
-</div>
-
-<div class="row">
-  {{-- Adresse gare --}}
-  <div class="col-md-6 mb-3">
-    <label for="adresse_gare" class="form-label">Adresse</label>
+        </div>
+          {{-- Adresse gare --}}
+  <div class="col-md-4 mb-3">
+    <label for="adresse_gare" class="form-label">Adresse (facultative)</label>
     <input type="text" name="adresse_gare" id="adresse_gare" class="form-control" value="{{ old('adresse_gare') }}">
   </div>
 
-  {{-- Téléphone gare --}}
-  <div class="col-md-6 mb-3">
-    <label for="telephone_gare" class="form-label">Téléphone</label>
-    <div class="input-group">
-      <span class="input-group-text">
-        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
-        +225
-      </span>
-      <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('telephone_gare') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)">
-    </div>
-    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
-</div>
-
-<div class="row">
-  {{-- Ville --}}
-  <div class="col-md-6 mb-3">
-    <label for="ville_id" class="form-label">Ville</label>
-    <select name="ville_id" id="ville_id" class="form-select">
+  <div class="col-md-4 mb-3">
+    <label for="ville_id" class="form-label">Ville de la gare <span class="text-danger">*</span></label>
+    <select name="ville_id" id="ville_id" class="form-select" required>
       <option value="">-- Sélectionner une ville --</option>
       @foreach($villes as $ville)
         <option value="{{ $ville->id }}" {{ old('ville_id') == $ville->id ? 'selected' : '' }}>
@@ -591,10 +583,28 @@
     </select>
   </div>
 
+ 
+
+<div class="row">
+  {{-- Ville --}}
+  
+   {{-- Téléphone gare --}}
+  <div class="col-md-4 mb-3">
+    <label for="telephone_gare" class="form-label">Téléphone <span class="text-danger">*</span></label>
+    <div class="input-group">
+      <span class="input-group-text">
+        <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
+        +225
+      </span>
+      <input type="text" name="telephone_gare" id="telephone_gare" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('telephone_gare') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)" required>
+    </div>
+    <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
+</div>
+
   {{-- Jour d'ouverture --}}
-  <div class="col-md-6 mb-3">
-    <label for="jour_ouvert_id" class="form-label">Jour d'ouverture</label>
-    <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select">
+  <div class="col-md-4 mb-3">
+    <label for="jour_ouvert_id" class="form-label">Jour d'ouverture <span class="text-danger">*</span></label>
+    <select name="jour_ouvert_id" id="jour_ouvert_id" class="form-select" required>
       <option value="">-- Sélectionner un jour d'ouverture --</option>
       @foreach($jours as $jour)
         <option value="{{ $jour->id }}" {{ old('jour_ouvert_id') == $jour->id ? 'selected' : '' }}>
@@ -603,12 +613,12 @@
       @endforeach
     </select>
   </div>
-</div>
 
-<div class="row">
+
+{{-- <div class="row"> --}}
   {{-- Jour de fermeture --}}
-  <div class="col-md-6 mb-3">
-    <label for="jour_de_fermeture_id" class="form-label">Jour de fermeture</label>
+  <div class="col-md-4 mb-3">
+    <label for="jour_de_fermeture_id" class="form-label">Jour de fermeture </label>
     <select name="jour_de_fermeture_id" id="jour_de_fermeture_id" class="form-select">
       <option value="">-- Sélectionner un jour de fermeture --</option>
       @foreach($jours as $jour)
@@ -622,21 +632,19 @@
 
 <div class="row">
   {{-- Heure ouverture --}}
-  <div class="col-md-6 mb-3">
-    <label for="heure_ouverture" class="form-label">Heure d'ouverture</label>
-    <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture') }}">
+  <div class="col-md-2 mb-3">
+    <label for="heure_ouverture" class="form-label">Heure d'ouverture <span class="text-danger">*</span></label>
+    <input type="time" name="heure_ouverture" id="heure_ouverture" class="form-control" value="{{ old('heure_ouverture') }}" required>
   </div>
 
   {{-- Heure fermeture --}}
-  <div class="col-md-6 mb-3">
-    <label for="heure_fermeture" class="form-label">Heure de fermeture</label>
-    <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture') }}">
+  <div class="col-md-2 mb-3">
+    <label for="heure_fermeture" class="form-label">Heure de fermeture <span class="text-danger">*</span></label>
+    <input type="time" name="heure_fermeture" id="heure_fermeture" class="form-control" value="{{ old('heure_fermeture') }}" required>
   </div>
-</div>
 
 <!-- Section Équipements -->
-<div class="row mb-4">
-  <div class="col-12">
+  <div class="col-8">
     <div class="card">
       <div class="card-header">
         <h6 class="card-title mb-0"><i class="fas fa-cogs me-2"></i>Équipements disponibles</h6>
@@ -685,12 +693,13 @@
       </div>
     </div>
   </div>
+
 </div>
 
 <div class="row">
   {{-- Téléphone --}}
   <div class="col-md-6 mb-3">
-    <label for="telephone" class="form-label">Téléphone (contact général)</label>
+    <label for="telephone" class="form-label">Téléphone Secondaire</label>
     <div class="input-group">
       <span class="input-group-text">
         <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
@@ -703,16 +712,16 @@
 
   {{-- Email --}}
   <div class="col-md-6 mb-3">
-    <label for="email" class="form-label">Email (contact général)</label>
+    <label for="email" class="form-label">Email Gare (facultative)</label>
     <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}">
   </div>
 </div>
 
 {{-- Site web (plein largeur) --}}
-<div class="mb-3">
+{{-- <div class="mb-3">
   <label for="site_web" class="form-label">Site web</label>
   <input type="url" name="site_web" id="site_web" class="form-control" value="{{ old('site_web') }}">
-</div>
+</div> --}}
 
 {{-- Description (plein largeur) --}}
 <div class="mb-3">
@@ -727,40 +736,40 @@
       <h5 class="card-title mb-0"><i class="fas fa-user-shield me-2"></i>Administrateur de la gare</h5>
       <p class="text-muted mb-0">Informations du responsable de cette gare</p>
     </div>
-    <div class="card-header bg-primary text-white">
+    {{-- <div class="card-header bg-primary text-white">
       <h6 class="mb-0"><i class="fas fa-user-tie"></i>Informations de l'Administrateur de la Gare</h6>
-    </div>
+    </div> --}}
     <div class="card-body">
       <div class="row">
         {{-- Nom admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_nom" class="form-label">Nom de l'administrateur</label>
-          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom') }}" placeholder="Nom de famille">
+          <label for="admin_nom" class="form-label">Nom de l'administrateur <span class="text-danger">*</span></label>
+          <input type="text" name="admin_nom" id="admin_nom" class="form-control" value="{{ old('admin_nom') }}" placeholder="Nom de famille" required>
         </div>
 
         {{-- Prénom admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_prenom" class="form-label">Prénom de l'administrateur</label>
-          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom') }}" placeholder="Prénom">
+          <label for="admin_prenom" class="form-label">Prénom de l'administrateur <span class="text-danger">*</span></label>
+          <input type="text" name="admin_prenom" id="admin_prenom" class="form-control" value="{{ old('admin_prenom') }}" placeholder="Prénom" required>
         </div>
       </div>
 
       <div class="row">
         {{-- Email admin --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_email" class="form-label">Email de l'administrateur</label>
-          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email') }}" placeholder="admin@exemple.com">
+          <label for="admin_email" class="form-label">Email de l'administrateur <span class="text-danger">*</span></label>
+          <input type="email" name="admin_email" id="admin_email" class="form-control" value="{{ old('admin_email') }}" placeholder="admin@exemple.com" required>
         </div>
 
         {{-- Admin téléphone --}}
         <div class="col-md-6 mb-3">
-          <label for="admin_telephone" class="form-label">Téléphone de l'administrateur</label>
+          <label for="admin_telephone" class="form-label">Téléphone de l'administrateur <span class="text-danger">*</span></label>
           <div class="input-group">
             <span class="input-group-text">
               <img src="https://flagcdn.com/w20/ci.png" alt="Drapeau Côte d'Ivoire" class="me-1" style="width: 20px;">
               +225
             </span>
-            <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('admin_telephone') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)">
+            <input type="text" name="admin_telephone" id="admin_telephone" class="form-control" placeholder="XX XX XX XX XX" value="{{ old('admin_telephone') }}" pattern="[0-9]{2}( [0-9]{2}){4}" oninput="formatPhoneNumber(this)" required>
           </div>
           <small class="text-muted">Format: XX XX XX XX XX (10 chiffres)</small>
         </div>
@@ -797,10 +806,10 @@
         @endif
 
         <div class="mt-3">
-          <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllPermissions()">
+          <button type="button" class="btn btn-outline-primary" onclick="selectAllPermissions()" style="min-width: 180px;">
             <i class="fas fa-check-double me-1"></i>Tout sélectionner
           </button>
-          <button type="button" class="btn btn-sm btn-outline-secondary ms-2" onclick="deselectAllPermissions()">
+          <button type="button" class="btn btn-outline-secondary ms-2" onclick="deselectAllPermissions()" style="min-width: 180px;">
             <i class="fas fa-times me-1"></i>Tout désélectionner
           </button>
         </div>
@@ -809,9 +818,33 @@
 
     </div>
   </div>
-    <div class="d-flex justify-content-center mt-4 mb-2">
-        <button type="submit" class="btn btn-primary w-50">Enregistrer la gare</button>
+     <div class="d-flex justify-content-center mt-4 mb-2">
+        <button type="submit" class="btn btn-primary w-50" id="submitButton">
+            <span id="btnText">Enregistrer la gare</span>
+            <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+        </button>
     </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('gareForm');
+    const btn = document.getElementById('submitButton');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnText = document.getElementById('btnText');
+
+    form.addEventListener('submit', function() {
+        // Afficher le spinner
+        btnSpinner.classList.remove('d-none');
+        // Changer le texte
+        btnText.textContent = 'Enregistrement...';
+        // Désactiver le bouton pour éviter double clic
+        btn.disabled = true;
+        // Laisser le formulaire se soumettre normalement
+    });
+});
+</script>
+
+
+
       </form>
 
     </div>

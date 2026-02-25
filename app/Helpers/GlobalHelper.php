@@ -2,10 +2,23 @@
 
 namespace App\Helpers;
 
+use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+
 class GlobalHelper
 {
+
+public static function generateNumeroReservation(): string
+{
+    do {
+        $numero = 'RES-' . date('Y') . '-' . strtoupper(Str::random(6));
+    } while (Reservation::where('numero_reservation', $numero)->exists());
+
+    return $numero;
+}
+
+
     public static function formatCreatedAt($date = null)
     {
         if (!$date) {

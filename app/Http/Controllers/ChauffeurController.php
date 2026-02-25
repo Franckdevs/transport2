@@ -12,7 +12,12 @@ class ChauffeurController extends Controller
 {
     public function index2()
     {
-        $chauffeurs = Chauffeur::get();
+        $user = Auth::user(); 
+        // $chauffeurs = Chauffeur::where('info_user_id', $user->info_user->id)->get();
+
+        $chauffeurs = Chauffeur::where('info_user_id', $user->info_user->id)
+    ->orderBy('id', 'desc')
+    ->get();
 
         return view("compagnie.chauffeur.index", compact("chauffeurs"));
     }
@@ -21,32 +26,38 @@ class ChauffeurController extends Controller
 public function store(Request $request)
 {
     $user = Auth::user();
+    $compagnie = $user->info_user->compagnie;
+    // dd($user, $compagnie);
 
     // Messages personnalisés
     $messages = [
         'nom.required'        => 'Le nom est obligatoire.',
         'prenom.required'     => 'Le prénom est obligatoire.',
+        'telephone.required'  => 'Le numéro de téléphone est obligatoire.',
         'telephone.unique'    => 'Ce numéro de téléphone existe déjà.',
+        'telephone.max'       => 'Le numéro de téléphone ne doit pas dépasser 15 caractères.',
+        'numeros_permis.required' => 'Le numéro de permis est obligatoire.',
+        'date_naissance.required' => 'La date de naissance est obligatoire.',
+        'date_naissance.date' => 'La date de naissance n\'est pas valide.',
+        'photo.required'      => 'Une photo est obligatoire.',
         'photo.image'         => 'Le fichier doit être une image valide.',
         'photo.mimes'         => 'Le fichier doit être au format jpg, jpeg, png ou gif.',
-        'photo.max'           => 'La taille maximale de l\'image est de 2 Mo.',
-        'date_naissance.date' => 'La date de naissance n\'est pas valide.',
+        'photo.max'           => 'La taille maximale de l\'image est de 100 Mo.',
     ];
 
     // Validation
     $validated = $request->validate([
         'nom'            => 'required|string|max:255',
         'prenom'         => 'required|string|max:255',
-        // 'adresse'        => 'nullable|string|max:255',
-        'telephone'      => 'required|string|max:50|unique:personnels,telephone',
-        'numeros_permis' => 'nullable|string|max:50',
-        'date_naissance' => 'nullable|date',
-        'photo'          => 'nullable|image|mimes:jpg,jpeg,png,gif|max:102400',
+        'telephone'      => 'required|string|max:15|unique:personnels,telephone',
+        'numeros_permis' => 'required|string|max:50',
+        'date_naissance' => 'required|date',
+        'photo'          => 'required|image|mimes:jpg,jpeg,png,gif|max:102400',
     ], $messages);
     
     // dd($validated);
     // Condition pour vérifier que la requête existe
-    if ($request) {
+    if ($validated) {
 
         $validated['info_user_id'] = $user->info_user->id;
 
@@ -66,7 +77,7 @@ public function store(Request $request)
         }
 
         $validated['status'] = 1;
-
+        $validated['compagnies_id'] = $compagnie->id;
         // Création du chauffeur
         $chauffeur = Chauffeur::create($validated);
 
@@ -154,6 +165,7 @@ public function show($id)
 public function update(Request $request, $id)
 {
     $user = Auth::user();
+    $compagnie = $user->info_user->compagnie;
 
     // Messages personnalisés
     $messages = [
@@ -199,6 +211,7 @@ public function update(Request $request, $id)
 
     // Ajout de l'info_user_id uniquement s'il n'est pas déjà défini
     $validated['info_user_id'] = $user->info_user->id ?? $chauffeur->info_user_id;
+    $validated['compagnies_id'] = $compagnie->id;
 
     // ⚙️ Mise à jour uniquement des champs réellement saisis
     foreach ($validated as $key => $value) {

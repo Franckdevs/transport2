@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Storage;
 
 class CompagniesController extends Controller
 {
@@ -43,9 +44,42 @@ public function index(Request $request)
         $query->whereDate('created_at', '<=', $request->end_date);
     }
 
+    // Filtrage par statut si fourni
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
     $compagnies = $query->get();
 
     return view('betro.compagnie.index', compact('compagnies'));
+}
+
+/**
+ * Met à jour le logo de la compagnie
+ */
+public function updateLogo(Request $request, $id)
+{
+    $request->validate([
+        'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    $compagnie = Compagnies::findOrFail($id);
+    
+    // Supprimer l'ancien logo s'il existe
+    if ($compagnie->logo_compagnies) {
+        Storage::delete('public/' . $compagnie->logo_compagnies);
+    }
+
+    // Enregistrer le nouveau logo
+    $path = $request->file('logo')->store('logos', 'public');
+    $compagnie->logo_compagnies = $path;
+    $compagnie->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Logo mis à jour avec succès',
+        'logo_url' => asset('storage/' . $path)
+    ]);
 }
 
 
@@ -73,7 +107,7 @@ public function index(Request $request)
             'nom_complet_compagnies' => 'required',
             'email_compagnies' => 'required',
             'telephone_compagnies' => 'required',
-            'adresse_compagnies' => 'required',
+            'adresse_compagnies' => 'nullable',
             'description_compagnies' => 'nullable|string',
             'logo_compagnies' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10240',
             'latitude' => 'nullable|string',
@@ -81,13 +115,31 @@ public function index(Request $request)
             'adresse' => 'nullable|string',
             'villes_id' => 'required|exists:villes,id',
         ], [
-            'required' => 'Ce champ est obligatoire.',
-            'confirmed' => 'Les mots de passe ne correspondent pas.',
-            'unique' => 'Cet email est déjà utilisé.',
-            'mimes' => 'Le format du fichier est incorrect.',
-            'max' => 'Le fichier doit avoir une taille maximale de 2Mo.',
-            'email' => 'Le format de l\'email est incorrect.',
-            'exists' => 'La ville sélectionnée est invalide.',
+            // 'required' => 'Ce champ est obligatoire.',
+            // 'confirmed' => 'Les mots de passe ne correspondent pas.',
+            // 'unique' => 'Cet email est déjà utilisé.',
+            // 'mimes' => 'Le format du fichier est incorrect.',
+            // 'max' => 'Le fichier doit avoir une taille maximale de 2Mo.',
+            // 'email' => 'Le format de l\'email est incorrect.',
+            // 'exists' => 'La ville sélectionnée est invalide.',
+            'nom.required' => 'Veuillez renseigner le nom.',
+            'prenom.required' => 'Veuillez renseigner le prénom.',
+            'telephone.required' => 'Le numéro de téléphone est obligatoire.',
+            'email.required' => 'L’adresse email est obligatoire.',
+            'email.email' => 'Veuillez saisir une adresse email valide.',
+            'email.unique' => 'Cette adresse email est déjà utilisée.',
+
+            'nom_complet_compagnies.required' => 'Le nom de la compagnie est obligatoire.',
+            'email_compagnies.required' => 'L’email de la compagnie est obligatoire.',
+            'email_compagnies.email' => 'L’email de la compagnie n’est pas valide.',
+            'telephone_compagnies.required' => 'Le téléphone de la compagnie est obligatoire.',
+
+            'logo_compagnies.image' => 'Le fichier doit être une image.',
+            'logo_compagnies.mimes' => 'Formats autorisés : jpg, jpeg, png, gif.',
+            'logo_compagnies.max' => 'La taille du logo ne doit pas dépasser 10 Mo.',
+
+            'villes_id.required' => 'Veuillez sélectionner une ville.',
+            'villes_id.exists' => 'La ville sélectionnée est invalide.',
         ]);
 
         // Création de l'utilisateur
@@ -154,7 +206,8 @@ public function index(Request $request)
             'villes_id' => $validated['villes_id'],
         ]);
 
-        Mail::to($validated['email_compagnies'])->send(new CompagnieCreeeMail($infoUser , $compagnies));
+        // Mail::to($validated['email_compagnies'])->send(new CompagnieCreeeMail($infoUser , $compagnies));
+        Mail::to($validated['email'])->send(new CompagnieCreeeMail($infoUser , $compagnies));
         // return redirect()->back()->with('success', 'Administrateur et compagnie créés avec succès.');
         return redirect()->route('compagnies')->with('success', 'Administrateur et compagnie créés avec succès.');
 
@@ -171,9 +224,12 @@ public function index(Request $request)
     {
         //
         $users = InfoUser::where('id', $compagnies->info_user_id)->first();
+        
+        // Charger les gares de la compagnie
+        $gares = $compagnies->gares()->with('ville')->get();
 
         // dd($users);
-        return view('betro.compagnie.show', compact('compagnies' , 'users'));
+        return view('betro.compagnie.show', compact('compagnies' , 'users', 'gares'));
      }
 
     /**
@@ -296,7 +352,7 @@ public function index(Request $request)
         'nom_complet_compagnies' => 'required',
         'email_compagnies' => 'required|email',
         'telephone_compagnies' => 'required',
-        'adresse_compagnies' => 'required',
+        'adresse_compagnies' => 'nullable',
         'description_compagnies' => 'nullable|string',
         'logo_compagnies' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10240',
         'villes_id' => 'required|exists:villes,id',
@@ -377,7 +433,7 @@ public function index(Request $request)
     }
 
     $compagnies->save();
-
+    //  return redirect()->back()->with('success', 'Compagnie modifiée avec succès.');
     return redirect()->route('compagnies')->with('success', 'Compagnie modifiée avec succès.');
 }
 
@@ -391,7 +447,8 @@ public function index(Request $request)
         $recupere_compagnie = Compagnies::find($id);
         $recupere_compagnie->status = 3;
         $recupere_compagnie->save();
-    return redirect()->route('compagnies')->with('success', 'Désactivation réussie.');
+    return redirect()->back()->with('success' , 'Désactivation réussie.');
+    // return redirect()->route('compagnies')->with('success', 'Désactivation réussie.');
     }
 
 
@@ -400,7 +457,8 @@ public function index(Request $request)
         $recupere_compagnie = Compagnies::find($id);
         $recupere_compagnie->status = 1;
         $recupere_compagnie->save();
-    return redirect()->route('compagnies')->with('success', 'Réactivation réussie.');
+    return redirect()->back()->with('success' , 'Réactivation réussie.');
+    // return redirect()->route('compagnies')->with('success', 'Réactivation réussie.');
     }
 
     // Approve a pending company (status 2 -> 1) and notify by email
@@ -416,17 +474,19 @@ public function index(Request $request)
 
         $encryptedId = Crypt::encryptString($compagnie->id);
         $createAccessUrl = url('/creer-acces/' . $encryptedId);
-
+        $recuper_infor_user = InfoUser::where('id', $compagnie->info_user_id)->first();
+        $users = User::where('id', $recuper_infor_user->user_id)->first();
         // Envoi d'un email moderne avec toutes les informations
         try {
-            Mail::to($compagnie->email_compagnies)
-                ->send(new CompagnieApprovedMail($compagnie, $createAccessUrl));
+        // Mail::to($compagnie->email_compagnies)
+        Mail::to($users->email)
+        ->send(new CompagnieApprovedMail($compagnie, $createAccessUrl , $users ));
         } catch (\Throwable $th) {
             report($th);
         }
-
         // Message de succès avec lien pour créer les accès
-        return redirect()->route('compagnies')->with('success', "La demande a été validée. Lien pour créer les accès: " . $createAccessUrl);
+        return redirect()->back()->with('success' , "La demande a été validée. Lien pour créer les accès");
+        // return redirect()->route('compagnies')->with('success', "La demande a été validée. Lien pour créer les accès");
     }
 
     // Refuse a pending company (status 2 -> 3) with reason and notify by email
@@ -441,17 +501,22 @@ public function index(Request $request)
             return redirect()->back()->with('error', "Cette compagnie n'est pas en attente de validation.");
         }
 
-        $compagnie->status = 3; // désactivation / refus
+        // $compagnie->status = 3; // désactivation / refus
+        $compagnie->status = 'demande_refuse';
         $compagnie->save();
 
+        $recuper_infor_user = InfoUser::where('id', $compagnie->info_user_id)->first();
+        $users = User::where('id', $recuper_infor_user->user_id)->first();
+
         try {
-            Mail::to($compagnie->email_compagnies)
+            Mail::to($users->email)
                 ->send(new CompagnieRefusedMail($compagnie, $validated['reason']));
         } catch (\Throwable $th) {
             report($th);
         }
 
-        return redirect()->route('compagnies')->with('success', 'La demande a été refusée et le motif a été envoyé par email.');
+        return redirect()->back()->with('success' , 'La demande a été refusée et le motif a été envoyé par email.');
+        // return redirect()->route('compagnies')->with('success', 'La demande a été refusée et le motif a été envoyé par email.');
     }
 
     public function creerAcces($encryptedId)
@@ -475,6 +540,7 @@ public function index(Request $request)
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Une erreur est survenue lors du traitement de votre demande.');
         }
+
 }
 
 
@@ -482,7 +548,7 @@ public function updatePassword(Request $request, $id)
 {
     // 1️⃣ Validation
     $validated = $request->validate([
-        'password' => 'required|string|min:8|confirmed',
+        'password' => 'required|string|min:2|confirmed',
     ]);
 
     // 2️⃣ Récupérer l'utilisateur
@@ -498,7 +564,7 @@ public function updatePassword(Request $request, $id)
 
     // 5️⃣ Rediriger avec message
     return redirect()->route('dashboardcompagnie_name')
-        ->with('success', 'Mot de passe modifié avec succès ✅');
+        ->with('success', 'Mot de passe ajouté avec succès');
 }
 
 

@@ -1,6 +1,6 @@
 @include('compagnie.all_element.header')
 
-<body class="layout-1" data-luno="theme-blue">
+        {{-- @include('compagnie.all_element.color_global') --}}
     <!-- start: sidebar -->
     @include('compagnie.all_element.sidebar')
 
@@ -28,14 +28,42 @@
                     </a>
                 </div> --}}
 
-                 <div class="d-flex justify-content-between align-items-center mb-4">
+                 {{-- <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="section-title mb-0">
-                      {{-- Modifier l'utilisateur
-                      Votre gare {{ $gares->nom_gare ?? '' }} --}}
+                    
                     </h4>
                     <a href="{{ route('voyage.index') }}" class="btn" title="Retour">
                         <i class="fa fa-arrow-left me-2"></i> Retour à la liste
                     </a>
+                </div> --}}
+                 <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="ms-auto d-flex align-items-center gap-2">
+                        @if($voyage->status == 1)
+                            <!-- Bouton Désactiver -->
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeactivate({{ $voyage->id }})" title="Désactiver le voyage">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                            
+                            <!-- Formulaire de désactivation masqué -->
+                            <form id="destroy-form-{{ $voyage->id }}" action="{{ route('voyage.destroy', $voyage->id) }}" method="POST" style="display: none;">
+                                @csrf
+                                {{-- @method('DELETE') --}}
+                            </form>
+                        @elseif($voyage->status == 3)
+                            <!-- Bouton Réactiver -->
+                            <button type="button" class="btn btn-success btn-sm" onclick="confirmReactivate({{ $voyage->id }})" title="Réactiver le voyage">
+                                <i class="fa fa-undo"></i>
+                            </button>
+                            
+                            <!-- Formulaire de réactivation masqué -->
+                            <form id="reactivate-form-{{ $voyage->id }}" action="{{ route('voyage.reactivation', $voyage->id) }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        @endif
+                        <a href="{{ route('voyage.index') }}" class="btn btn-light">
+                            <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                        </a>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -158,7 +186,8 @@
                                         <div class="info-item">
                                             <label class="form-label text-muted fw-semibold small">Configuration</label>
                                             <p class="fs-6 fw-bold text-dark mb-0 text-truncate" title="{{ $voyage->bus->configurationPlace->nom_complet ?? 'Non défini' }}">
-                                                {{ $voyage->bus->configurationPlace->nom_complet ?? 'Non défini' }}
+                                                {{ $voyage->bus->configurationPlace->nom ?? 'Non défini' }}
+                                                {{ $voyage->bus->configurationPlace->placeconfigbussave ? '(' . count($voyage->bus->configurationPlace->placeconfigbussave) . ' places)' : 'Non défini' }}
                                             </p>
                                         </div>
                                     </div>
@@ -201,7 +230,7 @@
                             <div class="card-body">
                                 <div class="row g-3">
                                     <!-- Nom complet -->
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-4 col-lg-4">
                                         <div class="info-item">
                                             <label class="form-label text-muted fw-semibold small">Nom et Prénom</label>
                                             <p class="fs-6 fw-bold text-dark mb-0">
@@ -211,7 +240,7 @@
                                     </div>
 
                                     <!-- Numéro de téléphone -->
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-4 col-lg-4">
                                         <div class="info-item">
                                             <label class="form-label text-muted fw-semibold small">Téléphone</label>
                                             <p class="fs-6 fw-bold text-dark mb-0">{{ $voyage->chauffeur->telephone ?? 'Non défini' }}</p>
@@ -219,8 +248,7 @@
                                     </div>
 
                                     <!-- Photo du chauffeur -->
-                                    <div class="col-12">
-                                        <div class="info-item">
+                                    <div class="col-md-4 col-lg-4">
                                             <label class="form-label text-muted fw-semibold small">Photo du Chauffeur</label>
                                             <div class="mt-2">
                                                 @if(!empty($voyage->chauffeur->photo))
@@ -232,8 +260,8 @@
                                                     <p class="text-muted fst-italic mb-0">Photo non disponible</p>
                                                 @endif
                                             </div>
-                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -248,7 +276,7 @@
                             <div class="card-body">
                                 <!-- Informations itinéraire -->
                                 <div class="row g-3 mb-4">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="info-item">
                                             <label class="form-label text-muted fw-semibold small">Point de départ</label>
                                             <p class="fs-6 fw-bold text-dark mb-0 text-truncate" title="{{ $voyage->itineraire->ville->nom_ville ?? 'Non défini' }}">
@@ -256,12 +284,28 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="info-item">
                                             <label class="form-label text-muted fw-semibold small">Durée estimée</label>
                                             <p class="fs-6 fw-bold text-dark mb-0">{{ $voyage->itineraire->estimation ?? 'Non défini' }}</p>
                                         </div>
                                     </div>
+
+                                    @if($voyage->disponible_toujours)
+                                    <div class="col-md-4">
+                                        <div class="info-item">
+                                            <label class="form-label text-muted fw-semibold small">Disponible</label>
+                                            <p class="fs-6 fw-bold text-dark mb-0">Toujours disponible</p>
+                                        </div>
+                                    </div>
+                                    @else
+                                     <div class="col-md-4">
+                                        <div class="info-item">
+                                            <label class="form-label text-muted fw-semibold small">Date de début</label>
+                                            <p class="fs-6 fw-bold text-dark mb-0">{{ $voyage->date_depart ?? 'Non défini' }}</p>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
 
                                 <!-- Arrêts du voyage -->
@@ -380,5 +424,48 @@
             }
         }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        // Fonction de confirmation de désactivation
+        function confirmDeactivate(voyageId) {
+            Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: "Voulez-vous vraiment désactiver ce voyage ?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, désactiver',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Soumettre le formulaire de désactivation
+                    document.getElementById('destroy-form-' + voyageId).submit();
+                }
+            });
+        }
+
+        // Fonction de confirmation de réactivation
+        function confirmReactivate(voyageId) {
+            Swal.fire({
+                title: 'Réactiver le voyage',
+                text: "Voulez-vous réactiver ce voyage ?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, réactiver',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Soumettre le formulaire de réactivation
+                    document.getElementById('reactivate-form-' + voyageId).submit();
+                }
+            });
+        }
+    </script>
 </body>
 </html>

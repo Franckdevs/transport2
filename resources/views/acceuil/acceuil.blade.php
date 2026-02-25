@@ -65,7 +65,7 @@
         }
         
         .header-bg {
-            background-image: url('all_image/bus_route.jpg');
+            background-image: url('{{ $imageAcceuilWeb ?? asset('all_image/bus_route.jpg') }}');
             background-size: cover;
             background-position: center;
             min-height: 480px;
@@ -508,6 +508,29 @@
             box-shadow: 0 0 0 3px rgba(255,208,0,0.15);
         }
         
+        /* Style pour le bouton avec loader */
+        .btn-with-loader {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
         .contact-form button {
             background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
             border: none;
@@ -590,7 +613,9 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="#">BETRO</a>
+            <a class="navbar-brand" href="#">
+                {{-- BETRO  --}}
+                <img src="{{ asset('log.png') }}" alt="" style="height: 45px; width: auto;"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -600,12 +625,12 @@
                     <li class="nav-item"><a class="nav-link" href="#processus">Comment ça marche</a></li>
                     <li class="nav-item"><a class="nav-link" href="#services">Nos services</a></li>
                     <li class="nav-item"><a class="nav-link" href="#partenaires">Partenaires</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact-section">Contact</a></li>
                     <li class="nav-item">
                         <a href="{{ route('login') }}" class="btn btn-connexion text-white ms-lg-3">Connexion</a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ url('/#inscription') }}" class="btn btn-connexion text-white ms-lg-2">S'inscrire</a>
+                        <a href="#inscription-section" class="btn btn-connexion text-white ms-lg-2">S'inscrire</a>
                     </li>
                 </ul>
             </div>
@@ -618,7 +643,7 @@
         <p class="lead mb-4">La solution moderne, intuitive et collaborative pour la gestion de votre compagnie de transport.</p>
         <div class="d-flex gap-2 justify-content-center">
             <a href="{{ route('login') }}" class="btn btn-connexion text-white">Se connecter</a>
-            <a href="{{ url('/register') }}" class="btn btn-connexion text-white">S'inscrire</a>
+            {{-- <a href="{{ url('/register') }}" class="btn btn-connexion text-white">S'inscrire</a> --}}
         </div>
     </div>
 </header>
@@ -641,7 +666,7 @@
                 
                 <div class="mb-4">
                     <span class="feature-badge bg-primary text-white">
-                        <i class="fas fa-check-circle"></i> +100 compagnies utilisent BETRO
+                        <i class="fas fa-check-circle"></i> +3 compagnies utilisent BETRO
                     </span>
                 </div>
                 
@@ -649,10 +674,10 @@
                     <span class="feature-badge bg-info text-white">
                         <i class="fas fa-shield-alt"></i> Sécurité des données
                     </span>
-                    <span class="feature-badge bg-success text-white">
+                    <span class="feature-badge bg-info text-white">
                         <i class="fas fa-headset"></i> Support 24/7
                     </span>
-                    <span class="feature-badge bg-warning text-dark">
+                    <span class="feature-badge bg-info text-white">
                         <i class="fas fa-rocket"></i> Innovation continue
                     </span>
                 </div>
@@ -660,7 +685,7 @@
                 <div class="row mt-4">
                     <div class="col-4">
                         <div class="stats-container fade-in delay-1">
-                            <div class="stat-number">+100</div>
+                            <div class="stat-number">+3</div>
                             <div class="stat-label">Compagnies</div>
                         </div>
                     </div>
@@ -681,7 +706,7 @@
             
             <div class="col-lg-6 text-center">
                 <div class="img-container mb-4 fade-in">
-                    <img src="{{ asset('all_image/bus_route.jpg') }}" alt="BETRO équipe" class="img-fluid rounded">
+                    <img src="{{ $sousImageAcceuilWeb ?? asset('all_image/bus_route.jpg') }}" alt="BETRO équipe" class="img-fluid rounded">
                 </div>
                 
                     {{-- <div class="user-avatars">
@@ -903,16 +928,16 @@
         
         <div class="row justify-content-center g-4">
            <div class="col-md-5">
-    <div class="card h-100 shadow-sm text-center">
-        <div class="card-body">
-            <div class="partner-logo">
-                <img src="{{ asset('all_image/image_bmi.jpg') }}" alt="Logo BMI" style="max-width:80px; max-height:80px;">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body">
+                    <div class="partner-logo">
+                        <img src="{{ asset('all_image/image_bmi.jpg') }}" alt="Logo BMI" style="max-width:80px; max-height:80px;">
+                    </div>
+                    <h5 class="card-title text-primary">BMI-WFS</h5>
+                    <p class="card-text">Partenaire international pour la gestion et l'optimisation du transport.</p>
+                </div>
             </div>
-            <h5 class="card-title text-primary">BMI-WFS</h5>
-            <p class="card-text">Partenaire international pour la gestion et l'optimisation du transport.</p>
         </div>
-    </div>
-</div>
             <div class="col-md-5">
                 <div class="card h-100 shadow-sm text-center">
                     <div class="card-body">
@@ -928,28 +953,40 @@
     </section>
 
     <!-- Section Contact -->
-    <section id="contact" class="container py-5 fade-in">
+    <section id="contact-section" class="container py-5 fade-in">
         <div class="row">
             <div class="col-12 text-center mb-5">
                 <h2 class="section-title center">Contactez-nous</h2>
                 <p class="lead">Une question ? Notre équipe est là pour vous aider</p>
             </div>
         </div>
+
+          @if(session('successs'))
+            <div class="alert alert-success">
+                {{ session('successs') }}
+            </div>
+        @endif
         
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <form class="contact-form">
+                <form class="contact-form" action="{{ route('contact.create') }}" method="POST">
+                    @csrf
                     <div class="mb-3">
-                        <input type="text" class="form-control" placeholder="Votre nom" required>
+                        <input type="text" class="form-control" placeholder="Votre nom" name="nom_complet" value="{{ old('nom_complet') }}" required>
                     </div>
                     <div class="mb-3">
-                        <input type="email" class="form-control" placeholder="Votre email" required>
+                        <input type="email" class="form-control" placeholder="Votre email" name="votre_email" value="{{ old('votre_email') }}" required>
                     </div>
                     <div class="mb-3">
-                        <textarea class="form-control" rows="4" placeholder="Votre message" required></textarea>
+                        <textarea class="form-control" rows="4" placeholder="Votre message" name="votre_message" value="{{ old('votre_message') }}" required></textarea>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary text-white">Envoyer</button>
+                        <button type="submit" class="btn btn-primary text-white" id="contact-submit-btn">
+                            <span id="submit-text">Envoyer</span>
+                            <div id="submit-loader" class="spinner-border spinner-border-sm text-light ms-2 d-none" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -961,13 +998,23 @@
         use App\Models\Ville;
         $villes = Ville::all();
     @endphp
-    <section id="inscription" class="container py-5 fade-in">
+    <section id="inscription-section" class="container py-5 fade-in">
         <div class="row">
             <div class="col-12 text-center mb-4">
                 <h2 class="section-title center">Créer une compagnie</h2>
                 <p class="lead">Inscrivez votre compagnie et son administrateur en quelques étapes</p>
             </div>
         </div>
+        {{-- @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif --}}
+
         <div class="row justify-content-center">
             <div class="col-12">
                 <div class="card" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
@@ -998,66 +1045,8 @@
             <form method="POST" action="{{ route('register.store') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="row g-4">
-                                <!-- Partie Administrateur -->
-                                
-                                <div class="col-lg-6">
-                                    <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> ADMINISTRATEUR</h5>
-                                    <div class="mb-3">
-                                        <label for="nom" class="form-label">Nom <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="nom" name="nom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('nom') }}">
-                                        @error('nom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="prenom" class="form-label">Prénom <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="prenom" name="prenom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('prenom') }}">
-                                        @error('prenom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtnHome">
-                                                <span>🇨🇮</span>
-                                                <span>+225</span>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item active" href="#">🇨🇮 Côte d'Ivoire (+225)</a></li>
-                                            </ul>
-                                            <input type="hidden" name="country_code" value="+225">
-                                            <input type="tel" class="form-control" id="telephone_home" name="telephone" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" placeholder="0700000000" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" value="{{ old('telephone') }}">
-                                        </div>
-                                        @error('telephone')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                        <div class="form-text">10 chiffres uniquement</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}">
-                                        @error('email')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
-                                    </div>
-
-                                    <div class="mt-2">
-                                        <h6 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i> Localisation de la compagnie</h6>
-                                        <div class="mb-2">
-                                            <input type="text" name="adresse" id="searchInputHome" class="form-control" placeholder="Rechercher une adresse..." autocomplete="off">
-                                        </div>
-                                        <div class="mb-2">
-                                            <button type="button" id="locateBtnHome" class="btn btn-outline-primary btn-sm">
-                                                <i class="fas fa-location-arrow me-1"></i> Me localiser
-                                            </button>
-                                        </div>
-                                        <div id="statusMessageHome" class="status-message small mb-2"></div>
-                                        <div id="mapHome" style="height: 260px; border-radius: 8px;" aria-label="Carte de localisation"></div>
-                                        <input type="hidden" id="latitudeHome" name="latitude">
-                                        <input type="hidden" id="longitudeHome" name="longitude">
-                                    </div>
-                                </div>
-
-                                <!-- Séparateur (desktop) -->
-                                <div class="col-lg-1 d-none d-lg-flex align-items-stretch">
-                                    <div style="width:1px; background:#ddd; height:100%"></div>
-                                </div>
-
                                 <!-- Partie Compagnie -->
-                                <div class="col-lg-5">
+                                <div class="col-lg-6">
                                     <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> COMPAGNIE</h5>
                                     <div class="mb-3">
                                         <label for="nom_complet_compagnies" class="form-label">Nom de la compagnie <span class="text-danger">*</span></label>
@@ -1096,19 +1085,100 @@
                                         @error('villes_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                     </div>
                                     <div class="mb-3">
-                                        <label for="logo_compagnies" class="form-label">Logo (max 10MB)</label>
-                                        <input type="file" class="form-control" id="logo_compagnies" name="logo_compagnies" accept="image/*" onchange="previewLogoHome(this)">
+                                        <label for="logo_compagnies" class="form-label">Logo  (Formats : JPG, JPEG, PNG, GIF – Taille max : 10 Mo)</label>
+                                        <input type="file" class="form-control" id="logo_compagnies" name="logo_compagnies" accept="image/*" onchange="previewLogoHome(this); updateFileInfo(this);">
                                         <div id="logoPreviewHome" class="mt-2 text-center" style="display: none;">
                                             <img id="logoPreviewImgHome" src="#" alt="Aperçu du logo" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
-                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeLogoHome()">
-                                                <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                        </div>
+                                        <div id="fileInfo" class="small text-muted mt-1"></div>
+                                        @error('logo_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+
+                                     <div class="mt-2">
+                                        <h6 class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Localisation de la compagnie</h6>
+                                        <div class="input-group mb-2">
+                                            <input type="text" name="adresse" id="searchInputHome" class="form-control" placeholder="Rechercher une adresse..." autocomplete="off">
+                                            <button type="button" id="locateBtnHome" class="btn btn-connexion d-flex align-items-center">
+                                                <i class="fas fa-location-arrow me-1"></i>
+                                                <span>Me localiser</span>
                                             </button>
                                         </div>
+                                        <div id="statusMessageHome" class="status-message small mb-2"></div>
+                                        <div id="mapHome" style="height: 260px; border-radius: 8px;" aria-label="Carte de localisation"></div>
+                                        <input type="hidden" id="latitudeHome" name="latitude">
+                                        <input type="hidden" id="longitudeHome" name="longitude">
                                     </div>
+                                    
                                 </div>
+
+                                <!-- Séparateur (desktop) -->
+                                <div class="col-lg-1 d-none d-lg-flex align-items-stretch">
+                                    <div style="width:1px; background:#ddd; height:100%"></div>
+                                </div>
+
+                                <!-- Partie Administrateur -->
+                                <div class="col-lg-5">
+                                    <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> ADMINISTRATEUR DE LA COMPAGNIE</h5>
+                                    <div class="mb-3">
+                                        <label for="nom" class="form-label">Nom administrateur  <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="nom" name="nom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('nom') }}">
+                                        @error('nom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="prenom" class="form-label">Prénom administrateur  <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="prenom" name="prenom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('prenom') }}">
+                                        @error('prenom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="telephone" class="form-label">Téléphone administrateur  <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtnHome">
+                                                <span>🇨🇮</span>
+                                                <span>+225</span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item active" href="#">🇨🇮 Côte d'Ivoire (+225)</a></li>
+                                            </ul>
+                                            <input type="hidden" name="country_code" value="+225">
+                                            <input type="tel" class="form-control" id="telephone_home" name="telephone" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" placeholder="0700000000" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" value="{{ old('telephone') }}">
+                                        </div>
+                                        @error('telephone')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                        <div class="form-text">10 chiffres uniquement</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        {{-- <label for="email" class="form-label">Email administrateur <span class="text-danger">*</span></label> --}}
+
+                                    <label for="email" class="form-label">
+                                        Email administrateur <span class="text-danger">*</span>
+                                        <small class="text-muted d-block">
+                                            C’est à cette adresse que sera envoyé l’email de confirmation.
+                                        </small>
+                                    </label>
+                                        <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}">
+                                        @error('email')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                    </div>
+
+                                    {{-- <div class="mt-2">
+                                        <h6 class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Localisation de la compagnie</h6>
+                                        <div class="input-group mb-2">
+                                            <input type="text" name="adresse" id="searchInputHome" class="form-control" placeholder="Rechercher une adresse..." autocomplete="off">
+                                            <button type="button" id="locateBtnHome" class="btn btn-connexion d-flex align-items-center">
+                                                <i class="fas fa-location-arrow me-1"></i>
+                                                <span>Me localiser</span>
+                                            </button>
+                                        </div>
+                                        <div id="statusMessageHome" class="status-message small mb-2"></div>
+                                        <div id="mapHome" style="height: 260px; border-radius: 8px;" aria-label="Carte de localisation"></div>
+                                        <input type="hidden" id="latitudeHome" name="latitude">
+                                        <input type="hidden" id="longitudeHome" name="longitude">
+                                    </div> --}}
+                                 
                             </div>
-                            <div class="text-center mt-3">
-                                <button type="submit" class="btn btn-connexion text-white px-4 py-2">Créer la compagnie</button>
+                            <div class="text-center mt-5">
+                                <button type="submit" id="submitBtn" class="btn btn-connexion text-white px-4 py-2">
+                                    <span class="btn-loader" id="submitLoader"></span>
+                                    <span id="submitText">Créer la compagnie</span>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -1139,6 +1209,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Gestion du formulaire de contact
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.querySelector('.contact-form');
+            
+            if (contactForm) {
+                contactForm.addEventListener('submit', function() {
+                    const submitBtn = document.getElementById('contact-submit-btn');
+                    const submitText = document.getElementById('submit-text');
+                    const submitLoader = document.getElementById('submit-loader');
+                    
+                    // Désactiver le bouton et afficher le loader
+                    submitBtn.disabled = true;
+                    submitText.textContent = 'Envoi...';
+                    submitLoader.classList.remove('d-none');
+                });
+            }
+        });
         // Animation au défilement
         document.addEventListener('DOMContentLoaded', function() {
             const fadeElements = document.querySelectorAll('.fade-in');
@@ -1188,72 +1275,307 @@
         }
     </script>
     <script>
+        // Fonction pour afficher les informations du fichier sélectionné
+        // function updateFileInfo(input) {
+        //     const fileInfo = document.getElementById('fileInfo');
+        //     if (input.files && input.files[0]) {
+        //         const file = input.files[0];
+        //         const fileSize = (file.size / 1024 / 1024).toFixed(2); // Taille en Mo
+        //         const fileName = file.name;
+        //         const fileExtension = fileName.split('.').pop().toUpperCase();
+                
+        //         fileInfo.textContent = `Fichier: ${fileName} (${fileSize} Mo) - Format: ${fileExtension}`;
+        //         fileInfo.style.display = 'block';
+        //     } else {
+        //         fileInfo.textContent = '';
+        //         fileInfo.style.display = 'none';
+        //     }
+        // }
+        function updateFileInfo(input) {
+    const fileInfo = document.getElementById('fileInfo');
+    const submitBtn = document.getElementById('submitBtn');
+    const maxSize = 10; // Taille maximale en Mo
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const fileSize = (file.size / 1024 / 1024).toFixed(2); // Taille en Mo
+        const fileName = file.name;
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        const isValidExtension = allowedExtensions.includes(fileExtension);
+        const isValidSize = file.size <= maxSize * 1024 * 1024; // Conversion en octets
+        
+        // Mise en forme du message avec les parties problématiques en rouge
+        let message = `Fichier: ${fileName} `;
+        
+        // Vérification de la taille
+        if (!isValidSize) {
+            message += `<span style="color: red;">(${fileSize} Mo - Taille maximale dépassée)</span>`;
+        } else {
+            message += `(${fileSize} Mo)`;
+        }
+        
+        message += ` - Format: `;
+        
+        // Vérification de l'extension
+        if (!isValidExtension) {
+            message += `<span style="color: red;">${fileExtension.toUpperCase()} (Format non supporté)</span>`;
+        } else {
+            message += fileExtension.toUpperCase();
+        }
+        
+        fileInfo.innerHTML = message;
+        fileInfo.style.display = 'block';
+        
+        // Désactiver le bouton de soumission si le fichier n'est pas valide
+        if (submitBtn) {
+            submitBtn.disabled = !(isValidExtension && isValidSize);
+        }
+    } else {
+        fileInfo.textContent = '';
+        fileInfo.style.display = 'none';
+        if (submitBtn) {
+            submitBtn.disabled = false;
+        }
+    }
+}
+
         // Google Maps for home registration form
-        let mapHomeInst, markerHome, autocompleteHome;
+        let mapHomeInst, markerHome, autocompleteHome, circleHome;
         let isMapsLoadedHome = false;
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessageHome');
+            if (!statusDiv) return;
+            
+            statusDiv.innerHTML = message;
+            statusDiv.className = `status-message ${type}`;
+            
+            // Cacher le message après 5 secondes pour les messages d'info
+            if (type === 'info' || type === 'success') {
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                    statusDiv.className = 'status-message';
+                }, 5000);
+            }
+        }
+
         window.initMapHome = function () {
             isMapsLoadedHome = true;
             const mapEl = document.getElementById('mapHome');
             if (!mapEl) return;
+            
             const defaultLoc = { lat: 5.345317, lng: -4.024429 };
+            
+            // Initialiser la carte
             mapHomeInst = new google.maps.Map(mapEl, {
                 center: defaultLoc,
                 zoom: 13,
-                streetViewControl: false
+                streetViewControl: false,
+                mapTypeControlOptions: {
+                    style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+                    position: google.maps.ControlPosition.TOP_RIGHT
+                }
             });
+
+            // Créer le marqueur
             markerHome = new google.maps.Marker({
                 position: defaultLoc,
                 map: mapHomeInst,
                 draggable: true,
-                icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png', scaledSize: new google.maps.Size(40, 40) }
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                title: "Déplacez-moi pour ajuster la position"
             });
-            markerHome.addListener('dragend', function(){
+
+            // Ajouter un cercle de précision autour du marqueur
+            circleHome = new google.maps.Circle({
+                map: mapHomeInst,
+                radius: 100, // 100 mètres
+                fillColor: '#AA0000',
+                fillOpacity: 0.2,
+                strokeColor: '#AA0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 1
+            });
+            circleHome.bindTo('center', markerHome, 'position');
+
+            // Initialiser l'autocomplétion des adresses
+            initAutocompleteHome();
+
+            // Événements
+            markerHome.addListener('dragend', function() {
                 setHomeLocation(markerHome.getPosition());
             });
-            const input = document.getElementById('searchInputHome');
-            if (input) {
-                autocompleteHome = new google.maps.places.Autocomplete(input, {
-                    types: ['geocode','establishment'],
-                    componentRestrictions: { country: 'ci' }
-                });
-                autocompleteHome.bindTo('bounds', mapHomeInst);
-                autocompleteHome.addListener('place_changed', function(){
-                    const place = autocompleteHome.getPlace();
-                    if (!place.geometry || !place.geometry.location) return;
-                    setHomeLocation(place.geometry.location);
-                });
-            }
+
+            // Gestion du bouton de localisation
             const locateBtn = document.getElementById('locateBtnHome');
             if (locateBtn) {
-                locateBtn.addEventListener('click', function(){
-                    if (!navigator.geolocation) return;
-                    locateBtn.disabled = true;
-                    locateBtn.innerHTML = "<i class='fas fa-spinner fa-spin me-1'></i> Localisation...";
-                    navigator.geolocation.getCurrentPosition(function(pos){
-                        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                        setHomeLocation(loc);
-                        locateBtn.disabled = false;
-                        locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
-                    }, function(){
-                        locateBtn.disabled = false;
-                        locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
-                    }, { timeout: 15000, enableHighAccuracy: true, maximumAge: 60000 });
-                });
+                locateBtn.addEventListener('click', locateUserHome);
             }
-            // Initialize hidden fields
+
+            // Initialiser les champs cachés
             updateHomeCoords(defaultLoc.lat, defaultLoc.lng);
         };
-        function setHomeLocation(latlng){
-            mapHomeInst.setCenter(latlng);
-            markerHome.setPosition(latlng);
-            updateHomeCoords(latlng.lat ? latlng.lat() : latlng.lat, latlng.lng ? latlng.lng() : latlng.lng);
+
+        function initAutocompleteHome() {
+            if (!isMapsLoadedHome) return;
+
+            const input = document.getElementById('searchInputHome');
+            if (!input) return;
+
+            autocompleteHome = new google.maps.places.Autocomplete(input, {
+                types: ['geocode', 'establishment'],
+                componentRestrictions: { country: 'ci' }
+            });
+
+            autocompleteHome.bindTo('bounds', mapHomeInst);
+            autocompleteHome.addListener('place_changed', function() {
+                const place = autocompleteHome.getPlace();
+                if (!place.geometry || !place.geometry.location) {
+                    showStatus("Lieu non trouvé !", "error");
+                    return;
+                }
+                setHomeLocation(place.geometry.location);
+            });
         }
-        function updateHomeCoords(lat,lng){
+
+        function locateUserHome() {
+            const locateBtn = document.getElementById('locateBtnHome');
+            
+            if (!navigator.geolocation) {
+                showStatus("La géolocalisation n'est pas supportée par ce navigateur.", "error");
+                return;
+            }
+
+            showStatus("Localisation en cours... ", "info");
+            
+            // Désactiver le bouton pendant la localisation
+            locateBtn.disabled = true;
+            locateBtn.innerHTML = "<i class='fas fa-spinner fa-spin me-1'></i> Localisation...";
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    setHomeLocation(userLocation);
+                    locateBtn.disabled = false;
+                    locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
+                },
+                function(error) {
+                    let errorMessage = "Impossible de récupérer votre position.";
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = "Vous avez refusé l'accès à votre position. Veuillez autoriser la localisation dans les paramètres de votre navigateur.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = "Votre position n'a pas pu être déterminée. Vérifiez votre connexion Internet ou le signal GPS.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = "La requête a expiré. Veuillez réessayer.";
+                            break;
+                    }
+                    showStatus(errorMessage, "error");
+                    locateBtn.disabled = false;
+                    locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
+                },
+                {
+                    timeout: 15000,
+                    enableHighAccuracy: true,
+                    maximumAge: 60000
+                }
+            );
+        }
+
+        function setHomeLocation(latlng) {
+            const lat = typeof latlng.lat === 'function' ? latlng.lat() : latlng.lat;
+            const lng = typeof latlng.lng === 'function' ? latlng.lng() : latlng.lng;
+
+            // Mettre à jour la position de la carte et du marqueur
+            mapHomeInst.setCenter({ lat, lng });
+            mapHomeInst.setZoom(16);
+            markerHome.setPosition({ lat, lng });
+
+            // Mettre à jour les champs cachés
+            updateHomeCoords(lat, lng);
+
+            // Mettre à jour l'adresse dans le champ de recherche
+            showStatus("Récupération de l'adresse...", "info");
+            
+            // Utiliser le géocodage de Google Maps
+            if (isMapsLoadedHome) {
+                const geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ location: { lat, lng } }, function(results, status) {
+                    if (status === "OK" && results[0]) {
+                        const searchInput = document.getElementById('searchInputHome');
+                        if (searchInput) {
+                            searchInput.value = results[0].formatted_address;
+                            showStatus("Position mise à jour avec succès", "success");
+                        }
+                    } else {
+                        // Si Google échoue, essayer avec Nominatim
+                        useNominatimHome(lat, lng);
+                    }
+                });
+            } else {
+                // Si Google Maps n'est pas chargé, utiliser Nominatim
+                useNominatimHome(lat, lng);
+            }
+        }
+
+        function useNominatimHome(lat, lng) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                .then(response => {
+                    if (!response.ok) throw new Error("Erreur réseau");
+                    return response.json();
+                })
+                .then(data => {
+                    const searchInput = document.getElementById('searchInputHome');
+                    if (searchInput && data.display_name) {
+                        searchInput.value = data.display_name;
+                        showStatus("Position mise à jour avec succès", "success");
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la récupération de l'adresse:", error);
+                    showStatus("Impossible de récupérer l'adresse exacte", "warning");
+                });
+        }
+
+        function updateHomeCoords(lat, lng) {
             const latI = document.getElementById('latitudeHome');
             const lngI = document.getElementById('longitudeHome');
             if (latI) latI.value = lat;
             if (lngI) lngI.value = lng;
+            
+            // Mettre à jour l'affichage des coordonnées si nécessaire
+            const latValue = document.getElementById('latValueHome');
+            const lngValue = document.getElementById('lngValueHome');
+            if (latValue) latValue.textContent = lat.toFixed(6);
+            if (lngValue) lngValue.textContent = lng.toFixed(6);
         }
+    </script>
+    <script>
+        // Gestion du loader sur le bouton de soumission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="{{ route('register.store') }}"]');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitLoader = document.getElementById('submitLoader');
+            const submitText = document.getElementById('submitText');
+            
+            if (form) {
+                form.addEventListener('submit', function() {
+                    // Désactiver le bouton et afficher le loader
+                    submitBtn.disabled = true;
+                    submitLoader.style.display = 'inline-block';
+                    submitText.textContent = 'Création en cours...';
+                });
+            }
+        });
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places&callback=initMapHome" async defer></script>
 </body>

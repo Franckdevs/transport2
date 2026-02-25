@@ -10,6 +10,7 @@ class Compagnies extends Model
 
     // Champs autorisés pour l’assignation de masse
     protected $fillable = [
+        'id',
         'nom_complet_compagnies',
         'email_compagnies',
         'telephone_compagnies',

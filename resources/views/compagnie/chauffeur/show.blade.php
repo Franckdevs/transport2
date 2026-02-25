@@ -3,8 +3,8 @@
     
     <style>
         :root {
-            --primary: #3498db;
-            --primary-light: #ebf5fb;
+            --primary: #ffc107;
+            --primary-light: #ffecb3;
             --secondary: #6c757d;
             --success: #2ecc71;
             --warning: #f39c12;
@@ -29,7 +29,7 @@
         }
 
         .profile-sidebar {
-            background: linear-gradient(135deg, var(--primary) 0%, #2980b9 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #ffa000 100%);
             color: white;
             padding: 2rem;
             text-align: center;
@@ -154,10 +154,10 @@
         }
 
         .btn-primary:hover {
-            background: #2980b9;
+            background: #ffa000;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-            color: white;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+            color: #212529;
         }
 
         .btn-outline-secondary {
@@ -250,16 +250,14 @@
 
         <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
             <div class="container-fluid">
-                <!-- En-tête -->
+                <!-- En-tête avec bouton à droite -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        {{-- <h1 class="h3 mb-1 text-dark">Détails du chauffeur</h1> --}}
-                        {{-- <p class="text-muted mb-0">Informations complètes du profil</p> --}}
+                   
+                    <div class="ms-auto">
+                        <a href="{{ route('chauffeur.index') }}" class="btn btn-light border">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
                     </div>
-                    <a href="{{ route('chauffeur.index') }}" class="btn">
-                        <i class="fas fa-arrow-left me-2"></i>
-                        Retour à la liste
-                    </a>
                 </div>
 
                 <!-- Carte de profil -->
@@ -268,10 +266,10 @@
                         <div class="profile-card">
                             <div class="row g-0">
 
-                                <div class="info-badge">
+                                {{-- <div class="info-badge">
                                     <i class="fas fa-info-circle"></i>
                                     Vous modifiez les informations de 
-                                </div>
+                                </div> --}}
                                 <!-- Sidebar avec photo -->
                                 <div class="col-lg-4 profile-sidebar">
                                     <div class="d-flex flex-column align-items-center h-100">
@@ -298,7 +296,7 @@
                                 <!-- Contenu principal -->
                                 <div class="col-lg-8 profile-content">
                                     <h4 class="section-title">
-                                        <i class="fas fa-info-circle text-primary"></i>
+                                        <i class="fas fa-info-circle text-warning"></i>
                                         Informations personnelles
                                     </h4>
                                     
@@ -364,21 +362,38 @@
                                     <!-- Métadonnées -->
                                     <div class="metadata">
                                         <p class="metadata-text">
-                                            <i class="fas fa-clock text-primary"></i>
+                                            <i class="fas fa-clock text-warning"></i>
                                             Créé le : {{ $chauffeur->created_at->format('d/m/Y à H:i') }}
                                         </p>
                                     </div>
 
                                     <!-- Actions -->
-                                    <div class="actions-grid">
-                                        <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-primary">
-                                            <i class="fas fa-edit me-2"></i>
-                                            Modifier le profil
-                                        </a>
-                                        <a href="{{ route('chauffeur.index') }}" class="btn btn-outline-secondary">
-                                            <i class="fas fa-list me-2"></i>
-                                            Liste des chauffeurs
-                                        </a>
+                                    <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
+                                        <div class="d-flex gap-2">
+                                            @if($chauffeur->status == 3)
+                                                <!-- Bouton Réactiver avec SweetAlert2 -->
+                                                <form id="reactivateForm{{ $chauffeur->id }}" action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    <button type="button" onclick="confirmReactivation(event, {{ $chauffeur->id }}, '{{ addslashes($chauffeur->nom) }} {{ addslashes($chauffeur->prenom) }}')" class="btn btn-success">
+                                                        <i class="fa fa-undo me-2"></i>Réactiver le chauffeur
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <!-- Bouton Désactiver avec SweetAlert2 -->
+                                                <form id="deleteForm{{ $chauffeur->id }}" action="{{ route('activer.destroy', $chauffeur->id) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    <button type="button" onclick="confirmDelete(event, {{ $chauffeur->id }}, '{{ addslashes($chauffeur->nom) }} {{ addslashes($chauffeur->prenom) }}')" class="btn btn-warning" title="Désactiver le chauffeur">
+                                                        <i class="fas fa-user-slash me-2"></i>Désactiver
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            
+                                            <a href="{{ route('modifier.edit', $chauffeur->id) }}" class="btn btn-warning">
+                                                <i class="fas fa-edit me-2"></i>Modifier
+                                            </a>
+                                        </div>
+                                        
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -393,8 +408,82 @@
 
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/bundle/apexcharts.bundle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // Fonction de confirmation de suppression avec SweetAlert2
+        function confirmDelete(event, id, name) {
+            event.preventDefault(); // Empêche la soumission directe du formulaire
+            
+            Swal.fire({
+                title: 'Confirmer la désactivation',
+                text: `Êtes-vous sûr de vouloir désactiver le chauffeur : ${name} ?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Oui, désactiver',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-danger mx-2',
+                    cancelButton: 'btn btn-secondary mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Soumettre le formulaire de suppression
+                    document.getElementById(`deleteForm${id}`).submit();
+                }
+            });
+        }
+
+        // Fonction de confirmation de réactivation avec SweetAlert2
+        function confirmReactivation(event, id, name) {
+            event.preventDefault(); // Empêche la soumission directe du formulaire
+            
+            Swal.fire({
+                title: 'Confirmer la réactivation',
+                text: `Voulez-vous vraiment réactiver le chauffeur : ${name} ?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, réactiver',
+                cancelButtonText: 'Annuler',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-success mx-2',
+                    cancelButton: 'btn btn-secondary mx-2'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Soumettre le formulaire de réactivation
+                    document.getElementById(`reactivateForm${id}`).submit();
+                }
+            });
+        }
+
+        // Gestion des messages de session (succès/erreur)
+        @if(session('success'))
+            Swal.fire({
+                title: 'Succès !',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                title: 'Erreur !',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
         // Animation simple au chargement
         document.addEventListener('DOMContentLoaded', function() {
             const infoCards = document.querySelectorAll('.info-card');

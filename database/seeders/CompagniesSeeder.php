@@ -11,7 +11,7 @@ use App\Models\Compagnies;
 use App\Models\Ville;
 
 class CompagniesSeeder extends Seeder
-{
+{   
     public function run(): void
     {
         $villes = Ville::pluck('id')->toArray();
@@ -58,7 +58,8 @@ class CompagniesSeeder extends Seeder
                 'telephone_compagnies' => "02000000{$i}",
                 'adresse_compagnies' => "Adresse Compagnie {$i}",
                 'description_compagnies' => "Description de la compagnie {$i}",
-                'logo_compagnies' => null,
+                'logo_compagnies' => '1763543209_4119743.jpg',
+                // 1763543209_4119743.jpg
                 'info_user_id' => $infoUser->id,
                 'latitude' => rand(-90, 90) . '.' . rand(100000, 999999),
                 'longitude' => rand(-180, 180) . '.' . rand(100000, 999999),

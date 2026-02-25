@@ -22,43 +22,99 @@
     <!-- start: page body -->
     <div class="page-body px-xl-4 px-sm-2 px-0 py-lg-2 py-1 mt-0 mt-lg-3">
       <div class="container-fluid">
-       <div class="container py-5">
-    <h2 class="text-center mb-4">Modifier la configuration</h2>
-
-    <div class="card shadow-sm p-4">
-        <div class="mb-3">
-            <a href="{{ route('listeconfig.index') }}" class="btn btn-outline-secondary">
-                <i class="fa fa-arrow-left me-2"></i>Retour à la liste
+        <!-- En-tête avec bouton à droite -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          {{-- <h1 class="page-title mb-0">
+            <i class="fas fa-edit me-2"></i>Modifier la configuration
+          </h1> --}}
+          <div class="ms-auto">
+            <a href="{{ route('listeconfig.index') }}" class="btn btn-light">
+              <i class="fas fa-arrow-left me-2"></i>Retour à la liste
             </a>
+          </div>
         </div>
-        <form id="configBusForm" method="POST" action="{{ route('config.update', $configuration->id) }}" novalidate>
-                @csrf
-                @method('PUT')
-                <div class="row g-3">
+
+        <div class="container py-3">
+          <div class="card shadow-sm">
+            {{-- <div class="card-header bg-light">
+              <h5 class="mb-0">
+                <i class="fas fa-edit me-2"></i>Modifier la configuration
+              </h5>
+            </div> --}}
+            <div class="card-body p-4">
+            <form id="configBusForm" method="POST" action="{{ route('config.update', $configuration->id) }}" novalidate>
+              @csrf
+              @method('PUT')
+              <div class="row g-3">
                 <!-- Première ligne : Configuration de base -->
-                <div class="col-md-3">
-                    <label class="form-label">Nom de la configuration <span class="text-danger">*</span></label>
-                    <input type="text" name="nom" class="form-control" value="{{ old('nom', $configuration->nom) }}" required>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="nom" class="form-label fw-bold">Nom de la configuration <span class="text-danger">*</span></label>
+                        <input type="text" name="nom" id="nom" class="form-control form-control-lg" 
+                               value="{{ old('nom', $configuration->nom) }}" required
+                               placeholder="Ex: Bus VIP 40 places"
+                               aria-describedby="nomHelp">
+                        <small id="nomHelp" class="form-text text-muted">Donnez un nom clair à cette configuration</small>
+                        @error('nom')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Nombre de colonnes <span class="text-danger">*</span></label>
-                    <input type="number" name="colonne" id="colonne" class="form-control" min="1" max="7" value="{{ old('colonne', $configuration->colonne) }}" required>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="colonne" class="form-label fw-bold">Colonnes <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-columns"></i></span>
+                            <input type="number" name="colonne" id="colonne" class="form-control" 
+                                   min="1" max="7" value="{{ old('colonne', $configuration->colonne) }}" required
+                                   oninput="validateColumnCount(this)"
+                                   aria-label="Nombre de colonnes">
+                        </div>
+                        <small class="form-text text-muted">Max: 7 colonnes</small>
+                        <div id="colonneError" class="invalid-feedback">
+                            Le nombre de colonnes ne peut pas dépasser 7.
+                        </div>
+                        @error('colonne')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Nombre de rangées <span class="text-danger">*</span></label>
-                    <input type="number" name="ranger" id="ranger" class="form-control" min="1" max="100" value="{{ old('ranger', $configuration->ranger) }}" required>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="ranger" class="form-label fw-bold">Rangées <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-bars"></i></span>
+                            <input type="number" name="ranger" id="ranger" class="form-control" 
+                                   min="1" max="100" value="{{ old('ranger', $configuration->ranger) }}" required
+                                   oninput="validateRowCount(this)"
+                                   aria-label="Nombre de rangées">
+                        </div>
+                        <small class="form-text text-muted">Max: 100 rangées</small>
+                        <div id="rangerError" class="invalid-feedback">
+                            Le nombre de rangées ne peut pas dépasser 100.
+                        </div>
+                        @error('ranger')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
 
-              <div class="col-md-3">
-    <label class="form-label">Places côté chauffeur <span class="text-danger">*</span></label>
-    <select id="leftSeats" class="form-select" name="places_cote_chauffeur">
-        <option value="1" {{ old('places_cote_chauffeur', $configuration->places_cote_chauffeur) == 1 ? 'selected' : '' }}>1 place</option>
-        <option value="2" {{ old('places_cote_chauffeur', $configuration->places_cote_chauffeur) == 2 ? 'selected' : '' }}>2 places</option>
-        <option value="3" {{ old('places_cote_chauffeur', $configuration->places_cote_chauffeur) == 3 ? 'selected' : '' }}>3 places</option>
-    </select>
-</div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="leftSeats" class="form-label fw-bold">Places côté chauffeur <span class="text-danger">*</span></label>
+                        <select id="leftSeats" class="form-select" name="places_cote_chauffeur" aria-describedby="seatsHelp">
+                            <option value="1" {{ old('places_cote_chauffeur', $configuration->places_cote_chauffeur) == 1 ? 'selected' : '' }}>1 place</option>
+                            <option value="2" {{ old('places_cote_chauffeur', $configuration->places_cote_chauffeur) == 2 ? 'selected' : '' }}>2 places</option>
+                            <option value="3" {{ old('places_cote_chauffeur', $configuration->places_cote_chauffeur) == 3 ? 'selected' : '' }}>3 places</option>
+                        </select>
+                        <small id="seatsHelp" class="form-text text-muted">Nombre de places côté conducteur</small>
+                        @error('places_cote_chauffeur')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
 
             </div>
@@ -66,13 +122,21 @@
             <!-- Deuxième ligne : Description -->
             <div class="row g-3 mt-3">
             <div class="col-12">
-                <label class="form-label">Description <span class="text-danger">*</span></label>
-                <textarea name="description" class="form-control" rows="2" placeholder="Description du bus">{{ old('description', $configuration->description) }}</textarea>
+                <div class="form-group">
+                    <label for="description" class="form-label fw-bold">Description <span class="text-danger">*</span></label>
+                    <textarea name="description" id="description" class="form-control" 
+                              rows="2" placeholder="Décrivez cette configuration de bus..."
+                              aria-describedby="descHelp">{{ old('description', $configuration->description) }}</textarea>
+                    <small id="descHelp" class="form-text text-muted">Détails sur la disposition des sièges</small>
+                    @error('description')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
            </div>
 
             <!-- Champ caché -->
-            <input type="hidden" name="info_user_id" id="info_user_id" value="1" required>
+            <input type="hidden" name="info_user_id" id="info_user_id" value="{{ auth()->user()->info_user->id }}" required>
 
             <div class="text-center my-3">
 
@@ -117,7 +181,7 @@
             <input type="hidden" name="sieges" id="siegesInput">
 
             <div class="text-center">
-                <button type="submit" id="submitBtn" class="btn btn-success btn-lg">
+                <button type="submit" id="submitBtn" class="btn btn-warning btn-lg">
                     <span class="d-flex align-items-center justify-content-center">
                         <span id="submitText">
                             <i class="fa fa-save me-2"></i> Enregistrer la configuration
@@ -155,7 +219,36 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Désactive le double-clic sur le formulaire
+// Fonctions de validation
+function validateColumnCount(input) {
+    const maxColumns = 7;
+    const errorElement = document.getElementById('colonneError');
+    
+    if (parseInt(input.value) > maxColumns) {
+        input.classList.add('is-invalid');
+        errorElement.style.display = 'block';
+        input.value = maxColumns; // Réinitialiser à la valeur maximale
+    } else {
+        input.classList.remove('is-invalid');
+        errorElement.style.display = 'none';
+    }
+}
+    
+function validateRowCount(input) {
+    const maxRows = 100;
+    const errorElement = document.getElementById('rangerError');
+    
+    if (parseInt(input.value) > maxRows) {
+        input.classList.add('is-invalid');
+        errorElement.style.display = 'block';
+        input.value = maxRows; // Réinitialiser à la valeur maximale
+    } else {
+        input.classList.remove('is-invalid');
+        errorElement.style.display = 'none';
+    }
+}
+
+    // Désactive le double-clic sur le formulaire
 document.addEventListener('DOMContentLoaded', () => {
     // Gestion de la soumission du formulaire
     const form = document.getElementById('configBusForm');
@@ -421,6 +514,15 @@ generateBtn.addEventListener('click', () => {
         }
     });
 });
+
+//  @if($errors->any())
+//             Swal.fire({
+//                 title: 'Erreur !',
+//                 html: '{!! implode('<br>', $errors->all()) !!}',
+//                 icon: 'error',
+//                 confirmButtonText: 'OK'
+//             });
+//         @endif
 </script>
 
 <style>

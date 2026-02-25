@@ -11,6 +11,7 @@ class Voyage extends Model
         'bus_id',
         'chauffeur_id',
         // 'montant',
+        'disponible_toujours',
         'heure_depart',
         'date_depart',
         'compagnie_id',

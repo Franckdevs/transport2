@@ -7,31 +7,45 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-yellow: #FFD700;  /* Jaune or */
+            --white: #FFFFFF;          /* Blanc */
+            --black: #000000;          /* Noir */
+            --light-gray: #f8f9fa;     /* Gris clair pour les fonds */
+        }
+        
         body {
-            background: #ffffff;
+            background: var(--white);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--black);
         }
+        
         .setup-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            background-color: var(--light-gray);
         }
+        
         .setup-card {
-            background: white;
+            background: var(--white);
             border-radius: 15px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             max-width: 650px;
             width: 100%;
         }
         .setup-header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
+            background: var(--primary-yellow);
+            color: var(--black);
             padding: 30px;
             text-align: center;
+            border-bottom: 2px solid var(--black);
         }
         .setup-header h1 {
             margin: 0;
@@ -86,12 +100,13 @@
             background: linear-gradient(135deg, #218838, #1e7e34);
         }
         .password-requirements {
-            background: #f8f9fa;
-            border-left: 4px solid #007bff;
+            background: var(--white);
+            border-left: 4px solid var(--primary-yellow);
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
             font-size: 14px;
+            border: 1px solid #e0e0e0;
         }
         .password-requirements ul {
             margin: 0;
@@ -102,7 +117,8 @@
             color: #666;
         }
         .user-info {
-            background: #e3f2fd;
+            background: var(--light-gray);
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
             padding: 15px;
             margin-bottom: 25px;
@@ -138,13 +154,18 @@
         .progress {
             height: 8px;
             border-radius: 4px;
+            background-color: #e9ecef;
+        }
+        
+        .progress-bar {
+            background-color: var(--primary-yellow);
         }
         .strength-text {
             font-size: 12px;
             margin-top: 5px;
         }
         .strength-weak { color: #dc3545; }
-        .strength-medium { color: #ffc107; }
+        .strength-medium { color: var(--primary-yellow); }
         .strength-strong { color: #28a745; }
     </style>
 </head>
@@ -254,7 +275,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-outline-secondary btn-setup" id="submitButton">
+                    <button type="submit" class="btn w-100" style="background-color: var(--primary-yellow); color: var(--black); border: 1px solid var(--black);">
                         <span class="d-flex align-items-center justify-content-center">
                             <span id="buttonText">Enregistrer</span>
                             <span id="spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>

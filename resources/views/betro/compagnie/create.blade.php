@@ -17,361 +17,163 @@
                 <div class="row g-3 row-deck">
 
                     <div class="col-12">
-                        <div class="card">
-                            {{-- <div class="card-header">
-                                <h6 class="card-title">
-                                    <i class="fas fa-building-user me-2"></i> Ajouter une compagnie et administrateur
-                                </h6>
-                            </div> --}}
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="card-title mb-0">
+                        <div class="card" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+                            <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); border-radius: 16px 16px 0 0;">
+                                <h6 class="card-title mb-0 text-white">
                                     <i class="fas fa-building-user me-2"></i> Création d'une compagnie et administrateur
                                 </h6>
 
-                                <a href="{{ route('compagnies') }}" class="btn btn-light-primary animated-btn">
+                                <a href="{{ route('compagnies') }}" class="btn btn-light animated-btn">
                                     <i class="bi bi-arrow-left"></i> Retour
                                 </a>
-                                {{-- <button type="button" class="btn btn-light-primary">Primary</button> --}}
                             </div>
-                            <div class="card-body">
+                            <div class="card-body p-4">
+                                @if(session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ session('success') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @if(session('error'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ session('error') }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                @if ($errors->any())
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                        <strong>Veuillez corriger les erreurs ci-dessous.</strong>
+                                        <ul class="mb-0 mt-2">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                                
                                 <form method="POST" action="{{ route('compagnies.store') }}"
                                     enctype="multipart/form-data">
                                     @csrf
-                                    <div class="row">
-
-                                        <!-- Partie Administrateur -->
-                                        <div class="col-md-5">
-                                            <h5 class="mb-4">
-                                                <i class="bi bi-arrow-right-short me-2"></i>
-                                                ADMINISTRATEUR
-                                            </h5>
-                                            <div class="mb-3">
-                                                <label for="nom" class="form-label" aria-required="true">Nom <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="nom" name="nom" 
-                                                    required 
-                                                    pattern="[A-Za-zÀ-ÿ\s-]+" 
-                                                    title="Veuillez entrer un nom valide (lettres, espaces et tirets)"
-                                                    aria-describedby="nomHelp"
-                                                    value="{{ old('nom') }}">
-                                                <div id="nomHelp" class="form-text">Uniquement des lettres, espaces et tirets</div>
-                                                @error('nom')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="prenom" class="form-label" aria-required="true">Prénom <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" id="prenom" name="prenom"
-                                                    required
-                                                    pattern="[A-Za-zÀ-ÿ\s-]+"
-                                                    title="Veuillez entrer un prénom valide (lettres, espaces et tirets)"
-                                                    aria-describedby="prenomHelp"
-                                                    value="{{ old('prenom') }}">
-                                                <div id="prenomHelp" class="form-text">Uniquement des lettres, espaces et tirets</div>
-                                                @error('prenom')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="telephone" class="form-label" aria-required="true">Téléphone <span class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtn">
-                                                        <span id="selectedFlag">🇨🇮</span>
-                                                        <span id="selectedCode">+225</span>
-                                                    </button>
-                                                    <ul class="dropdown-menu" id="countryList">
-                                                        <li><a class="dropdown-item active" href="#" data-flag="🇨🇮" data-code="+225">🇨🇮 Côte d'Ivoire (+225)</a></li>
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🇧🇫" data-code="+226">🇧🇫 Burkina Faso (+226)</a></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🇲🇱" data-code="+223">🇲🇱 Mali (+223)</a></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🇳🇪" data-code="+227">🇳🇪 Niger (+227)</a></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🇧🇯" data-code="+229">🇧🇯 Bénin (+229)</a></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🇹🇬" data-code="+228">🇹🇬 Togo (+228)</a></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🇫🇷" data-code="+33">🇫🇷 France (+33)</a></li>
-                                                        <li><hr class="dropdown-divider"></li>
-                                                        <li><a class="dropdown-item" href="#" data-flag="🌐" data-code="">Autre pays</a></li>
-                                                    </ul>
-                                                    <input type="hidden" id="countryCode" name="country_code" value="+225">
-                                                    <input type="tel" class="form-control" id="telephone" name="telephone"
-                                                        required
-                                                        pattern="^(0[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2})$|^(0[0-9]{1}[-. ]?[0-9]{2}[-. ]?[0-9]{2}[-. ]?[0-9]{2})$"
-                                                        title="Veuillez entrer un numéro de téléphone ivoirien valide (ex: 01 23 45 67 89 ou 012 34 56 78)"
-                                                        aria-describedby="telHelp"
-                                                        placeholder="01 23 45 67 89"
-                                                        value="{{ old('telephone') }}">
-                                                </div>
-                                                <div id="telHelp" class="form-text">Format : 01 23 45 67 89 ou 01.23.45.67.89 ou 0123456789</div>
-                                                @error('telephone')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="email" class="form-label" aria-required="true">Email <span
-                                                        class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" id="email" name="email"
-                                                    required
-                                                    pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
-                                                    title="Veuillez entrer une adresse email valide"
-                                                    aria-describedby="emailHelp"
-                                                    value="{{ old('email') }}">
-                                                <div id="emailHelp" class="form-text">Format : exemple@domaine.com</div>
-                                                @error('email')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-
-                                            <div class="mt-2">
-                                                <h5 class="mb-4">
-                                                    <i class="bi bi-arrow-right-short me-2"></i>
-                                                    LOCALISATION DE LA COMPAGNIE <span class="text-danger">*</span>
-                                                </h5>
-
-                                                <div class="mb-2">
-                                                    <input type="text" name="adresse" id="searchInput"
-                                                        class="form-control"
-                                                        placeholder="Rechercher une adresse..."
-                                                        autocomplete="off"
-                                                        aria-label="Rechercher une adresse">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <button type="button" id="locateBtn"
-                                                        class="btn btn-outline-primary"
-                                                        aria-label="Utiliser ma position actuelle">
-                                                        <i class="fas fa-location-arrow me-1" aria-hidden="true"></i> Me localiser
-                                                    </button>
-                                                </div>
-                                                <div id="statusMessage" class="status-message" role="alert" aria-live="polite"></div>
-                                                <div id="map"
-                                                    style="height: 300px; border-radius: 8px; margin-bottom: 10px;"
-                                                    aria-label="Carte de localisation"
-                                                    tabindex="0">
-                                                </div>
-                                                <div id="addressDetails" class="mt-2" style="display:none;" role="region" aria-live="polite"></div>
-                                                <div class="row mt-2">
-                                                    <div class="col-md-6" style="display:none;">
-                                                        <label>Latitude :</label>
-                                                        <span id="latValue">-</span>
-                                                        <input type="hidden" id="latitude" name="latitude">
-                                                    </div>
-                                                    <div class="col-md-6" style="display:none;">
-                                                        <label>Longitude :</label>
-                                                        <span id="lngValue">-</span>
-                                                        <input type="hidden" id="longitude" name="longitude">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {{-- <div class="mb-3">
-                                                <label for="password" class="form-label">Mot de passe</label>
-                                                <input type="password" class="form-control" id="password"
-                                                    name="password" required>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="password_confirmation" class="form-label">Confirmer le mot
-                                                    de passe</label>
-                                                <input type="password" class="form-control" id="password_confirmation"
-                                                    name="password_confirmation" required>
-                                            </div> --}}
-                                            <!-- Section Permissions -->
-                                        </div>
-
-                                        <!-- Séparateur -->
-                                        <div class="col-md-2 d-flex justify-content-center align-items-center">
-                                            <div style="width: 1px; height: 100%; background-color: #ddd;"></div>
-                                        </div>
-
+                                    <div class="row g-4">
                                         <!-- Partie Compagnie -->
-                                        <div class="col-md-5">
-                                            <h5 class="mb-4">
-                                                <i class="bi bi-arrow-right-short me-2"></i>
-                                                COMPAGNIE
-                                            </h5>
-
+                                        <div class="col-lg-6">
+                                            <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> COMPAGNIE</h5>
                                             <div class="mb-3">
-                                                <label for="nom_complet_compagnies" class="form-label" aria-required="true">
-                                                    Nom de la compagnie <span class="text-danger">*</span>
-                                                </label>
-                                                <input type="text" class="form-control" id="nom_complet_compagnies"
-                                                    name="nom_complet_compagnies" 
-                                                    required
-                                                    minlength="2"
-                                                    maxlength="100"
-                                                    aria-describedby="nomCompagnieHelp"
-                                                    value="{{ old('nom_complet_compagnies') }}">
-                                                <div id="nomCompagnieHelp" class="form-text">Entre 2 et 100 caractères</div>
-                                                @error('nom_complet_compagnies')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
+                                                <label for="nom_complet_compagnies" class="form-label">Nom de la compagnie <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="nom_complet_compagnies" name="nom_complet_compagnies" required minlength="2" maxlength="100" value="{{ old('nom_complet_compagnies') }}">
+                                                @error('nom_complet_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
-
                                             <div class="mb-3">
-                                                {{-- <label for="email_compagnies" class="form-label">Email compagnie
-                                                    <span class="text-danger">*</span></label> --}}
-                                                <label for="email_compagnies" class="form-label"
-                                                    data-bs-toggle="tooltip" data-bs-placement="right"
-                                                    title="C'est sur cette adresse que vous recevrez le mail de connexion et vos identifiants ainsi que les notifications."
-                                                    aria-describedby="emailCompagnieHelp">
-                                                    Email compagnie <i class="bi bi-info-circle" aria-hidden="true"></i>
-                                                    <span class="text-danger">*</span>
-                                                </label>
-
-                                                <input type="email" class="form-control" id="email_compagnies"
-                                                    name="email_compagnies" 
-                                                    required
-                                                    pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
-                                                    title="Veuillez entrer une adresse email valide"
-                                                    value="{{ old('email_compagnies') }}"
-                                                    aria-describedby="emailCompagnieHelp">
-                                                <div id="emailCompagnieHelp" class="form-text">Format : contact@votrecompagnie.com</div>
-                                                @error('email_compagnies')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
+                                                <label for="email_compagnies" class="form-label">Email compagnie <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" id="email_compagnies" name="email_compagnies" required value="{{ old('email_compagnies') }}">
+                                                @error('email_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
-
-                                            {{-- <div class="mb-3">
-                                                <label for="telephone_compagnies" class="form-label">Téléphone</label>
-                                                <input type="text" class="form-control" id="telephone_compagnies"
-                                                    name="telephone_compagnies" required>
-                                            </div> --}}
-
                                             <div class="mb-3">
-                                                <label for="telephone_compagnies" class="form-label" aria-required="true">
-                                                    Téléphone <span class="text-danger">*</span>
-                                                </label>
+                                                <label for="telephone_compagnies" class="form-label">Téléphone <span class="text-danger">*</span></label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text">
-                                                        <span aria-hidden="true">🇨🇮 +225</span>
-                                                        <span class="visually-hidden">Indicatif téléphonique de la Côte d'Ivoire</span>
-                                                    </span>
-                                                    <input type="tel" class="form-control" id="telephone_compagnies"
-                                                        name="telephone_compagnies" 
-                                                        placeholder="ex : 0700000000"
-                                                        required
-                                                        pattern="[0-9]{10}"
-                                                        title="Veuillez entrer un numéro de téléphone valide (10 chiffres)"
-                                                        aria-describedby="telCompagnieHelp"
-                                                        value="{{ old('telephone_compagnies') }}">
+                                                    <span class="input-group-text"><span aria-hidden="true">🇨🇮 +225</span><span class="visually-hidden">Indicatif téléphonique de la Côte d'Ivoire</span></span>
+                                                    <input type="tel" class="form-control" id="telephone_compagnies" name="telephone_compagnies" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" placeholder="0700000000" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" value="{{ old('telephone_compagnies') }}">
                                                 </div>
-                                                <div id="telCompagnieHelp" class="form-text">Format : 10 chiffres (ex: 0700000000)</div>
-                                                @error('telephone_compagnies')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
-                                                <!-- Le script a été déplacé dans un fichier séparé -->
+                                                @error('telephone_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
-
-
                                             <div class="mb-3">
-                                                <label for="adresse_compagnies" class="form-label">Adresse
-                                                    (Facultatif)</label>
-                                                <input type="text" class="form-control" id="adresse_compagnies"
-                                                    name="adresse_compagnies" required>
+                                                <label for="adresse_compagnies" class="form-label">Adresse (Facultatif)</label>
+                                                <input type="text" class="form-control" id="adresse_compagnies" name="adresse_compagnies" value="{{ old('adresse_compagnies') }}">
                                             </div>
-
                                             <div class="mb-3">
-                                                <label for="description_compagnies" class="form-label">Description
-                                                    (Facultatif)</label>
-                                                <textarea class="form-control" id="description_compagnies"
-                                                    name="description_compagnies" rows="3"></textarea>
+                                                <label for="description_compagnies" class="form-label">Description (Facultatif)</label>
+                                                <textarea class="form-control" id="description_compagnies" name="description_compagnies" rows="3">{{ old('description_compagnies') }}</textarea>
                                             </div>
-
                                             <div class="mb-3">
                                                 <label for="villes_id" class="form-label">Ville <span class="text-danger">*</span></label>
-                                                <select class="form-select" id="villes_id" name="villes_id" required
-                                                        aria-label="Sélectionner une ville">
+                                                <select class="form-select" id="villes_id" name="villes_id" required>
                                                     <option value="">Sélectionner une ville</option>
                                                     @foreach($villes as $ville)
-                                                        <option value="{{ $ville->id }}" {{ old('villes_id') == $ville->id ? 'selected' : '' }}>
-                                                            {{ $ville->nom_ville }}
-                                                        </option>
+                                                        <option value="{{ $ville->id }}" {{ old('villes_id') == $ville->id ? 'selected' : '' }}>{{ $ville->nom_ville }}</option>
                                                     @endforeach
                                                 </select>
-                                                @error('villes_id')
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                                @enderror
+                                                @error('villes_id')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                             </div>
-
                                             <div class="mb-3">
-                                                <label for="logo_compagnies" class="form-label">Logo Taille maximale : 10MB. Formats acceptés : JPG, PNG, GIF</label>
-                                                <input type="file" class="form-control mb-2" id="logo_compagnies"
-                                                    name="logo_compagnies" accept="image/*" 
-                                                    onchange="previewLogo(this)">
+                                                <label for="logo_compagnies" class="form-label">Logo (Formats : JPG, JPEG, PNG, GIF – Taille max : 10 Mo)</label>
+                                                <input type="file" class="form-control" id="logo_compagnies" name="logo_compagnies" accept="image/*" onchange="previewLogo(this); updateFileInfo(this);">
                                                 <div id="logoPreview" class="mt-2 text-center" style="display: none;">
                                                     <img id="logoPreviewImg" src="#" alt="Aperçu du logo" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
-                                                    <button type="button" class="btn btn-sm btn-outline-danger mt-2" onclick="removeLogo()">
-                                                        <i class="fas fa-trash-alt me-1"></i> Supprimer
+                                                </div>
+                                                <div id="fileInfo" class="small text-muted mt-1"></div>
+                                                @error('logo_compagnies')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            </div>
+
+                                             <div class="mt-2">
+                                                <h6 class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Localisation de la compagnie</h6>
+                                                <div class="input-group mb-2">
+                                                    <input type="text" name="adresse" id="searchInput" class="form-control" placeholder="Rechercher une adresse..." autocomplete="off">
+                                                    <button type="button" id="locateBtn" class="btn btn-primary">
+                                                        <i class="fas fa-location-arrow me-1"></i>
+                                                        <span>Me localiser</span>
                                                     </button>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- <div class="mb-4">
-                                        <h5>
-                                            <i class="fas fa-map-marker-alt me-2 text-danger"></i>
-                                            Localisation de la compagnie
-                                        </h5>
-                                        <div class="mb-2">
-                                            <input type="text" name="adresse" id="searchInput" class="form-control"
-                                                placeholder="Rechercher une adresse ou un lieu..." autocomplete="off">
-                                        </div>
-                                        <div class="mb-2">
-                                            <button type="button" id="locateBtn" class="btn btn-outline-primary">
-                                                <i class="fas fa-location-arrow me-1"></i> Me localiser
-                                            </button>
-                                        </div>
-                                        <div id="statusMessage" class="status-message"></div>
-                                        <div id="map" style="height: 300px; border-radius: 8px; margin-bottom: 10px;">
-                                        </div>
-                                        <div id="addressDetails" class="mt-2" style="display:none;"></div>
-                                        <div class="row mt-2">
-                                            <div class="col-md-6" style="display:none;">
-                                                <label>Latitude :</label>
-                                                <span id="latValue">-</span>
+                                                <div id="statusMessage" class="status-message small mb-2"></div>
+                                                <div id="map" style="height: 260px; border-radius: 8px;" aria-label="Carte de localisation"></div>
                                                 <input type="hidden" id="latitude" name="latitude">
-                                            </div>
-                                            <div class="col-md-6" style="display:none;">
-                                                <label>Longitude :</label>
-                                                <span id="lngValue">-</span>
                                                 <input type="hidden" id="longitude" name="longitude">
                                             </div>
+                                            
                                         </div>
-                                    </div> --}}
 
-                                    <div class="mt-4 text-center">
-                                        <button type="submit" id="submitButton" class="btn btn-success px-3 py-3 animated-btn">
-                                            <span id="submitText">
-                                                <i class="fas fa-check-circle me-2"></i>
-                                                Créer l'administrateur et la compagnie
-                                            </span>
-                                            <span id="submitSpinner" class="spinner-border spinner-border-sm d-none ms-2" role="status" aria-hidden="true"></span>
+                                        <!-- Séparateur (desktop) -->
+                                        <div class="col-lg-1 d-none d-lg-flex align-items-stretch">
+                                            <div style="width:1px; background:#ddd; height:100%"></div>
+                                        </div>
+
+                                        <!-- Partie Administrateur -->
+                                        <div class="col-lg-5">
+                                            <h5 class="mb-3"><i class="fas fa-arrow-right me-2"></i> ADMINISTRATEUR DE LA COMPAGNIE</h5>
+                                            <div class="mb-3">
+                                                <label for="nom" class="form-label">Nom administrateur <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="nom" name="nom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('nom') }}">
+                                                @error('nom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="prenom" class="form-label">Prénom administrateur <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" id="prenom" name="prenom" required pattern="[A-Za-zÀ-ÿ\s-]+" value="{{ old('prenom') }}">
+                                                @error('prenom')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="telephone" class="form-label">Téléphone administrateur <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="countryCodeBtn">
+                                                        <span>🇨🇮</span>
+                                                        <span>+225</span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item active" href="#">🇨🇮 Côte d'Ivoire (+225)</a></li>
+                                                    </ul>
+                                                    <input type="hidden" name="country_code" value="+225">
+                                                    <input type="tel" class="form-control" id="telephone" name="telephone" required pattern="[0-9]{10}" maxlength="10" inputmode="numeric" placeholder="0700000000" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" value="{{ old('telephone') }}">
+                                                </div>
+                                                @error('telephone')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                                <div class="form-text">10 chiffres uniquement</div>
+                                            </div>
+                                            <div class="mb-3">
+<label for="email" class="form-label">
+    Email administrateur <span class="text-danger">*</span>
+    <small class="text-muted d-block">
+        C'est à cette adresse que sera envoyé l'email de confirmation.
+    </small>
+</label>
+                                                <input type="email" class="form-control" id="email" name="email" required value="{{ old('email') }}">
+                                                @error('email')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                            </div>
+
+                                         </div>
+                                    </div>
+                                    <div class="text-center mt-5">
+                                        <button type="submit" id="submitBtn" class="btn btn-primary px-4 py-2">
+                                            <span class="btn-loader" id="submitLoader"></span>
+                                            <span id="submitText">Créer la compagnie</span>
                                         </button>
-                                        
-                                        <script>
-                                            document.addEventListener('DOMContentLoaded', function() {
-                                                const form = document.querySelector('form');
-                                                const submitButton = document.getElementById('submitButton');
-                                                const submitText = document.getElementById('submitText');
-                                                const submitSpinner = document.getElementById('submitSpinner');
-                                                
-                                                if (form) {
-                                                    form.addEventListener('submit', function() {
-                                                        // Désactiver le bouton
-                                                        submitButton.disabled = true;
-                                                        // Masquer le texte et afficher le spinner
-                                                        submitText.classList.add('d-none');
-                                                        submitSpinner.classList.remove('d-none');
-                                                        // Ajouter une classe pour le style désactivé
-                                                        submitButton.classList.add('pe-none');
-                                                    });
-                                                }
-                                            });
-                                        </script>
                                     </div>
                                 </form>
                             </div>
@@ -382,21 +184,254 @@
             </div>
         </div>
 
+        <!-- Styles CSS inspirés de la page d'accueil -->
+        <style>
+            :root {
+                --primary-color: #ffd000;
+                --secondary-color: #000000;
+                --accent-color: #ffeb3b;
+                --light-color: #ffffff;
+                --dark-color: #000000;
+                --success-color: #4caf50;
+                --warning-color: #ff9800;
+                --info-color: #000000;
+            }
+            
+            .card {
+                border: none;
+                border-radius: 15px;
+                transition: all 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            }
+            
+            .card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(255,208,0,0.25);
+            }
+            
+            .form-control, .form-select {
+                border-radius: 10px;
+                border: 1px solid #e0e0e0;
+                padding: 12px 15px;
+                transition: all 0.3s ease;
+            }
+            
+            .form-control:focus, .form-select:focus {
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 3px rgba(255,208,0,0.15);
+            }
+            
+            .btn-primary {
+                background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+                border: none;
+                border-radius: 10px;
+                padding: 12px 30px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(255,208,0,0.35);
+            }
+            
+            .btn-light {
+                background: rgba(255,255,255,0.9);
+                border: 1px solid rgba(255,208,0,0.3);
+                color: var(--primary-color);
+                border-radius: 10px;
+                padding: 10px 25px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-light:hover {
+                background: rgba(255,208,0,0.2);
+                color: var(--primary-color);
+                transform: translateY(-2px);
+                border-color: var(--primary-color);
+            }
+            
+            .input-group-text {
+                border-radius: 10px 0 0 10px;
+                border: 1px solid #e0e0e0;
+                background: rgba(255,208,0,0.1);
+            }
+            
+            .status-message {
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 0.9rem;
+            }
+            
+            .status-message.info { background: #e3f2fd; color: #1976d2; }
+            .status-message.success { background: #e8f5e8; color: #2e7d32; }
+            .status-message.error { background: #ffebee; color: #c62828; }
+            .status-message.warning { background: #fff3e0; color: #f57c00; }
+            
+            .btn-loader {
+                display: none;
+                width: 20px;
+                height: 20px;
+                border: 3px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                border-top-color: #fff;
+                animation: spin 1s ease-in-out infinite;
+                margin-right: 8px;
+            }
+            
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            
+            .animated-btn {
+                position: relative;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            
+            .animated-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                transition: left 0.5s;
+            }
+            
+            .animated-btn:hover::before {
+                left: 100%;
+            }
+        </style>
+
         <script>
+            // Logo preview handlers
+            function previewLogo(input) {
+                const file = input.files && input.files[0];
+                const wrap = document.getElementById('logoPreview');
+                const img = document.getElementById('logoPreviewImg');
+                if (!wrap || !img) return;
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e){
+                        img.src = e.target.result;
+                        wrap.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    wrap.style.display = 'none';
+                    img.src = '#';
+                }
+            }
+            
+            function removeLogo() {
+                const input = document.getElementById('logo_compagnies');
+                const wrap = document.getElementById('logoPreview');
+                const img = document.getElementById('logoPreviewImg');
+                if (input) input.value = '';
+                if (wrap) wrap.style.display = 'none';
+                if (img) img.src = '#';
+            }
+            
+            // Fonction pour afficher les informations du fichier sélectionné
+            function updateFileInfo(input) {
+                const fileInfo = document.getElementById('fileInfo');
+                const submitBtn = document.getElementById('submitBtn');
+                const maxSize = 10; // Taille maximale en Mo
+                const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                
+                if (input.files && input.files[0]) {
+                    const file = input.files[0];
+                    const fileSize = (file.size / 1024 / 1024).toFixed(2); // Taille en Mo
+                    const fileName = file.name;
+                    const fileExtension = fileName.split('.').pop().toLowerCase();
+                    const isValidExtension = allowedExtensions.includes(fileExtension);
+                    const isValidSize = file.size <= maxSize * 1024 * 1024; // Conversion en octets
+                    
+                    // Mise en forme du message avec les parties problématiques en rouge
+                    let message = `Fichier: ${fileName} `;
+                    
+                    // Vérification de la taille
+                    if (!isValidSize) {
+                        message += `<span style="color: red;">(${fileSize} Mo - Taille maximale dépassée)</span>`;
+                    } else {
+                        message += `(${fileSize} Mo)`;
+                    }
+                    
+                    message += ` - Format: `;
+                    
+                    // Vérification de l'extension
+                    if (!isValidExtension) {
+                        message += `<span style="color: red;">${fileExtension.toUpperCase()} (Format non supporté)</span>`;
+                    } else {
+                        message += fileExtension.toUpperCase();
+                    }
+                    
+                    fileInfo.innerHTML = message;
+                    fileInfo.style.display = 'block';
+                    
+                    // Désactiver le bouton de soumission si le fichier n'est pas valide
+                    if (submitBtn) {
+                        submitBtn.disabled = !(isValidExtension && isValidSize);
+                    }
+                } else {
+                    fileInfo.textContent = '';
+                    fileInfo.style.display = 'none';
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                    }
+                }
+            }
+            
+            // Gestion du loader sur le bouton de soumission
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form[action="{{ route('compagnies.store') }}"]');
+                const submitBtn = document.getElementById('submitBtn');
+                const submitLoader = document.getElementById('submitLoader');
+                const submitText = document.getElementById('submitText');
+                
+                if (form) {
+                    form.addEventListener('submit', function() {
+                        // Désactiver le bouton et afficher le loader
+                        submitBtn.disabled = true;
+                        submitLoader.style.display = 'inline-block';
+                        submitText.textContent = 'Création en cours...';
+                    });
+                }
+            });
+            
+            // Google Maps pour le formulaire de compagnie
             let map, marker, autocomplete;
-            let isGoogleMapsLoaded = false;
+            let isMapsLoaded = false;
 
-            // Attendre que Google Maps soit chargé
+            function showStatus(message, type = 'info') {
+                const statusDiv = document.getElementById('statusMessage');
+                if (!statusDiv) return;
+                
+                statusDiv.innerHTML = message;
+                statusDiv.className = `status-message ${type}`;
+                
+                // Cacher le message après 5 secondes pour les messages d'info
+                if (type === 'info' || type === 'success') {
+                    setTimeout(() => {
+                        statusDiv.innerHTML = '';
+                        statusDiv.className = 'status-message';
+                    }, 5000);
+                }
+            }
+
             window.initMap = function () {
-                isGoogleMapsLoaded = true;
-                initializeMap();
-            };
-
-            function initializeMap() {
-                const defaultLocation = { lat: 5.345317, lng: -4.024429 };
-
-                map = new google.maps.Map(document.getElementById("map"), {
-                    center: defaultLocation,
+                isMapsLoaded = true;
+                const mapEl = document.getElementById('map');
+                if (!mapEl) return;
+                
+                const defaultLoc = { lat: 5.345317, lng: -4.024429 };
+                
+                // Initialiser la carte
+                map = new google.maps.Map(mapEl, {
+                    center: defaultLoc,
                     zoom: 13,
                     streetViewControl: false,
                     mapTypeControlOptions: {
@@ -405,12 +440,13 @@
                     }
                 });
 
+                // Créer le marqueur
                 marker = new google.maps.Marker({
-                    position: defaultLocation,
+                    position: defaultLoc,
                     map: map,
                     draggable: true,
                     icon: {
-                        url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                        url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
                         scaledSize: new google.maps.Size(40, 40)
                     },
                     title: "Déplacez-moi pour ajuster la position"
@@ -432,29 +468,33 @@
                 initAutocomplete();
 
                 // Événements
-                marker.addListener("dragend", function () {
+                marker.addListener('dragend', function() {
                     setLocation(marker.getPosition());
                 });
 
-                document.getElementById("locateBtn").addEventListener("click", function () {
-                    locateUser();
-                });
+                // Gestion du bouton de localisation
+                const locateBtn = document.getElementById('locateBtn');
+                if (locateBtn) {
+                    locateBtn.addEventListener('click', locateUser);
+                }
 
-                // Mettre à jour l'affichage des coordonnées
-                updateCoordinates(defaultLocation.lat, defaultLocation.lng);
-            }
+                // Initialiser les champs cachés
+                updateCoords(defaultLoc.lat, defaultLoc.lng);
+            };
 
             function initAutocomplete() {
-                if (!isGoogleMapsLoaded) return;
+                if (!isMapsLoaded) return;
 
-                const input = document.getElementById("searchInput");
+                const input = document.getElementById('searchInput');
+                if (!input) return;
+
                 autocomplete = new google.maps.places.Autocomplete(input, {
                     types: ['geocode', 'establishment'],
-                    componentRestrictions: { country: 'ci' } // Restreindre à la Côte d'Ivoire
+                    componentRestrictions: { country: 'ci' }
                 });
 
-                autocomplete.bindTo("bounds", map);
-                autocomplete.addListener("place_changed", function () {
+                autocomplete.bindTo('bounds', map);
+                autocomplete.addListener('place_changed', function() {
                     const place = autocomplete.getPlace();
                     if (!place.geometry || !place.geometry.location) {
                         showStatus("Lieu non trouvé !", "error");
@@ -465,20 +505,21 @@
             }
 
             function locateUser() {
+                const locateBtn = document.getElementById('locateBtn');
+                
                 if (!navigator.geolocation) {
                     showStatus("La géolocalisation n'est pas supportée par ce navigateur.", "error");
                     return;
                 }
 
                 showStatus("Localisation en cours... ", "info");
-
+                
                 // Désactiver le bouton pendant la localisation
-                const locateBtn = document.getElementById("locateBtn");
                 locateBtn.disabled = true;
                 locateBtn.innerHTML = "<i class='fas fa-spinner fa-spin me-1'></i> Localisation...";
 
                 navigator.geolocation.getCurrentPosition(
-                    function (position) {
+                    function(position) {
                         const userLocation = {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
@@ -487,7 +528,7 @@
                         locateBtn.disabled = false;
                         locateBtn.innerHTML = "<i class='fas fa-location-arrow me-1'></i> Me localiser";
                     },
-                    function (error) {
+                    function(error) {
                         let errorMessage = "Impossible de récupérer votre position.";
                         switch (error.code) {
                             case error.PERMISSION_DENIED:
@@ -516,29 +557,34 @@
                 const lat = typeof latlng.lat === 'function' ? latlng.lat() : latlng.lat;
                 const lng = typeof latlng.lng === 'function' ? latlng.lng() : latlng.lng;
 
+                // Mettre à jour la position de la carte et du marqueur
                 map.setCenter({ lat, lng });
                 map.setZoom(16);
                 marker.setPosition({ lat, lng });
 
-                document.getElementById("latitude").value = lat;
-                document.getElementById("longitude").value = lng;
-                updateCoordinates(lat, lng);
+                // Mettre à jour les champs cachés
+                updateCoords(lat, lng);
 
-                showStatus("Récupération de l'adresse... <span class='loading'></span>", "info");
-
-                // Essayer d'abord avec Google Geocoding
-                if (isGoogleMapsLoaded) {
+                // Mettre à jour l'adresse dans le champ de recherche
+                showStatus("Récupération de l'adresse...", "info");
+                
+                // Utiliser le géocodage de Google Maps
+                if (isMapsLoaded) {
                     const geocoder = new google.maps.Geocoder();
-                    geocoder.geocode({ location: { lat, lng } }, function (results, status) {
+                    geocoder.geocode({ location: { lat, lng } }, function(results, status) {
                         if (status === "OK" && results[0]) {
-                            processAddressResults(results[0]);
+                            const searchInput = document.getElementById('searchInput');
+                            if (searchInput) {
+                                searchInput.value = results[0].formatted_address;
+                                showStatus("Position mise à jour avec succès", "success");
+                            }
                         } else {
-                            // Si Google échoue, utiliser Nominatim
+                            // Si Google échoue, essayer avec Nominatim
                             useNominatim(lat, lng);
                         }
                     });
                 } else {
-                    // Utiliser Nominatim si Google Maps n'est pas chargé
+                    // Si Google Maps n'est pas chargé, utiliser Nominatim
                     useNominatim(lat, lng);
                 }
             }
@@ -550,79 +596,40 @@
                         return response.json();
                     })
                     .then(data => {
-                        if (data && data.address) {
-                            processNominatimResult(data);
-                        } else {
-                            throw new Error("Aucune adresse trouvée");
+                        const searchInput = document.getElementById('searchInput');
+                        if (searchInput && data.display_name) {
+                            searchInput.value = data.display_name;
+                            showStatus("Position mise à jour avec succès", "success");
                         }
                     })
-                    .catch(err => {
-                        console.error("Erreur Nominatim:", err);
-                        showStatus("Impossible de récupérer l'adresse. Vous pouvez saisir manuellement.", "error");
-                        document.getElementById("searchInput").value = `Position: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                        document.getElementById("addressDetails").innerHTML = "Adresse non disponible. Veuillez saisir manuellement.";
+                    .catch(error => {
+                        console.error("Erreur lors de la récupération de l'adresse:", error);
+                        showStatus("Impossible de récupérer l'adresse exacte", "warning");
                     });
             }
 
-            function processAddressResults(result) {
-                const address = result.formatted_address;
-                document.getElementById("searchInput").value = address;
-
-                let detailsHTML = `<strong>Adresse complète:</strong> ${address}<br><br>`;
-                detailsHTML += "<strong>Détails:</strong><br>";
-                detailsHTML += "<ul>";
-
-                for (const component of result.address_components) {
-                    detailsHTML += `<li><strong>${component.types[0]}:</strong> ${component.long_name}</li>`;
-                }
-
-                detailsHTML += "</ul>";
-                document.getElementById("addressDetails").innerHTML = detailsHTML;
-
-                showStatus("Adresse trouvée avec succès!", "success");
+            function updateCoords(lat, lng) {
+                const latI = document.getElementById('latitude');
+                const lngI = document.getElementById('longitude');
+                if (latI) latI.value = lat;
+                if (lngI) lngI.value = lng;
             }
-
-            function processNominatimResult(data) {
-                const address = data.display_name;
-                document.getElementById("searchInput").value = address;
-
-                let detailsHTML = `<strong>Adresse complète:</strong> ${address}<br><br>`;
-                detailsHTML += "<strong>Détails:</strong><br>";
-                detailsHTML += "<ul>";
-
-                for (const [key, value] of Object.entries(data.address)) {
-                    detailsHTML += `<li><strong>${key}:</strong> ${value}</li>`;
-                }
-
-                detailsHTML += "</ul>";
-                document.getElementById("addressDetails").innerHTML = detailsHTML;
-
-                showStatus("Adresse trouvée avec succès!", "success");
-            }
-
-            function showStatus(message, type) {
-                const statusElement = document.getElementById("statusMessage");
-                statusElement.innerHTML = message;
-                statusElement.className = "status-message " + type;
-            }
-
-            function updateCoordinates(lat, lng) {
-                document.getElementById("latValue").textContent = lat.toFixed(6);
-                document.getElementById("lngValue").textContent = lng.toFixed(6);
-            }
-
+            
             // Vérifier si l'API Google Maps est chargée
             function checkGoogleMapsLoaded() {
                 if (typeof google !== 'undefined' && google.maps) {
                     isGoogleMapsLoaded = true;
-                    initializeMap();
+                    initMap();
                 } else {
                     // Réessayer après 1 seconde
                     setTimeout(checkGoogleMapsLoaded, 1000);
                 }
             }
-            // Démarrer la vérification du chargement de Google Maps
-            window.onload = checkGoogleMapsLoaded;
+            
+            // Démarrer la vérification du chargement de Google Maps au cas où le callback ne fonctionne pas
+            window.onload = function() {
+                setTimeout(checkGoogleMapsLoaded, 1000);
+            };
         </script>
         <!-- Styles personnalisés pour le formulaire -->
         <link href="{{ asset('assets/css/compagnie-form.css') }}" rel="stylesheet">
@@ -634,6 +641,6 @@
         <!-- Script personnalisé pour la gestion du formulaire -->
         <script src="{{ asset('assets/js/compagnie-form.js') }}"></script>
         <script
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&libraries=places&callback=initMap"
             async defer></script>
         <!-- Ton script JS ici -->

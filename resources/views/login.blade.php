@@ -16,358 +16,62 @@
             --error-color: #e74c3c;
         }
 
-        body, html {
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
             width: 100%;
-            overflow: hidden; /* Désactive le défilement global */
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-color);
+            overflow-x: hidden;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            min-height: 100vh;
-            margin: 0;
-            color: #333;
             display: flex;
-            overflow: hidden; /* Désactive le défilement du body */
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .login-page {
             display: flex;
-            width: 100vw;
-            height: 100vh;
-            max-height: 100%;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            -webkit-overflow-scrolling: auto !important;
+            flex: 1;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
         }
 
         .login-image {
-            flex: 1;
-            min-width: 0; /* Permet à l'image de se réduire correctement */
-            background: url('https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center;
+            flex: 1 0 50%;
+            background: url('{{ $imageConnexionWeb ?? 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80' }}') no-repeat center center;
             background-size: cover;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 300px;
         }
 
         .login-content {
-            flex: 1;
-            min-width: 0;
+            flex: 1 0 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
-            background: white;
             overflow-y: auto;
-            -webkit-overflow-scrolling: auto !important;
-            overscroll-behavior: contain; /* Empêche le défilement de la page parente */
-            max-height: 100vh;
         }
 
         .login-container {
             width: 100%;
-            max-width: 500px;
-            border-radius: 12px;
-            padding: 2rem;
+            max-width: 420px;
             margin: 0 auto;
-            position: relative;
-            overflow: visible;
         }
 
-        .login-header {
-            margin-bottom: 3rem; /* Plus d'espace en dessous du titre */
-            padding: 0 1rem;
-            text-align: center;
-        }
-
-        .login-header h2 {
-            color: #333;
-            font-weight: 700;
-            font-size: 2.25rem; /* Taille de titre augmentée */
-            margin-bottom: 1rem; /* Plus d'espace sous le titre */
-            letter-spacing: -0.5px; /* Ajustement de l'espacement des lettres */
-        }
-
-        .login-header p {
-            color: #6c757d;
-            font-size: 1.15rem; /* Taille de police augmentée */
-            margin: 0;
-            line-height: 1.6; /* Meilleure lisibilité */
-        }
-
-        .login-title {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .login-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            transform: rotate(30deg);
-            pointer-events: none;
-        }
-
-        .login-header h1 {
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-header h1 {
-            margin: 0;
-            font-size: 1.75rem;
-            font-weight: 600;
-        }
-
-        .login-form {
-            padding: 0;
-            width: 100%;
-            overflow: visible;
-        }
-
-        @media (max-width: 576px) {
-            .login-container {
-                margin: 10px;
-                max-width: 100%;
-            }
-
-            .login-form {
-                padding: 1.5rem;
-            }
-
-            .btn-login {
-                width: 80%;
-            }
-        }
-
-        .form-floating {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-floating label {
-            color: #6c757d;
-        }
-
-        .form-control {
-            height: 52px;
-            padding: 0.65rem 1.25rem;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: all 0.2s;
-            width: 100%;
-            margin-bottom: 1.25rem;
-            line-height: 1.5;
-            box-sizing: border-box; /* Assure que le padding est inclus dans la hauteur */
-        }
-
-        .form-control:focus {
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-        }
-
-        .input-group-text {
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            padding: 0 1rem;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 50px;
-            height: 52px; /* Hauteur fixe pour correspondre aux champs */
-            box-sizing: border-box;
-        }
-
-        .input-group .form-control {
-            border-left: none;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-
-        .input-group .toggle-password {
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            background: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            border-left: none;
-            color: #6c757d;
-            padding: 0 1rem;
-            font-size: 1.1rem;
-            min-width: 50px;
-            height: 52px; /* Hauteur fixe pour correspondre aux champs */
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .input-group .toggle-password:hover {
-            background: #e9ecef;
-        }
-
-        .form-check-input:checked {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-        }
-
-        .form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-            border-color: #86b7fe;
-        }
-
-        .form-check-label {
-            color: #495057;
-            font-size: 0.95rem;
-            user-select: none;
-        }
-
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            padding: 0.75rem;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.2s;
-            font-size: 1rem;
-            height: 50px;
-            width: 100%;
-            margin: 1rem 0;
-            overflow: hidden; /* Empêche le défilement */
-            position: relative; /* Pour le positionnement des éléments enfants */
-            html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Empêche tout défilement sur la page */
-            position: fixed; /* Verrouille la position */
-            width: 100%;
-            -webkit-overflow-scrolling: auto !important; /* Désactive le défilement élastique sur iOS */
-        }
-        }
-
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-            transform: none; /* Supprime l'effet de translation qui pouvait causer le défilement */
-        }
-
-        .form-footer {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #6c757d;
-        }
-
-        .form-footer a {
-            color: #666666;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        /* Style du lien de retour */
-        .back-to-home {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #000; /* Couleur noire au lieu de bleu */
-            text-decoration: none;
-            margin: 0.5rem 0;
-            font-weight: 500;
-            transition: background-color 0.2s, color 0.2s;
-            background-color: var(--primary-color);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            border: none;
-        }
-
-        .back-to-home i {
-            margin-right: 0.5rem;
-            font-size: 1.1em;
-            color: var(--primary-color);
-        }
-
-        .back-to-home:hover {
-            color: #000; /* Couleur noire plus foncée au survol */
-            background-color: #e6c000;
-            text-decoration: none; /* Pas de soulignement pour un bouton */
-        }
-
-        .form-footer a:hover {
-            text-decoration: underline;
-            color: #333333;
-        }
-        /* Icons in inputs and toggle button in yellow */
-        .input-group-text i, .toggle-password i {
-            color: var(--primary-color) !important;
-        }
-
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .remember-forgot {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        /* Color palette overrides: jaune (#ffd000), blanc (#ffffff), noir (#000000) */
-        :root {
-            --primary-color: #ffd000;
-            --secondary-color: #000000;
-            --accent-color: #ffeb3b;
-            --light-color: #ffffff;
-            --dark-color: #000000;
-            --info-color: #000000;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --error-color: #e74c3c;
-        }
-
-        /* Replace Bootstrap blues with white visuals and black text */
-        .text-primary, .text-info { color: #ffffff !important; }
-        .bg-primary, .bg-info { background-color: #ffffff !important; color: #000000 !important; }
-        .btn-primary {
-            background-color: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
-            color: #000000 !important;
-        }
-        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-            background-color: #e6c000 !important;
-            border-color: #e6c000 !important;
-            color: #000000 !important;
-        }
-
-        /* Inputs and controls using the new palette */
-        .form-control:focus {
-            border-color: var(--primary-color) !important;
-            box-shadow: 0 0 0 0.25rem rgba(255, 208, 0, 0.25) !important;
-        }
-        .form-check-input:checked {
-            background-color: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
-        }
-        .form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(255, 208, 0, 0.25) !important;
-            border-color: var(--primary-color) !important;
-        }
+        
     </style>
 </head>
 <body>
+ 
     <div class="login-page">
         <div class="login-image">
             <!-- L'image est définie en arrière-plan -->
@@ -379,6 +83,13 @@
             <p class="text-muted mt-2">Entrez vos identifiants pour accéder à votre espace</p>
         </div>
 
+           @if (session('success'))
+            <div class="alert alert-success d-flex align-items-center gap-2" role="alert">
+                {{-- <i class="bi bi-check-circle-fill"></i> --}}
+                <div>{{ session('success') }}</div>
+            </div>
+        @endif
+
         @if (session('password_pending'))
             <div class="alert alert-warning d-flex align-items-center gap-2" role="alert">
                 <i class="bi bi-info-circle-fill"></i>
@@ -386,7 +97,7 @@
             </div>
         @endif
 
-        <form class="login-form" method="POST" action="{{ route('login_connexion') }}">
+        <form method="POST" action="{{ route('login_connexion') }}" id="loginForm">
             @csrf
 
             <div class="mb-3">
@@ -425,18 +136,25 @@
                         Se souvenir de moi
                     </label>
                 </div>
-                <a href="#" class="text-decoration-none small">Mot de passe oublié ?</a>
+                <a href="{{ route('password.request') }}" class="forgot-password-link">
+                    <i class="bi bi-question-circle"></i> Mot de passe oublié ?
+                </a>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-                Se connecter
+            <button type="submit" class="btn btn-primary w-100 py-3" id="loginButton" onclick="showLoader()">
+                <span id="buttonText">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
+                </span>
+                <div id="loader" class="spinner-border spinner-border-sm d-none" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
             </button>
 
             <div class="text-center mt-4">
                 <a href="{{ url('/') }}" class="back-to-home">
                     <i class="bi bi-arrow-left"></i> Retour à l'accueil
                 </a>
-                <p class="mb-0 text-muted mt-3">Vous n'avez pas de compte ? <a href="#" class="text-decoration-none">S'inscrire</a></p>
+                {{-- <p class="mb-0 text-muted mt-3">Vous n'avez pas de compte ? <a href="#" class="text-decoration-none">S'inscrire</a></p> --}}
             </div>
             </form>
         </div>
@@ -444,51 +162,142 @@
 </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showLoader() {
+            document.getElementById('buttonText').classList.add('d-none');
+            document.getElementById('loader').classList.remove('d-none');
+            document.getElementById('loginButton').setAttribute('disabled', 'disabled');
+            
+            // Soumettre le formulaire après un court délai pour permettre l'animation
+            setTimeout(() => {
+                document.getElementById('loginForm').submit();
+            }, 100);
+        }
+    </script>
     <style>
-        @media (max-width: 992px) {
+        /* Styles pour les tablettes */
+        @media (max-width: 991.98px) {
             .login-page {
                 flex-direction: column;
-                height: 100%;
-                overflow-y: auto; /* Permet le défilement uniquement si nécessaire sur mobile */
+                min-height: 100vh;
             }
 
             .login-image {
-                height: 40vh;
-                min-height: 40vh;
-                order: 1;
+                flex: 0 0 35vh;
+                min-height: 35vh;
                 width: 100%;
             }
 
             .login-content {
-                order: 2;
-                padding: 2.5rem 1.5rem;
-                width: 100%;
-                height: 60vh;
-                min-height: 60vh;
-                overflow-y: auto; /* Permet le défilement du contenu si nécessaire */
+                flex: 1;
+                padding: 2rem 1.5rem;
+                min-height: 65vh;
             }
 
             .login-container {
-                max-width: 100%;
-                padding: 0;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .login-form {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
+                max-width: 500px;
             }
         }
 
-        /* Désactive le défilement horizontal sur tous les éléments */
-        * {
-            max-width: 100%;
-            overflow: visible !important;
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
+        /* Styles pour les mobiles */
+        @media (max-width: 575.98px) {
+            .login-content {
+                padding: 1.5rem 1rem;
+            }
+
+            .login-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .form-label {
+                font-size: 0.95rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        /* Très petits écrans */
+        @media (max-width: 360px) {
+            .login-content {
+                padding: 1rem 0.75rem;
+            }
+
+            .login-header h2 {
+                font-size: 1.35rem;
+            }
+
+            .form-control, .input-group-text {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
+        /* Styles des boutons et liens */
+        .btn-primary {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #000 !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #000 !important;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Styles de survol et d'état actif désactivés pour maintenir la couleur jaune */
+
+        .forgot-password-link {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password-link:hover {
+            color: #ffc107;
+            text-decoration: underline;
+        }
+
+        .back-to-home {
+            display: inline-flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-home:hover {
+            color: #ffc107;
+            transform: translateX(-3px);
+        }
+
+        .back-to-home i {
+            margin-right: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-to-home:hover i {
+            transform: translateX(-3px);
+        }
+
+        /* Correction pour les champs de formulaire */
+        .form-control, .input-group-text {
+            height: auto;
+            min-height: 45px;
+        }
+
+        /* Amélioration de la lisibilité sur mobile */
+        @media (hover: none) {
+            .form-control, .btn {
+                font-size: 16px; /* Désactive le zoom automatique sur iOS */
+            }
         }
 
         /* Désactive le défilement sur tous les éléments sauf .login-content */

@@ -113,23 +113,78 @@ use App\Helpers\GlobalHelper;
                                 <p class="text-muted mb-3">
                                     <i class="fas fa-map-marker-alt me-1"></i> {{ $compagnies->ville?->nom_ville ?? 'Ville non spécifiée' }}
                                 </p>
+
+                                @if($compagnies->status == 1)
+                                <span class="badge bg-success">Validé en activité</span>
+                                @elseif($compagnies->status == 2)
+                                <span class="badge bg-warning text-dark">En attente</span>
+                                @elseif($compagnies->status == 3)
+                                <span class="badge bg-danger">Désactivation</span>
+                                @elseif($compagnies->status == 'demande_refuse')
+                                <span class="badge bg-danger">Demande refusée</span>
+                                @else
+                                <span class="badge bg-secondary">Inconnu</span>
+                                @endif
                                 
                                 <div class="d-flex justify-content-center gap-2 mb-3">
+                                     {{-- @if ($compagnies->status != 'demande_refuse' && $compagnies->status != 2)
                                     <a href="{{ route('compagnies.edit', $compagnies->id) }}" class="btn btn-primary btn-sm">
                                         <i class="fas fa-edit me-1"></i> Modifier
                                     </a>
+                                    @endif --}}
 
-                                    <a href="#" class="btn btn-outline-secondary btn-sm">
-                                        <i class="fas fa-envelope me-1"></i> Contacter
+                                    
+                                     @if ($compagnies->status != 'demande_refuse' && $compagnies->status != 2)
+                                    <a href="{{ route('compagnies.edit', $compagnies->id) }}" class="btn btn-outline-secondary btn-sm mt-4">
+                                        <i class="fas fa-envelope me-1"></i> Modifier
                                     </a>
+                                    @endif
                                 </div>
                                 
-                                <div class="mt-3 pt-3 border-top">
+                                <!-- Boutons de gestion de statut -->
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    @if ($compagnies->status != 'demande_refuse')
+                                    @if($compagnies->status == 2)
+                                        <!-- Actions validation / refus -->
+                                        <form action="{{ route('compagnies.approve', $compagnies->id) }}" method="POST" style="display:inline;" class="approve-form">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm" title="Valider la demande">
+                                                <i class="fa fa-check"></i> Valider
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#refuseModal{{ $compagnies->id }}" title="Refuser la demande">
+                                            <i class="fa fa-times"></i> Refuser
+                                        </button>
+                                    @else
+                                        <!-- Bouton de suppression / réactivation -->
+                                        @if($compagnies->status == 1)
+                                            <form id="deleteForm{{ $compagnies->id }}" action="{{ route('compagnies.destroy', $compagnies->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="btn btn-warning btn-sm" onclick="confirmDelete({{ $compagnies->id }}, '{{ addslashes($compagnies->nom_complet_compagnies) }}')" title="Bloquer cette compagnie">
+                                                    <i class="fas fa-ban"></i> Bloquer
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form id="reactivateForm{{ $compagnies->id }}" action="{{ route('compagnies.reactivate', $compagnies->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="button" class="btn btn-success btn-sm" onclick="confirmReactivate({{ $compagnies->id }}, '{{ addslashes($compagnies->nom_complet_compagnies) }}')">
+                                                    <i class="fa fa-refresh"></i> Réactiver
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endif
+                                    @endif
+                                </div>
+                                
+                                
+                                {{-- <div class="mt-3 pt-3 border-top">
                                     <h6 class="text-uppercase text-muted mb-3">Réseaux sociaux</h6>
                                     <div class="d-flex justify-content-center gap-3">
                                         <a href="#" class="text-primary"><i class="fab fa-facebook-f"></i></a>
                                     </div>
-                                </div>
+                                </div> --}}
+                                
                             </div>
                         </div>
                     </div>
@@ -194,16 +249,107 @@ use App\Helpers\GlobalHelper;
                             </div>
                         </div>
 
-                        <!-- Carte de localisation -->
+                        <!-- Onglets pour Gares et Localisation -->
                         <div class="card">
-                            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0"><i class="fas fa-map-marked-alt text-primary me-2"></i>Localisation</h5>
-                                <button class="btn btn-sm btn-outline-primary" id="refresh-map">
-                                    <i class="fas fa-sync-alt me-1"></i> Actualiser
-                                </button>
+                            <div class="card-header bg-transparent">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="gares-tab" data-bs-toggle="tab" data-bs-target="#gares" type="button" role="tab" aria-controls="gares" aria-selected="true">
+                                            <i class="fas fa-train me-2"></i>Gares de la compagnie
+                                            @if(isset($gares) && $gares->count() > 0)
+                                                <span class="badge bg-primary ms-1">{{ $gares->count() }}</span>
+                                            @endif
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="localisation-tab" data-bs-toggle="tab" data-bs-target="#localisation" type="button" role="tab" aria-controls="localisation" aria-selected="false">
+                                            <i class="fas fa-map-marked-alt me-2"></i>Localisation
+                                        </button>
+                                    </li>
+                                </ul>
                             </div>
-                            <div class="card-body p-0">
-                                <div id="map" style="width: 100%; height: 300px; border-radius: 0 0 8px 8px;"></div>
+                            <div class="card-body">
+                                <!-- Tab panes -->
+                                <div class="tab-content" id="myTabContent">
+                                    <!-- Onglet Gares -->
+                                    <div class="tab-pane fade show active" id="gares" role="tabpanel" aria-labelledby="gares-tab">
+                                        @if(isset($gares) && $gares->count() > 0)
+                                            <div class="table-responsive">
+                                                <table id="garesTable" class="table display dataTable table-hover" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Nom de la gare</th>
+                                                            <th>Ville</th>
+                                                            <th>Adresse</th>
+                                                            <th>Téléphone</th>
+                                                            <th>Email</th>
+                                                            <th>Heures d'ouverture</th>
+                                                            <th>Services</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($gares as $gare)
+                                                            <tr>
+                                                                <td>
+                                                                    <strong>{{ $gare->nom_gare ?? 'Non renseigné' }}</strong>
+                                                                </td>
+                                                                <td>{{ $gare->ville?->nom_ville ?? 'Non renseignée' }}</td>
+                                                                <td>{{ \Illuminate\Support\Str::limit($gare->adresse_gare ?? 'Non renseignée', 30) }}</td>
+                                                                <td>{{ $gare->telephone_gare ?? 'Non renseigné' }}</td>
+                                                                <td>{{ \Illuminate\Support\Str::limit($gare->email ?? 'Non renseigné', 20) }}</td>
+                                                                <td>
+                                                                    @if($gare->heure_ouverture && $gare->heure_fermeture)
+                                                                        <span class="badge bg-success">
+                                                                            {{ $gare->heure_ouverture }} - {{ $gare->heure_fermeture }}
+                                                                        </span>
+                                                                    @else
+                                                                        <span class="badge bg-secondary">Non défini</span>
+                                                                    @endif
+                                                                </td>
+                                                                <td>
+                                                                    <div class="d-flex gap-1">
+                                                                        @if($gare->parking_disponible)
+                                                                            <span class="badge bg-info" title="Parking disponible">P</span>
+                                                                        @endif
+                                                                        @if($gare->wifi_disponible)
+                                                                            <span class="badge bg-primary" title="WiFi disponible">WiFi</span>
+                                                                        @endif
+                                                                        @if($gare->nombre_quais)
+                                                                            <span class="badge bg-warning" title="{{ $gare->nombre_quais }} quais">{{ $gare->nombre_quais }}Q</span>
+                                                                        @endif
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center py-5">
+                                                <div class="mb-3">
+                                                    <i class="fas fa-train fa-4x text-muted"></i>
+                                                </div>
+                                                <h5 class="text-muted">Aucune gare enregistrée</h5>
+                                                <p class="text-muted">Cette compagnie ne possède pas encore de gares dans le système.</p>
+                                                {{-- <button class="btn btn-primary">
+                                                    <i class="fas fa-plus me-2"></i>Ajouter une gare
+                                                </button> --}}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    
+                                    <!-- Onglet Localisation -->
+                                    <div class="tab-pane fade" id="localisation" role="tabpanel" aria-labelledby="localisation-tab">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <h5 class="mb-0"><i class="fas fa-map-marked-alt text-primary me-2"></i>Localisation de la compagnie</h5>
+                                            <button class="btn btn-sm btn-outline-primary" id="refresh-map">
+                                                <i class="fas fa-sync-alt me-1"></i> Actualiser
+                                            </button>
+                                        </div>
+                                        <div id="map" style="width: 100%; height: 400px; border-radius: 8px;"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -213,6 +359,33 @@ use App\Helpers\GlobalHelper;
 
         @include('betro.all_element.footer')
     </div>
+
+    <!-- Modal de refus pour les compagnies en attente -->
+    @if($compagnies->status == 2)
+    <div class="modal fade" id="refuseModal{{ $compagnies->id }}" tabindex="-1" aria-labelledby="refuseLabel{{ $compagnies->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refuseLabel{{ $compagnies->id }}">Refuser la demande</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <form action="{{ route('compagnies.refuse', $compagnies->id) }}" method="POST" class="refuse-form">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Motif / Modifications demandées</label>
+                            <textarea name="reason" class="form-control" rows="4" required placeholder="Expliquez le motif de refus ou les corrections à apporter..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-danger">Envoyer le refus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 
     @if(isset($compagnies) && $compagnies->latitude && $compagnies->longitude)
     <script>
@@ -312,7 +485,89 @@ use App\Helpers\GlobalHelper;
             }
         });
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiw_DCMqoSQ5MoxmNqwbMKN_JEy-qQAS0&callback=initMap&libraries=places" async defer></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    $(document).ready(function() {
+        // Gestionnaire pour le formulaire d'approbation
+        $(document).on('submit', '.approve-form', function(e) {
+            e.preventDefault();
+            const form = this;
+            
+            Swal.fire({
+                title: 'Confirmer la validation',
+                text: 'Valider cette demande ? Un email de confirmation sera envoyé.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Oui, valider',
+                cancelButtonText: 'Annuler',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // Initialisation de DataTable
+        $('#garesTable').addClass('nowrap').dataTable({
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/French.json'
+            }
+        });
+    });
+
+    // Fonction pour confirmer le blocage
+    function confirmDelete(compagnieId, compagnieName) {
+      Swal.fire({
+        title: 'Confirmer le blocage',
+        html: `
+          <p>Attention ! En bloquant <strong>${compagnieName}</strong> :</p>
+          <ul style="text-align: left; padding-left: 20px;">
+            <li>Toutes les gares associées seront désactivées</li>
+            <li>Les agents ne pourront plus se connecter</li>
+            <li>La compagnie sera marquée comme inactive</li>
+          </ul>
+          <p>Voulez-vous continuer ?</p>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, bloquer',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('deleteForm' + compagnieId).submit();
+        }
+      });
+    }
+
+    // Fonction pour confirmer la réactivation
+    function confirmReactivate(compagnieId, compagnieName) {
+      Swal.fire({
+        title: 'Confirmer la réactivation',
+        html: `
+          <p>Voulez-vous réactiver la compagnie <strong>${compagnieName}</strong> ?</p>
+          <p class="text-muted">Cela permettra à nouveau l'accès aux utilisateurs de cette compagnie.</p>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, réactiver',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          document.getElementById('reactivateForm' + compagnieId).submit();
+        }
+      });
+    }
+    </script>
     @else
     <script>
         document.addEventListener('DOMContentLoaded', function() {

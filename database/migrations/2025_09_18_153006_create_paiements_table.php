@@ -16,8 +16,13 @@ return new class extends Migration
             $table->foreignId('utilisateur_id')->nullable()->constrained('utilisateurs', 'id');
             $table->foreignId('voyages_id')->nullable()->constrained('voyages', 'id');
             $table->foreignId('itineraire_id')->nullable()->constrained('itineraires')->nullOnDelete();
-            $table->foreignId('id_arret_voayage')->nullable()->constrained('arret_voyages', 'id');
+            $table->foreignId('id_arret_voayage')->nullable()->constrained('arrets', 'id');
             $table->foreignId('compagnie_id')->nullable()->constrained('compagnies', 'id');
+            $table->foreignId('gares_id')->nullable()->constrained('gares', 'id');
+
+            $table->string('nom_complet')->nullable();
+            $table->string('telephone_proprietaire')->nullable();
+
             $table->string('numero_place')->nullable();
             $table->string('montant')->nullable(); // montant du paiement
             $table->string('moyenPaiement')->nullable(); // ex. : carte de crédit, PayPal, etc.

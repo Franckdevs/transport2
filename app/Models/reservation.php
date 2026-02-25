@@ -12,10 +12,22 @@ class Reservation extends Model
         'utilisateurs_id',
         'numero_place',
         'autre_informations',
-        'statut', // tu avais "status" dans $fillable mais dans le Blade tu utilises "statut"
+        'status', // tu avais "status" dans $fillable mais dans le Blade tu utilises "statut"
         'id_arret_voayage',
-        'paiements_id'
+        'agents_id',
+        'paiements_id',
+        'compagnies_id',
+        'gare_id',
+        'numero_reservation',
+        'nom_complet',
+        'telephone_proprietaire'
+    
     ];
+
+    public function gares()
+    {
+        return $this->belongsTo(Gare::class, 'gare_id');
+    }
 
     public function voyage()
     {
@@ -27,6 +39,7 @@ class Reservation extends Model
         return $this->belongsTo(Utilisateur::class, 'utilisateurs_id');
     }
 
+    
    public function arretvoyage()
     {
     return $this->belongsTo(ArretVoyage::class, 'id_arret_voayage');
@@ -37,6 +50,15 @@ class Reservation extends Model
         return $this->belongsTo(Paiement::class, 'paiements_id');
     }
 
+    public function arret()
+    {
+        return $this->belongsTo(Arret::class, 'id_arret_voayage');
+    }
+
+    public function itineraire()
+    {
+        return $this->belongsTo(Itineraire::class, 'itineraire_id');
+    }
 
 
 

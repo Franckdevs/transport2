@@ -69,16 +69,37 @@ class GareController extends Controller
             'site_web'=> 'nullable',
             'description'=> 'nullable',
             // Champs administrateur
-            'admin_nom' => 'nullable|string|max:255',
-            'admin_prenom' => 'nullable|string|max:255',
-            'admin_email' => 'nullable|email|unique:users,email',
-            'admin_telephone' => 'nullable|string|max:20',
-            'admin_permissions' => 'nullable|array',
-            'admin_permissions.*' => 'exists:permissions,name',
+            'admin_nom' => 'required|string|max:255',
+            'admin_prenom' => 'required|string|max:255',
+            'admin_email' => 'required|email|unique:users,email',
+            'admin_telephone' => 'required|string|max:20',
+'admin_permissions'   => 'required|array|min:1',
+            'admin_permissions.*' => 'required|exists:permissions,name',
             'compagnie_id' => 'nullable|exists:compagnies,id',
             'id_admin_creation' => 'nullable|exists:users,id',
+        ],[
+            'admin_permissions.required'   => 'Veuillez sélectionner au moins une permission.',
+    'admin_permissions.array'      => 'Les permissions doivent être sous forme de liste.',
+    'admin_permissions.*.required' => 'Chaque permission sélectionnée est obligatoire.',
+    'admin_permissions.*.exists'   => 'Une permission sélectionnée est invalide.',
+            'admin_nom.required' => 'Le nom de l\'administrateur est requis',
+            'admin_prenom.required' => 'Le prénom de l\'administrateur est requis',
+            'admin_email.required' => 'L\'email de l\'administrateur est requis',
+            'admin_telephone.required' => 'Le téléphone de l\'administrateur est requis',
+            'admin_email.email' => 'L\'email de l\'administrateur doit être valide',
+'admin_email.unique' => 'Cet email est déjà utilisé par un autre compte.',
+            'admin_telephone.max' => 'Le téléphone de l\'administrateur doit contenir au maximum 20 caractères',
+            'heure_ouverture.required' => 'L\'heure d\'ouverture est requise',
+            'heure_fermeture.required' => 'L\'heure de fermeture est requise',
+            'jour_ouvert_id.required' => 'Le jour d\'ouverture est requis',
+            'jour_de_fermeture_id.required' => 'Le jour de fermeture est requis',
         ]);
 
+//                     'admin_telephone' => 'required|string|max:20',
+// 'admin_permissions'   => 'required|array|min:1',
+//             'admin_permissions.*' => 'required|exists:permissions,name',
+//         ] ,[
+                
         // 2️⃣ Créer l'utilisateur administrateur de la gare si les infos sont fournies
         $adminInfoUserId = null;
         if ($validated['admin_email'] && ($validated['admin_nom'] || $validated['admin_prenom'])) {
@@ -171,26 +192,51 @@ public function update2(Request $request, $id)
             'jour_de_fermeture_id' => 'nullable|exists:jours,id',
             'latitude' => 'nullable',
             'longitude' => 'nullable',
-            'heure_ouverture' => 'nullable',
-            'heure_fermeture' => 'nullable',
+            'heure_ouverture' => 'required',
+            'heure_fermeture' => 'required',
             'parking_disponible' => 'boolean',
             'wifi_disponible' => 'boolean',
             'telephone' => 'nullable',
             'email' => 'nullable|email',
-            'site_web' => 'nullable',
+            // 'site_web' => 'nullable',
             'description' => 'nullable',
             // Champs administrateur
-            'admin_nom' => 'nullable|string|max:255',
-            'admin_prenom' => 'nullable|string|max:255',
-            'admin_email' => [
-                'nullable',
-                'email',
-                Rule::unique('users', 'email')->ignore($user ? $user->id : null),
-                Rule::unique('info_users', 'email')->ignore($gare->info_user_id)
-            ],
-            'admin_telephone' => 'nullable|string|max:20',
-            'admin_permissions' => 'nullable|array',
-            'admin_permissions.*' => 'exists:permissions,name',
+            'admin_nom' => 'required|string|max:255',
+            'admin_prenom' => 'required|string|max:255',
+            'admin_email'=>'required|email',
+            // 'admin_email' => [
+            //     'required',
+            //     'email',
+            //     Rule::unique('users', 'email')->ignore($user ? $user->id : null),
+            //     Rule::unique('info_users', 'email')->ignore($gare->info_user_id)
+            // ],
+ 
+// 'admin_email' => [
+//     'required',
+//     'email',
+//     Rule::unique('users', 'email')->ignore($user?->id),
+//     Rule::unique('gares','admin_email')->ignore($gare->info_user_id),
+// ],
+
+            'admin_telephone' => 'required|string|max:20',
+'admin_permissions'   => 'required|array|min:1',
+            'admin_permissions.*' => 'required|exists:permissions,name',
+        ] ,[
+                'admin_permissions.required'   => 'Veuillez sélectionner au moins une permission.',
+    'admin_permissions.array'      => 'Les permissions doivent être sous forme de liste.',
+    'admin_permissions.*.required' => 'Chaque permission sélectionnée est obligatoire.',
+    'admin_permissions.*.exists'   => 'Une permission sélectionnée est invalide.',
+
+            'admin_nom.required' => 'Le nom de l\'administrateur est requis',
+            'admin_prenom.required' => 'Le prénom de l\'administrateur est requis',
+            'admin_email.required' => 'L\'email de l\'administrateur est requis',
+            'admin_telephone.required' => 'Le téléphone de l\'administrateur est requis',
+            'admin_email.email' => 'L\'email de l\'administrateur doit être valide',
+            'admin_telephone.max' => 'Le téléphone de l\'administrateur doit contenir au maximum 20 caractères',
+            'heure_ouverture.required' => 'L\'heure d\'ouverture est requise',
+            'heure_fermeture.required' => 'L\'heure de fermeture est requise',
+            'jour_ouvert_id.required' => 'Le jour d\'ouverture est requis',
+            'jour_de_fermeture_id.required' => 'Le jour de fermeture est requis',
         ]);
 
         if (!empty($validated['admin_email']) && ($validated['admin_nom'] || $validated['admin_prenom'])) {
@@ -198,19 +244,29 @@ public function update2(Request $request, $id)
                 // Mettre à jour l'utilisateur existant
 
                 // Mettre à jour User
+                if($currentUser->email == $request->admin_email){
+                
+                }else{
+                $user->update(['email' => $validated['admin_email'],]);
+                }
+                // dd($currentUser->email);
                 $user->update([
-                    'name' => trim(($validated['admin_prenom'] ?? '') . ' ' . ($validated['admin_nom'] ?? '')),
-                    'email' => $validated['admin_email'],
+                    // '' => trim(($validated['admin_prenom'] ?? '') . ' ' . ($validated['admin_nom'] ?? '')),
+                    // 'email' => $validated['admin_email'],
                     'prenom' => $validated['admin_prenom'] ?? '',
                     'nom' => $validated['admin_nom'] ?? '',
                 ]);
 
                 // Mettre à jour InfoUser
+               if($currentUser->email == $request->admin_email){
+                 }else{
+                   $user->info_user->update(['email' => $validated['admin_email'],]);
+                // $user->update(['email' => $validated['admin_email'],]);
+                }
                 $user->info_user->update([
                     'nom' => $validated['admin_nom'],
                     'prenom' => $validated['admin_prenom'],
                     'telephone' => $validated['admin_telephone'],
-                    'email' => $validated['admin_email'],
                 ]);
 
             } else {
@@ -259,7 +315,7 @@ public function update2(Request $request, $id)
             'wifi_disponible' => $request->input('wifi_disponible', 0) == 1,
             'telephone' => $validated['telephone'] ?? $gare->telephone,
             'email' => $validated['email'] ?? $gare->email,
-            'site_web' => $validated['site_web'] ?? $gare->site_web,
+            // 'site_web' => $validated['site_web'] ?? $gare->site_web,
             'description' => $validated['description'] ?? $gare->description,
         ]);
 
@@ -273,7 +329,6 @@ public function update2(Request $request, $id)
         return redirect()->back()->with('error', 'Erreur lors de la mise à jour de la gare: ' . $e->getMessage())->withInput();
     }
 }
-
 
 
     /**
@@ -294,11 +349,19 @@ public function update2(Request $request, $id)
 public function edit(gare $gare ,$id)
 {
     $gare = Gare::find($id);
-$garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
-    ->where('name', 'NOT LIKE', '%ajouter%')
-        ->where('name', 'NOT LIKE', '%tout-les-permissions%')
+// $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
+//     ->where('name', 'NOT LIKE', '%ajouter%')
+//         ->where('name', 'NOT LIKE', '%tout-les-permissions%')
 
-    ->get();
+//     ->get();
+   $garePermissions = Permission::whereIn('name', [
+    'tableau-de-bord-compagnies',
+    'itineraires',
+    'voyages',
+    'reservation',
+    'paramettre',
+    'agents'
+    ])->get();
     // $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
 
     $compagnie_id = Auth::user()->info_user->compagnie->id;
@@ -334,14 +397,29 @@ $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
         //
     }
 
-public function index2()
-{
-    $user = Auth::user();
-    $listegares = Gare::where('info_user_id', '!=', $user->id)
-    ->orderBy('id', 'desc')
-    ->paginate(10); // 10 par page
-    return view('compagnie.gares.index', compact('listegares'));
-}
+    public function index2(Request $request)
+    {
+        $user = Auth::user();
+        $compagnie_id = $user->info_user->compagnie->id;
+        
+        $query = Gare::where('info_user_id', '!=', $user->id)
+            ->where('compagnie_id', $compagnie_id);
+            
+        // Filtrer par ville si spécifié
+        if ($request->filled('ville_id')) {
+            $query->where('ville_id', $request->ville_id);
+        }
+        
+        // Filtrer par statut si spécifié
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        $listegares = $query->orderBy('id', 'desc')->get();
+        $villes = Ville::all();
+        
+        return view('compagnie.gares.index', compact('listegares', 'villes'));
+    }
 
 
 // public function create2()
@@ -361,10 +439,19 @@ public function create2()
 {
     // Récupérer toutes les permissions sauf celles qui contiennent "Betro"
     // $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')->get();
-    $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
-    ->where('name', 'NOT LIKE', '%ajouter%')
-        ->where('name', 'NOT LIKE', '%tout-les-permissions%')
-    ->get();
+    // $garePermissions = Permission::where('name', 'NOT LIKE', '%Betro%')
+    // ->where('name', 'NOT LIKE', '%ajouter%')
+    //     ->where('name', 'NOT LIKE', '%tout-les-permissions%')
+    // ->get();
+    $garePermissions = Permission::whereIn('name', [
+    'tableau-de-bord-compagnies',
+    'itineraires',
+    'voyages',
+    'reservation',
+    'paramettre',
+    'agents'
+    ])->get();
+
     $compagnie_id = Auth::user()->info_user->compagnie->id;
 
     return view('compagnie.gares.create', [

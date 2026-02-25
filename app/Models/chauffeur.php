@@ -2,9 +2,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Chauffeur extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'info_user_id',
         'nom',
@@ -15,6 +18,7 @@ class Chauffeur extends Model
         'date_naissance',
         'status',
         'photo',
+        'compagnies_id'
     ];
 
     // Relation : un chauffeur appartient à une compagnie

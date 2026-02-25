@@ -7,6 +7,7 @@ class Bus extends Model
 {
     protected $table = "buses";
     protected $fillable = [
+        'id',
         'info_user_id',
         'nom_bus',
         'marque_bus',
@@ -14,7 +15,7 @@ class Bus extends Model
         'immatriculation_bus',
         'photo_bus',
         'description_bus',
-        'place',
+        // 'place',
         'localisation_bus',
         'nombre_places',
         'configuration_car',
@@ -40,11 +41,37 @@ class Bus extends Model
         return $this->belongsTo(ConfigurationBus::class, 'configuration_place_buses_id');
     }
 
+    // Relation : un bus a plusieurs places (sièges) via sa configuration
+    public function places()
+    {
+        return $this->hasManyThrough(
+            PlaceConfiguration::class,
+            ConfigurationBus::class,
+            'id', // Foreign key on configuration_buses table
+            'configuration_bus_id', // Foreign key on place_configurations table
+            'configuration_place_buses_id', // Local key on buses table
+            'id' // Local key on configuration_buses table
+        );
+    }
+
 
     public function getPhotoBusAttribute($value)
-{
-    return $value ? asset('buses/' . $value) : null;
-}
+    {
+        if (!$value) {
+            return null;
+        }
+        
+        // Si le chemin contient déjà 'http', on le retourne tel quel
+        if (strpos($value, 'http') === 0) {
+            return $value;
+        }
+        
+        // Nettoyer le chemin pour éviter les doublons
+        $cleanPath = ltrim($value, '/');
+        $cleanPath = str_replace('buses/', '', $cleanPath);
+        
+        return asset('buses/' . $cleanPath);
+    }
 
 
 

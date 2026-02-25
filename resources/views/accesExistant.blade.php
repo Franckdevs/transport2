@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Accès existant - Transport</title>
     <!-- Bootstrap 5 CSS -->
+    <link rel="icon" href="{{ asset('log.png') }}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
@@ -121,8 +122,8 @@
                 <div class="auth-card">
                  
                     <div class="auth-body text-center p-4 p-md-5">
-                        <div class="icon-success">
-                            <i class="bi bi-shield-lock"></i>
+                        <div class="icon-success" style="color: #FFD700;">
+                            <i class="bi bi-shield-lock" style="color: #FFD700;"></i>
                         </div>
                         <h1>Compte déjà actif</h1>
                         <p class="lead">
@@ -130,10 +131,10 @@
                             Vous pouvez vous connecter en utilisant vos identifiants.
                         </p>
                         <div class="d-grid gap-3">
-                            <a href="{{ route('login') }}" class="back-home">
+                            <a href="{{ route('login') }}" class="back-home" style="color: #000000 !important;">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
                             </a>
-                            <a href="{{ url('/') }}" class="back-home">
+                            <a href="{{ url('/') }}" class="back-home" style="color: #000000 !important;">
                                 <i class="bi bi-house-door me-1"></i> Retour à l'accueil
                             </a>
                         </div>

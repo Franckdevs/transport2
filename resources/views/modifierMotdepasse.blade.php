@@ -5,7 +5,8 @@
     <title>Modifier mot de passe</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
-      <link rel="icon" href="../log.png" type="image/x-icon"> <!-- Favicon-->
+    <link rel="icon" href="../log.png" type="image/x-icon"> <!-- Favicon -->
+    <link rel="stylesheet" href="{{ asset('assets/css/loader.css') }}"> <!-- Loader CSS -->
 
     <style>
         body {
@@ -53,7 +54,8 @@
             box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
         }
         .btn-primary {
-            background: #28a745;
+            background: #FFC107;
+            color: #000;
             border: none;
             border-radius: 8px;
             padding: 0.8rem;
@@ -68,20 +70,15 @@
             gap: 10px;
         }
         .btn-primary:hover {
-            background: #218838;
+            background: #FFD700;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
         }
         .btn-primary:disabled {
             background: #28a745;
             opacity: 0.8;
         }
-        .spinner-border {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.15em;
-            display: none;
-        }
+        /* Les styles du loader ont été déplacés vers public/assets/css/loader.css */
         .password-match {
             font-size: 0.8rem;
             margin-top: 0.2rem;
@@ -212,8 +209,8 @@
 </head>
 <body>
 
-<div class="card">
-    <div class="card-header">
+<div class="card" style="max-width: 600px; min-height: 600px; margin: 2rem auto;">
+    <div class="card-header" style="background: linear-gradient(135deg, #FFD700, #FFC000); color: #000000;">
         <div class="d-flex flex-column align-items-center">
             @if($info_users->compagnie && $info_users->compagnie->logo_compagnies)
                 <img src="{{ asset($info_users->compagnie->logo_compagnies) }}" 
@@ -247,7 +244,7 @@
         </div>
         @endif
 
-        <form id="passwordForm" action="{{ route('acces.update.password', $users->id) }}" method="POST" autocomplete="off">
+        <form id="passwordForm" action="{{ route('acces.update.password', $users->id) }}" method="POST" autocomplete="off" onsubmit="return handleSubmit(event)">
             @csrf
             @method('PUT')
             
@@ -301,15 +298,69 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100" id="submitButton" style="display: none;">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <span id="buttonText">Mettre à jour</span>
+            <button type="submit" class="btn btn-warning w-100 btn-with-loader" id="submitButton" disabled>
+                <span class="btn-text"><i class="fas fa-save"></i> Mettre à jour</span>
+                <span class="loader"></span>
             </button>
         </form>
     </div>
 </div>
 
 <script>
+// Sauvegarder les valeurs des champs dans le stockage local
+function saveFormData() {
+    const form = document.getElementById('passwordForm');
+    const formData = new FormData(form);
+    const formObject = {};
+    formData.forEach((value, key) => {
+        formObject[key] = value;
+    });
+    localStorage.setItem('passwordFormData', JSON.stringify(formObject));
+}
+
+// Charger les valeurs sauvegardées
+function loadFormData() {
+    const savedData = localStorage.getItem('passwordFormData');
+    if (savedData) {
+        const formData = JSON.parse(savedData);
+        for (const [key, value] of Object.entries(formData)) {
+            const input = document.querySelector(`[name="${key}"]`);
+            if (input) {
+                input.value = value;
+            }
+        }
+        // Vérifier la correspondance des mots de passe après le chargement
+        checkMatch();
+    }
+}
+
+// Gérer la soumission du formulaire
+function handleSubmit(event) {
+    const button = document.getElementById('submitButton');
+    const buttonText = button.querySelector('.btn-text');
+    const loader = button.querySelector('.loader');
+    
+    // Désactiver le bouton et afficher le loader
+    button.disabled = true;
+    button.classList.add('btn-loading');
+    buttonText.textContent = 'Traitement...';
+    loader.style.display = 'inline-block';
+    
+    // Laisser le formulaire se soumettre normalement
+    return true;
+}
+
+// Charger les données sauvegardées au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    loadFormData();
+    
+    // Sauvegarder les données des champs à chaque modification
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('input', saveFormData);
+    });
+});
+
 function togglePassword(fieldId) {
     const field = document.getElementById(fieldId);
     const icon = field.nextElementSibling.querySelector('i');
@@ -466,32 +517,32 @@ function checkMatch() {
     const submitButton = document.getElementById('submitButton');
     const message = document.getElementById('matchMessage');
     
+    // Toujours désactiver le bouton par défaut
+    submitButton.disabled = true;
+    submitButton.style.opacity = '0.6';
+    
     if (password.value && confirm.value) {
         if (password.value === confirm.value) {
+            // Mots de passe identiques
             message.innerHTML = "<i class='fas fa-check-circle me-1'></i>Mots de passe identiques ✓";
             message.className = 'password-match text-success bg-success bg-opacity-10';
-            submitButton.style.display = 'flex'; // Afficher le bouton
             
-            // Animation de succès pour la correspondance
-            message.style.animation = 'fadeIn 0.5s ease';
+            // Activer le bouton uniquement si les mots de passe correspondent
             submitButton.disabled = false;
             submitButton.style.opacity = '1';
             return true;
         } else {
-            message.innerHTML = "<i class='fas fa-info-circle me-1'></i>Veuillez confirmer votre mot de passe";
-            message.className = 'password-match text-info bg-info bg-opacity-10';
-            submitButton.style.display = 'none'; // Cacher le bouton
-            submitButton.disabled = true;
-            submitButton.style.opacity = '0.6';
-            return false;
+            // Mots de passe différents
+            message.innerHTML = "<i class='fas fa-exclamation-triangle me-1'></i>Les mots de passe ne correspondent pas";
+            message.className = 'password-match text-danger bg-danger bg-opacity-10';
         }
     } else {
-        message.innerHTML = "";
-        message.className = 'password-match';
-        submitButton.disabled = true;
-        submitButton.style.opacity = '0.6';
-        return false;
+        // Champs vides
+        message.innerHTML = "<i class='fas fa-info-circle me-1'></i>Veuillez confirmer votre mot de passe";
+        message.className = 'password-match text-info bg-info bg-opacity-10';
     }
+    
+    return false;
 }
 
 function validateForm() {
@@ -503,40 +554,55 @@ function validateForm() {
 }
 
 // Événements
-document.getElementById('password').addEventListener('input', function() {
-    updatePasswordStrength();
-    checkMatch();
-});
-
-document.getElementById('password_confirmation').addEventListener('input', function() {
-    checkMatch();
-    // Mettre à jour la force si le champ de confirmation est modifié
-    updatePasswordStrength();
-});
+// Mettre à jour la validation à chaque modification des champs
+document.getElementById('password').addEventListener('input', checkMatch);
+document.getElementById('password_confirmation').addEventListener('input', checkMatch);
 
 document.getElementById('passwordForm').addEventListener('submit', function(e) {
-    if (!validateForm()) {
+    // Vérifier d'abord la correspondance des mots de passe
+    if (!checkMatch()) {
         e.preventDefault();
-        document.getElementById('matchMessage').innerHTML = "<i class='fas fa-exclamation-triangle me-1'></i>Veuillez corriger les erreurs avant envoi";
-        document.getElementById('matchMessage').className = 'password-match text-danger bg-danger bg-opacity-10';
-        
-        // Animation d'erreur
-        document.getElementById('matchMessage').style.animation = 'fadeIn 0.5s ease';
-        
-        // Focus sur le champ mot de passe si faible
-        const password = document.getElementById('password').value;
-        const { strength } = checkPasswordStrength(password);
-        if (strength < 40) {
-            document.getElementById('password').focus();
-        }
+        const message = document.getElementById('matchMessage');
+        message.innerHTML = "<i class='fas fa-exclamation-triangle me-1'></i>Les mots de passe ne correspondent pas";
+        message.className = 'password-match text-danger bg-danger bg-opacity-10';
+        message.style.animation = 'fadeIn 0.5s ease';
+        document.getElementById('password_confirmation').focus();
+        return false;
     }
+    
+    // Ensuite vérifier la force du mot de passe
+    const password = document.getElementById('password').value;
+    const { strength } = checkPasswordStrength(password);
+    if (strength < 40) {
+        e.preventDefault();
+        const message = document.getElementById('matchMessage');
+        message.innerHTML = "<i class='fas fa-exclamation-triangle me-1'></i>Le mot de passe est trop faible";
+        message.className = 'password-match text-danger bg-danger bg-opacity-10';
+        message.style.animation = 'fadeIn 0.5s ease';
+        document.getElementById('password').focus();
+        return false;
+    }
+    
+    // Si on arrive ici, tout est bon, on peut soumettre le formulaire
+    return true;
 });
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
     // Désactiver le bouton au départ
-    document.getElementById('submitButton').disabled = true;
-    document.getElementById('submitButton').style.opacity = '0.6';
+    const submitButton = document.getElementById('submitButton');
+    submitButton.disabled = true;
+    submitButton.style.opacity = '0.6';
+    
+    // Vérifier l'état initial des champs
+    checkMatch();
+    
+    // Ajouter la validation au formulaire
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        if (!checkMatch()) {
+            e.preventDefault();
+        }
+    });
 });
 </script>
 

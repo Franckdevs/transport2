@@ -13,9 +13,9 @@
                     <span class="line"></span>
                   </span>
                 </button>
-                <a href="../index.html" class="brand-icon d-flex align-items-center mx-2 mx-sm-3 text-primary" style="font-size: 22px; font-weight: bold;">
-                {{-- {{ Auth::user()->info_user->compagnie->nom_complet_compagnies ?? '' }} --}}
-                </a>
+                {{-- <a href="../index.html" class="brand-icon d-flex align-items-center mx-2 mx-sm-3 text-primary" style="font-size: 22px; font-weight: bold;">
+                {{ Auth::user()->info_user->compagnie->nom_complet_compagnies ?? '' }}
+                </a> --}}
               </div>
 
           <ul class="header-right justify-content-end d-flex align-items-center mb-0">
@@ -23,7 +23,10 @@
             <!-- Badge dans le header -->
     @if(Auth::check())
         @php
-            $role = Auth::user()->getRoleNames()->first();
+            $user = Auth::user();
+            $role = $user->getRoleNames()->first();
+            
+            // Définition des libellés des rôles
             $roleLabels = [
                 'super-admin-betro'      => 'Super admin Betro',
                 'sous-admin-betro'       => 'Sous admin Betro',
@@ -36,27 +39,35 @@
                 'agent'                  => 'Agent',
                 'client'                 => 'Client',
             ];
-            $roleText = $roleLabels[$role] ?? $role;
-
-            $permissionsList = Auth::user()->getAllPermissions()->pluck('name')->toArray();
-            $permissionsText = empty($permissionsList) ? 'Aucune permission' : implode(", ", $permissionsList);
+            
+            $roleText = $roleLabels[$role] ?? 'Utilisateur';
+            $permissions = $user->getAllPermissions()->pluck('name');
         @endphp
 
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <!-- Badge pour le rôle -->
-            <span class="badge bg-primary rounded-pill px-3 py-2">
+        <div class="d-flex align-items-center gap-3 me-3">
+            <!-- Badge du rôle avec infobulles -->
+            <span class="badge bg-primary rounded-pill px-3 py-2"
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="bottom" 
+                  title="{{ $permissions->isEmpty() ? 'Aucune permission' : 'Permissions: ' . $permissions->implode(', ') }}">
                 <i class="fas fa-user-tag me-1"></i>
                 <strong>{{ $roleText }}</strong>
             </span>
 
             <!-- Badge pour la gare -->
-            @if(Auth::user()->info_user && Auth::user()->info_user->gare)
+            @if($user->info_user && $user->info_user->gare)
+                @php
+                    $gare = $user->info_user->gare->load('ville');
+                @endphp
                 <span class="badge bg-secondary rounded-pill px-3 py-2"
                       data-bs-toggle="tooltip"
                       data-bs-placement="top"
-                      title="Gare associée">
+                      title="Gare de {{ $gare->ville->nom_ville ?? 'Ville inconnue' }}">
                     <i class="fas fa-train me-1"></i>
-                    <strong>{{ Auth::user()->info_user->gare->nom_gare }}</strong>
+                    <strong>{{ $gare->nom_gare }}</strong>
+                    @if(isset($gare->ville))
+                        <span class="ms-1">({{ $gare->ville->nom_ville }})</span>
+                    @endif
                 </span>
             @endif
         </div>
@@ -78,13 +89,13 @@
 
                 <li>
                   <div class="dropdown morphing scale-left user-profile mx-lg-3 mx-2">
-                    <a class="nav-link dropdown-toggle rounded-circle after-none p-0" href="#" role="button" data-bs-toggle="dropdown">
-                      <img class="avatar img-thumbnail rounded-circle shadow" src="../assets/img/profile_av.png" alt="">
-                    </a>
+                    {{-- <a class="nav-link dropdown-toggle rounded-circle after-none p-0" href="#" role="button" data-bs-toggle="dropdown">
+                      <img class="avatar img-thumbnail rounded-circle shadow" src="{{ asset(Auth::user()->info_user->gare->compagnie->logo_compagnies) }}" alt="">
+                    </a> --}}
                     <div class="dropdown-menu border-0 rounded-4 shadow p-0">
                       <div class="card border-0 w240">
                         <div class="card-body border-bottom d-flex">
-                          <img class="avatar rounded-circle" src="../assets/img/profile_av.png" alt="">
+                          {{-- <img class="avatar rounded-circle" src="{{ asset(Auth::user()->info_user->gare->compagnie->logo_compagnies) }}" alt=""> --}}
                           <div class="flex-fill ms-3">
                             <h6 class="card-title mb-0">{{ Auth::user()->nom }} {{ Auth::user()->prenom }}</h6>
                             <span class="text-muted">{{ Auth::user()->email }}</span>

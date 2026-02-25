@@ -180,4 +180,56 @@
                 width: 100%;
             }
         }
+
+        /* Thème jaune personnalisé */
+        [data-luno="theme-yellow"] .btn-primary {
+            background: #ffc107 !important;
+            border-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        [data-luno="theme-yellow"] .btn-primary:hover {
+            background: #e0a800 !important;
+            border-color: #e0a800 !important;
+        }
+
+        [data-luno="theme-yellow"] .form-control:focus,
+        [data-luno="theme-yellow"] .form-select:focus {
+            border-color: #ffc107 !important;
+            box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.25) !important;
+        }
+
+        [data-luno="theme-yellow"] .text-primary {
+            color: #ffc107 !important;
+        }
+
+        [data-luno="theme-yellow"] .badge.bg-primary {
+            background-color: #ffc107 !important;
+            color: #000 !important;
+        }
+
+        [data-luno="theme-yellow"] .card-header.bg-primary {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+        }
+
+        [data-luno="theme-yellow"] .page-header {
+            border-bottom: 2px solid #ffc107 !important;
+        }
+
+        [data-luno="theme-yellow"] .spinner-border.text-primary {
+            color: #ffc107 !important;
+        }
+
+        [data-luno="theme-yellow"] .border-primary {
+            border-color: #ffc107 !important;
+        }
+
+        [data-luno="theme-yellow"] .alert-primary {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+            color: #856404 !important;
+        }
     </style>
+
+    @include('compagnie.all_element.color_global')
